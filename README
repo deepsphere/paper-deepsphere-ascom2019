@@ -1,12 +1,14 @@
-Paper: Spherical Convolutional Neural Networks
-==============================================
+Paper: Efficient spherical Convolutional Neural Networks
+========================================================
 
 To compile you can use the command make.
 
 TODO list
 ---------
+Check Cohen work and check if we can compare/beat them.
 
 Questions
 ---------
 
+* Should we use another title?
 * 
