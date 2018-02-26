@@ -32,21 +32,37 @@
 %% \documentclass[final,5p,times,authoryear]{elsarticle}
 %% \documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
 
+
+\usepackage[utf8]{inputenc}
+
+
+
 %% For including figures, graphicx.sty has been loaded in
 %% elsarticle.cls. If you prefer to use the old commands
 %% please give \usepackage{epsfig}
 
 %% The amssymb package provides various useful mathematical symbols
 \usepackage{amssymb}
-%% The amsthm package provides extended theorem environments
-%% \usepackage{amsthm}
+\usepackage{color}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{graphicx,array}
+\usepackage{amsmath}
 
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
 %% \usepackage{lineno}
 
-\journal{Nuclear Physics B}
+\newcommand{\nati}[1]{{\color[rgb]{.1,.6,.1}{#1}}}
+
+\newcommand{\todo}[1]{{\color[rgb]{.6,.1,.6}{#1}}}
+
+
+
+
+
+\journal{Astronomy and Computing}
 
 \begin{document}
 
@@ -72,7 +88,7 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\title{}
+\title{Efficient spherical Convolutional Neural Networks}
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -103,8 +119,30 @@
 %% \linenumbers
 
 %% main text
-\section{}
-\label{}
+\section{Introduction}
+\label{sec:intro}
+
+\paragraph{Potential applications}
+\begin{itemize}
+	\item Efficient compression de-compression of 360 videos\cite{su2017learning}
+	\item Analysis of spherical cosmological data such as the cosmic microwave background \cite{...}, already done in\cite{he2018analysis}.
+\end{itemize}
+
+
+\subsection{Related work}
+\cite{cohen2017convolutional} \nati{+ add other graph CNN approaches \cite{...}}
+\cite{cohen2018spherical}
+\cite{boomsma2017spherical}
+\cite{defferrard2016convolutional}
+
+\section{Convolution neural networks on a sphere}
+
+
+\section{Experiments}
+
+
+
+\section*{Thanks}
 
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
@@ -116,20 +154,10 @@
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
 %%
-%%  \bibliographystyle{elsarticle-harv} 
-%%  \bibliography{<your bibdatabase>}
+\section*{Bibliography}
+\bibliographystyle{elsarticle-harv} 
+\bibliography{biblio}
 
-%% else use the following coding to input the bibitems directly in the
-%% TeX file.
-
-\begin{thebibliography}{00}
-
-%% \bibitem[Author(year)]{label}
-%% Text of bibliographic item
-
-\bibitem[ ()]{}
-
-\end{thebibliography}
 \end{document}
 
 \endinput
