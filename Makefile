@@ -1,4 +1,4 @@
-PDFNAME = audio-inpainting.pdf
+PDFNAME = scnn.pdf
 
 all:	$(PDFNAME)
 

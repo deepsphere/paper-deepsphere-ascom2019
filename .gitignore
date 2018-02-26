@@ -11,5 +11,7 @@
 *.aux
 *.log
 *.out
+*.spl
 *.synctex.gz
 *-eps-converted-to.pdf
+scnn.pdf
