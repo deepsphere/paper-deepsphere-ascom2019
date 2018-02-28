@@ -122,7 +122,11 @@
 \section{Introduction}
 \label{sec:intro}
 
-\paragraph{Potential applications}
+\subsection{Motivation}
+a) Cosmology has a lot of spherical data. Our solution is easy to use and is based on the widely used healpix sampling.
+b) It is the most efficient spherical convolution
+
+\subsection{Potential applications}
 \begin{itemize}
 	\item Efficient compression de-compression of 360 videos\cite{su2017learning}
 	\item Analysis of spherical cosmological data such as the cosmic microwave background \cite{...}, already done in\cite{he2018analysis}.
@@ -135,11 +139,26 @@
 \cite{boomsma2017spherical}
 \cite{defferrard2016convolutional}
 
-\section{Convolution neural networks on a sphere}
+\section{Spherical convolution on sphere using a graph}
+\begin{itemize}
+	\item We build a graph using the healpix sampling
+	\item Define Fourier transform and show that the harmonics are visually close to the spherical harmonics
+	\item Define spherical convolution using the graph Fourier transform and show heat diffusion example
+	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
+\end{itemize}
 
+\section{Efficient spherical CNN}
+\begin{itemize}
+	\item We need efficient convolution, hence the Chebysheff trick
+	\item Define spherical CNN using graph CNN
+\end{itemize}
 
 \section{Experiments}
-
+\begin{itemize}
+	\item With the entire sphere / different PSD (The PSD features + linear SVM is equivalently good)
+	\item Without the entire sphere / same PSD (The histogram features + kernelized SVM is equivalently good)
+	\item ??
+\end{itemize}
 
 
 \section*{Thanks}
