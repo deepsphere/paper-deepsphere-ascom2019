@@ -58,6 +58,7 @@
 
 \newcommand{\todo}[1]{{\color[rgb]{.6,.1,.6}{#1}}}
 
+\newcommand{\assign}[1]{{\color[rgb]{.8,.5,.8}{Assigned: #1 }}}
 
 
 
@@ -88,7 +89,7 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\title{Efficient spherical Convolutional Neural Networks}
+\title{Efficient spherical Convolutional Neural Networks with Healpix sampling for cosmological applications}
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -123,23 +124,31 @@
 \label{sec:intro}
 
 \subsection{Motivation}
+\assign{Tomek}
+
 a) Cosmology has a lot of spherical data. Our solution is easy to use and is based on the widely used healpix sampling.
 b) It is the most efficient spherical convolution
 
 \subsection{Potential applications}
+	\assign{Tomek, Nathanael}
+
 \begin{itemize}
+
 	\item Efficient compression de-compression of 360 videos\cite{su2017learning}
 	\item Analysis of spherical cosmological data such as the cosmic microwave background \cite{...}, already done in\cite{he2018analysis}.
 \end{itemize}
 
 
 \subsection{Related work}
+\assign{Nathanael}
 \cite{cohen2017convolutional} \nati{+ add other graph CNN approaches \cite{...}}
 \cite{cohen2018spherical}
 \cite{boomsma2017spherical}
 \cite{defferrard2016convolutional}
 
 \section{Spherical convolution on sphere using a graph}
+\assign{Nathanael}
+
 \begin{itemize}
 	\item We build a graph using the healpix sampling
 	\item Define Fourier transform and show that the harmonics are visually close to the spherical harmonics
@@ -148,15 +157,20 @@ b) It is the most efficient spherical convolution
 \end{itemize}
 
 \section{Efficient spherical CNN}
+\assign{Michael}
+
+
 \begin{itemize}
 	\item We need efficient convolution, hence the Chebysheff trick
 	\item Define spherical CNN using graph CNN
 \end{itemize}
 
 \section{Experiments}
+\assign{Nathanael, Tomek}
+
 \begin{itemize}
 	\item With the entire sphere / different PSD (The PSD features + linear SVM is equivalently good)
-	\item Without the entire sphere / same PSD (The histogram features + kernelized SVM is equivalently good)
+	\item Without the entire sphere / same PSD (1 sample: the histogram features + kernelized SVM is equivalently good)
 	\item ??
 \end{itemize}
 
