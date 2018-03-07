@@ -155,12 +155,12 @@ b) It is the most efficient spherical convolution
 \section{Spherical convolution on sphere using a graph}
 \assign{Nathanael}
 
-As presented in~\cite{cohen2018spherical}, the most mathematical approach to extend convolution on a sphere is to use a spherical Fourier transform. Convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which can be, even with accelerated algorithm, rather expensive. For 2-dimensional images, efficient convolution can be achieved when the convolution kernel is localized (for example a 5x5 pixel patch) by doing the computation directly in the signal domain. Unfortunately, this approach cannot be directly extended to the spherical case. Hence, the main idea of this contribution is to leverage graph signal processing~\cite{shuman2013emerging} to define a spherical convolution that can be computed direcly in the signal domain. 
+As presented in~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which is, even with accelerated algorithms, rather expensive. For 2-dimensional images, an efficient convolution can be achieved when the convolution kernel is localized (for example a 5x5 pixel patch) by doing the computation directly in the signal domain. Unfortunately, this approach cannot be directly extended to the spherical case. Hence, the main idea of this contribution is to leverage graph signal processing~\cite{shuman2013emerging} to define a spherical convolution that can be computed directly in the signal domain. 
 
 In this section, we follow classical constructions presented in~\cite{cohen2018spherical,...} and \nati{show} that the resulting spherical convolution is close to one corresponding to spherical approach.
 
 \paragraph{Graph creation.}
-As a hard constraint resulting from the cosmological applications, we are bound to use the HealPix sampling~\cite{gorski2005healpix} and we create a weighted undirected graph where each pixel is a node (vertex) that is connected to his $8$ or $7$ closest neighboors\footnote{For some pixels, the $8^{th}$ nearest neighboor is not well defined.}. Given the set of nearest neighboors, we define the weight matrix $W$ using the following scheme
+As a hard constraint resulting from the cosmological applications, we are bound to use the HealPix sampling~\cite{gorski2005healpix} and we create a weighted undirected graph where each pixel is a node (vertex) that is connected to his $8$ or $7$ closest neighboors\footnote{For some pixels, the $8^{th}$ nearest neighbor is not well defined.}. Given the set of nearest neighbors, we define the weight matrix $W$ using the following scheme
 \begin{equation}
 W[i,j]=\begin{cases}
 e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connected, and}\\
@@ -169,8 +169,8 @@ e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connecte
 \end{equation}
 Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$ on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected pixels $i$ and $j$. The degree of a node (or a pixel) is defined as $d_i = \sum_j W[i,j]$. The degree matrix $D$ is the diagonal matrix where $D_ii=d_i$.
 
-\paragraph{Fourier transform.}
-The graph noramalized Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the Fourier transform.
+\paragraph{Graph Fourier Transform and spherical harmonics.}
+The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the graph Fourier basis. 
  
 \begin{itemize}
 	\item We build a graph using the healpix sampling
