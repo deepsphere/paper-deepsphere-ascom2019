@@ -129,49 +129,62 @@
 \section{Introduction}
 \label{sec:intro}
 
-
-
-
-\subsection{Motivation}
+%\subsection{Motivation}
 \assign{Tomek}
 
 a) Cosmology has a lot of spherical data. Our method is simple and easy to use. Moreover, it is based on the widely used healpix sampling.
 b) It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
 
 \subsection{Potential applications}
-	\assign{Tomek, Nathanael, Michael}
+	\assign{Tomek, Nathanaël, Michaël}
 
 The analysis of spherical cosmological data, such as the cosmic microwave background \cite{...}, as done in \cite{he2018analysis}, is the target application of our method.
 
 While our method was developed with cosmology in mind, it can easily target any problem where data live on a sphere. Examples include, but are certainly not limited to, (i) efficient compression and decompression of \ang{360} videos (see \cite{su2017learning}), (ii) \todo{data analysis on planets? (climate, forecasting, temperature, wind)}, (iii) \todo{particle physics? (jets on detectors, but they are usually cylindrical)}, (iv) \todo{applications in Cohen's papers?}.
 
-Finally, not that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks [some citations, e.g. brain Alzeihmer, particle physics].
+Finally, not that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks [some citations, e.g. brain Alzeihmer, particle physics, computer graphics].
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
-\subsection{Related work}
-\assign{Nathanael, Michael}
+\section{Related work}
 \label{sec:related}
+
+\subsection{Spherical convolutions}
+\assign{Nathanaël}
+
 \cite{cohen2017convolutional} 
 \cite{cohen2018spherical}
 \cite{boomsma2017spherical}
-\cite{defferrard2016convolutional}
 
-\nati{+ add other graph CNN approaches \cite{...}}
+\subsection{Convolutions on graphs}
+\assign{Michaël}
+
+\todo{other approaches? GNNs, Kipf first order approx, message passing}
 
 Previous work: [Bruna] which needed the full eigendecomposition of the Laplacian, costing $O(n^3)$ operations.
 
+In this work, we are using the graph CNN formulation introduced in \cite{defferrard2016convolutional}.
+
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
-Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which a sphere do not possess.
+\subsection{Convolutions on manifolds}
 
-\section{Spherical convolution on sphere using a graph}
-\assign{Nathanael}
+Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
+
+\subsection{Convolutions on point clouds?}
+
+PointNet and co. Related but we are loosing the structure. Also coarsening.
+
+\section{Method}
+
+The gist of our method is to define the convolution on a sphere using a graph. The graph is here seen as a discrete approximation of the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$.
 
 As presented in~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which is, even with accelerated algorithms, rather expensive. For 2-dimensional images, an efficient convolution can be achieved when the convolution kernel is localized (for example a 5x5 pixel patch) by doing the computation directly in the signal domain. Unfortunately, this approach cannot be directly extended to the spherical case. Hence, the main idea of this contribution is to leverage graph signal processing~\cite{shuman2013emerging} to define a spherical convolution that can be computed directly in the signal domain. 
 
 In this section, we follow classical constructions presented in~\cite{cohen2018spherical,...} and \nati{show} that the resulting spherical convolution is close to one corresponding to spherical approach.
 
-\paragraph{Graph creation.}
+\subsection{Graph creation}
+\assign{Nathanaël}
+
 As a hard constraint resulting from the cosmological applications, we are bound to use the HealPix sampling~\cite{gorski2005healpix} and we create a weighted undirected graph where each pixel is a node (vertex) that is connected to his $8$ or $7$ closest neighboors\footnote{For some pixels, the $8^{th}$ nearest neighbor is not well defined.}. Given the set of nearest neighbors, we define the weight matrix $W$ using the following scheme
 \begin{equation}
 W[i,j]=\begin{cases}
@@ -181,7 +194,15 @@ e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connecte
 \end{equation}
 Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$ on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected pixels $i$ and $j$. The degree of a node (or a pixel) is defined as $d_i = \sum_j W[i,j]$. The degree matrix $D$ is the diagonal matrix where $D_ii=d_i$.
 
-\paragraph{Graph Fourier Transform and spherical harmonics.}
+\subsection{Coarsening}
+\assign{Nathanaël}
+
+How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 12$ points.
+
+\subsection{Graph Fourier basis and spherical harmonics}
+\assign{Nathanaël}
+% TODO: basis or transform?
+
 The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the graph Fourier basis. 
  
 \begin{itemize}
@@ -191,9 +212,13 @@ The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is
 	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
 \end{itemize}
 
-\section{Efficient spherical CNN}
-\assign{Michael}
+\subsection{Convolutions on graphs}
+\assign{Nathanaël, Michaël}
 
+With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for the eigendecomposition, plus $O(n^2)$ for the transform (to be done for each forward and backward pass).
+
+\subsection{Efficient convolutions}
+\assign{Michaël}
 
 \begin{itemize}
 	\item We need efficient convolution, hence the Chebysheff trick
@@ -201,7 +226,7 @@ The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is
 \end{itemize}
 
 \section{Experiments}
-\assign{Nathanael, Tomek}
+\assign{Nathanaël, Tomek}
 
 \begin{itemize}
 	\item With the entire sphere / different PSD (The PSD features + linear SVM is equivalently good)
@@ -209,6 +234,8 @@ The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is
 	\item ??
 \end{itemize}
 
+\section{Conclusion}
+\assign{Nathanaël, Tomek, Michaël}
 
 \section*{Thanks}
 
