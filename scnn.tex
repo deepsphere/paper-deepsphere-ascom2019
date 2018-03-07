@@ -48,6 +48,7 @@
 \usepackage{hyperref}
 \usepackage{graphicx,array}
 \usepackage{amsmath}
+\usepackage{siunitx}
 
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
@@ -134,19 +135,18 @@
 \subsection{Motivation}
 \assign{Tomek}
 
-a) Cosmology has a lot of spherical data. Our solution is easy to use and is based on the widely used healpix sampling.
-b) It is the most efficient spherical convolution
+a) Cosmology has a lot of spherical data. Our method is simple and easy to use. Moreover, it is based on the widely used healpix sampling.
+b) It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
 
 \subsection{Potential applications}
 	\assign{Tomek, Nathanael, Michael}
 
-\begin{itemize}
+The analysis of spherical cosmological data, such as the cosmic microwave background \cite{...}, as done in \cite{he2018analysis}, is the target application of our method.
 
-	\item Efficient compression de-compression of 360 videos\cite{su2017learning}
-	\item Analysis of spherical cosmological data such as the cosmic microwave background \cite{...}, already done in\cite{he2018analysis}.
-\end{itemize}
+While our method was developed with cosmology in mind, it can easily target any problem where data live on a sphere. Examples include, but are certainly not limited to, (i) efficient compression and decompression of \ang{360} videos (see \cite{su2017learning}), (ii) \todo{data analysis on planets? (climate, forecasting, temperature, wind)}, (iii) \todo{particle physics? (jets on detectors, but they are usually cylindrical)}, (iv) \todo{applications in Cohen's papers?}.
 
-Note that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks.
+Finally, not that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks [some citations, e.g. brain Alzeihmer, particle physics].
+% the convolution is not restricted to the sphere, the coarsening/pooling is
 
 \subsection{Related work}
 \assign{Nathanael, Michael}
