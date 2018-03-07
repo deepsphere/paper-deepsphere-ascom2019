@@ -15,9 +15,9 @@ all:	$(PDFNAME)
 	lyx -f --export latex $<
 
 texclean:	
-	-rm *.aux *.bbl *.blg *.log *.dvi *.out *.toc *.gz* *.fdb_latexmk *.spl
+	-rm -f *.aux *.bbl *.blg *.log *.dvi *.out *.toc *.gz* *.fdb_latexmk *.spl
 
 clean:	texclean
-	-rm $(PDFNAME)
+	-rm -f $(PDFNAME)
 
 .PHONY: all texclean clean
