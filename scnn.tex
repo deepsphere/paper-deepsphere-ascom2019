@@ -103,6 +103,11 @@
 \begin{abstract}
 %% Text of abstract
 
+	\todo{(Michaël) I would not invent a new term, SCNN, but rather say that convolutional neural networks on graphs (or GCNs) can be efficiently applied to (spherical?) cosmological applications.
+	Arguments: the method is not new and hence don't deserve a new name. Emphasize that it is generic to the data structure, and that the sphere is simply a particular graph.
+	Ideas: Graph Convolutional Networks for efficient spherical ???, Efficient spherical ??? with GCNs and Healpix sampling
+}
+
 \end{abstract}
 
 \begin{keyword}
@@ -141,6 +146,7 @@ b) It is the most efficient spherical convolution
 	\item Analysis of spherical cosmological data such as the cosmic microwave background \cite{...}, already done in\cite{he2018analysis}.
 \end{itemize}
 
+Note that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks.
 
 \subsection{Related work}
 \assign{Nathanael, Michael}
@@ -151,6 +157,12 @@ b) It is the most efficient spherical convolution
 \cite{defferrard2016convolutional}
 
 \nati{+ add other graph CNN approaches \cite{...}}
+
+Previous work: [Bruna] which needed the full eigendecomposition of the Laplacian, costing $O(n^3)$ operations.
+
+Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
+
+Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which a sphere do not possess.
 
 \section{Spherical convolution on sphere using a graph}
 \assign{Nathanael}
