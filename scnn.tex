@@ -204,6 +204,8 @@ How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 
 % TODO: basis or transform?
 
 The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the graph Fourier basis. 
+
+Show the spherical harmonics.
  
 \begin{itemize}
 	\item We build a graph using the healpix sampling
@@ -226,6 +228,15 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 \end{itemize}
 
 \section{Experiments}
+
+What do we want to show? The graph CNN is able to discriminate ??? using higher order statistics.
+
+\subsection{Data}
+\assign{Tomek}
+
+Our data comes from a simulation with software ??? using the following parameters ???. All the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
+
+\subsection{Results}
 \assign{Nathanaël, Tomek}
 
 \begin{itemize}
@@ -233,6 +244,11 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 	\item Without the entire sphere / same PSD (1 sample: the histogram features + kernelized SVM is equivalently good)
 	\item ??
 \end{itemize}
+
+\subsection{Interpretation}
+\assign{Nathanaël, Tomek, Michaël}
+
+Show the learned filters and feature maps and try to interpret them.
 
 \section{Conclusion}
 \assign{Nathanaël, Tomek, Michaël}
