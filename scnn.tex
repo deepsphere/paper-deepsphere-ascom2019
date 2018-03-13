@@ -153,8 +153,11 @@ Finally, not that those neural networks are not restricted to the sphere and can
 
 \cite{cohen2017convolutional} 
 \cite{cohen2018spherical}
-\cite{boomsma2017spherical}
+\nati{I meet one of the author of \cite{cohen2018spherical} and we talk for an hour. Here is what I learned}
+Very recently, a version of spherical convolutional neural networks have been proposed in~\cite{cohen2017convolutional,cohen2018spherical}. The main goal of this contribution is to develop a CNN with a convolution that is rotation-equivariant on the sphere, i.e. a rotation of the input implies the same rotation of the output. The resulting convolution is performed by a spherical Fourier transform (i.e. a projection on the spherical harmonics), a  multiplication in the spectral domain and an inverse spherical Fourier tranform. The approach is mathematically well justifed and illustrated with a few experiments. The main computational cost of the convultion comes from the two Fourier transforms. The Fourier transform can be accelerated for special samplings set (including the healpix). Nevertheless, even with these acceleration, the convolution seems to be more expensive than graph convolution. A comparizon would be very complicated because the author have focused on \nati{...} sampling set and do not provide any code for the Healpix one.
 
+\cite{boomsma2017spherical}
+,
 \subsection{Convolutions on graphs}
 \assign{Michaël}
 
