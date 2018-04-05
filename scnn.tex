@@ -169,6 +169,8 @@ In this work, we are using the graph CNN formulation introduced in \cite{defferr
 
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
+\todo{Cool to have a global illustration of the network (CNN like)}
+
 \subsection{Convolutions on manifolds}
 
 Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
@@ -197,10 +199,14 @@ e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connecte
 \end{equation}
 Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$ on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected pixels $i$ and $j$. The degree of a node (or a pixel) is defined as $d_i = \sum_j W[i,j]$. The degree matrix $D$ is the diagonal matrix where $D_{ii}=d_i$.
 
+Figure Graph (show also the triangle, separate plot?) + sampling
+
 \subsection{Coarsening}
 \assign{Nathanaël}
 
 How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 12$ points.
+
+Figure heaplix pooling.
 
 \subsection{Graph Fourier basis and spherical harmonics}
 \assign{Nathanaël}
@@ -208,7 +214,7 @@ How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 
 
 The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the graph Fourier basis. 
 
-Show the spherical harmonics.
+Figure our harmonics.
  
 \begin{itemize}
 	\item We build a graph using the healpix sampling
@@ -222,11 +228,16 @@ Show the spherical harmonics.
 
 With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for the eigendecomposition, plus $O(n^2)$ for the transform (to be done for each forward and backward pass).
 
+Example on the heat equation
+Figure filters
+Figure diffusion (unit of heat)
+
 \subsection{Efficient convolutions}
 \assign{Michaël}
 
 \begin{itemize}
 	\item We need efficient convolution, hence the Chebysheff trick
+	\item Explain the different between a polynomial filter convolution and a traditional patch restricted convolution
 	\item Define spherical CNN using graph CNN
 \end{itemize}
 
@@ -239,6 +250,8 @@ What do we want to show? The graph CNN is able to discriminate ??? using higher 
 
 Our data comes from a simulation with software ??? using the following parameters ???. All the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
 
+Figure: part map plot
+
 \subsection{Results}
 \assign{Nathanaël, Tomek}
 
@@ -247,6 +260,11 @@ Our data comes from a simulation with software ??? using the following parameter
 	\item Without the entire sphere / same PSD (1 sample: the histogram features + kernelized SVM is equivalently good)
 	\item ??
 \end{itemize}
+
+
+Figure: Result curves 
+
+Figure: Filter if they look good.
 
 \subsection{Interpretation}
 \assign{Nathanaël, Tomek, Michaël}
