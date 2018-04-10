@@ -145,8 +145,20 @@ While our method was developed with cosmology in mind, it can easily target any 
 Finally, not that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks [some citations, e.g. brain Alzeihmer, particle physics, computer graphics].
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
+
+\subsection{Healpix sampling}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/healpix-3layers.jpg}
+\caption{3 smaller sclales of the healpix sampling.}
+\label{fig:healpix_sampling}
+\end{figure}
+
 \section{Related work}
 \label{sec:related}
+
+
 
 \subsection{Spherical convolutions}
 \assign{Nathanaël}
@@ -181,6 +193,8 @@ PointNet and co. Related but we are loosing the structure. Also coarsening.
 
 \section{Method}
 
+
+
 The gist of our method is to define the convolution on a sphere using a graph. The graph is here seen as a discrete approximation of the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$.
 
 As presented in~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which is, even with accelerated algorithms, rather expensive. For 2-dimensional images, an efficient convolution can be achieved when the convolution kernel is localized (for example a 5x5 pixel patch) by doing the computation directly in the signal domain. Unfortunately, this approach cannot be directly extended to the spherical case. Hence, the main idea of this contribution is to leverage graph signal processing~\cite{shuman2013emerging} to define a spherical convolution that can be computed directly in the signal domain. 
@@ -189,6 +203,14 @@ In this section, we follow classical constructions presented in~\cite{cohen2018s
 
 \subsection{Graph creation}
 \assign{Nathanaël}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
+\includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
+\caption{Left: Healpix graph for the full sphere using a nside parameter of $4$. Right: Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
+\label{fig:healpix_graph_4}
+\end{figure}
 
 From the ubiquitous HealPix sampling~\citep{gorski2005healpix}, we create a weighted undirected graph where each pixel is a node (vertex) that is connected to his $8$ or $7$ closest neighbors.\footnote{For some pixels, the $8^{th}$ nearest neighbor is not well defined.} Given the set of nearest neighbors, we define the weight matrix $W$ using the following scheme
 \begin{equation}
@@ -206,7 +228,12 @@ Figure Graph (show also the triangle, separate plot?) + sampling
 
 How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 12$ points.
 
-Figure heaplix pooling.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/pooling.pdf}
+\caption{Pooling, 1/12 of the sphere, 2 levels, molview projection.}
+\label{fig:pooling}
+\end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
 \assign{Nathanaël}
@@ -214,7 +241,12 @@ Figure heaplix pooling.
 
 The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the graph Fourier basis. 
 
-Figure our harmonics.
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
+\caption{12 first graph Fourier eigenvectors.}
+\label{fig:graph_harmonics}
+\end{figure}
  
 \begin{itemize}
 	\item We build a graph using the healpix sampling
@@ -229,7 +261,32 @@ Figure our harmonics.
 With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for the eigendecomposition, plus $O(n^2)$ for the transform (to be done for each forward and backward pass).
 
 Example on the heat equation
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
+\caption{Top: Diffusion of a unit of heat for different time using the graph. Bottom: gaussian filtering on the sphere. Relative difference of the two diffusions: $13.5$\%, $6.1$\%, $5.2$\%, $3.8$\% }
+\label{fig:gaussian_filters_comparizon}
+\end{figure}
+
 Figure filters 3 representations for both graph + spherical Fourier
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_spectral.pdf}
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_gnomonic.pdf}
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_section.pdf}
+\caption{3 Different effet visualization of filters. Top: Graph spectral domain. Middle: gnomonic projection on the sphere. Bottom: section of filter.}
+\label{fig:gaussian_filters_visualization}
+\end{figure}
+
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/index_plotting_order20_nside16.pdf}
+
+\caption{Indexes selected for the section ploting of the filter.}
+\label{fig:index_section}
+\end{figure}
+
 
 \subsection{Efficient convolutions}
 \assign{Michaël}
@@ -249,7 +306,20 @@ What do we want to show? The graph CNN is able to discriminate ??? using higher 
 
 Our data comes from a simulation with software ??? using the following parameters ???. All the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
 
-Figure: part map plot ???
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/smooth_map_class_1.pdf}
+\includegraphics[width=0.45\textwidth]{figures/smooth_map_class_2.pdf}
+\caption{One sample of each class }
+\label{fig:map_sample}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/part_sphere.pdf}
+\caption{3 subparts of the sphere with different sizes. Blue: order 1. Green: order 2. Yellow: order 3.}
+\label{fig:subpart_sphere}
+\end{figure}
 
 \subsection{Results}
 \assign{Nathanaël, Tomek}
