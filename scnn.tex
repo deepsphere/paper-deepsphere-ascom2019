@@ -146,7 +146,14 @@ Finally, not that those neural networks are not restricted to the sphere and can
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
 
+\todo{
 \subsection{Healpix sampling}
+Should we have this subsection to explain the advantages of Healpix?
+\begin{itemize}
+	\item Define the gedesic grid?
+	\item reference the "cubed sphere"~\cite{ronchi1996cubed}?
+\end{itemize}
+}
 
 \begin{figure}[!ht]
 \centering
@@ -160,16 +167,49 @@ Finally, not that those neural networks are not restricted to the sphere and can
 
 
 
-\subsection{Spherical convolutions}
-\assign{Nathanaël}
+\subsection{Spherical convolutions} 
+The major challenge to generalize CNN to a
+spherical domain is to generalize convolution. In the context of CNN, we found
+two particular approaches to address this issue.
 
-\cite{cohen2017convolutional} 
-\cite{cohen2018spherical}
-\nati{I meet one of the author of \cite{cohen2018spherical} and we talk for an hour. Here is what I learned}
-Very recently, a version of spherical convolutional neural networks have been proposed in~\cite{cohen2017convolutional,cohen2018spherical}. The main goal of this contribution is to develop a CNN with a convolution that is rotation-equivariant on the sphere, i.e. a rotation of the input implies the same rotation of the output. The resulting convolution is performed by a spherical Fourier transform (i.e. a projection on the spherical harmonics), a  multiplication in the spectral domain and an inverse spherical Fourier tranform. The approach is mathematically well justifed and illustrated with a few experiments. The main computational cost of the convultion comes from the two Fourier transforms. The Fourier transform can be accelerated for special samplings set (including the healpix). Nevertheless, even with these acceleration, the convolution seems to be more expensive than graph convolution. A comparizon would be very complicated because the author have focused on \nati{...} sampling set and do not provide any code for the Healpix one.
+The first approach, leveraging the continuous spherical convolution, has been
+proposed in~\cite{cohen2017convolutional,cohen2018spherical}. These
+contributions propose to use a convolution that is rotational equivariant on the
+sphere, i.e. a rotation of the input implies the same rotation of the output.
+The convolution is performed by a spherical Fourier transform (i.e. a projection
+on the spherical harmonics), a  multiplication in the spectral domain and an
+inverse spherical Fourier tranform. Hence the main computational cost of a
+convolution comes from the two Fourier transforms. Fortunately, the Fourier
+transform can be accelerated for special samplings set (theoretically including
+HealPix). The main advantage of this approach is that it provides a
+mathematically well defined rotational equivariant network. Nevertheless, even
+with these Fourier transform acceleration, the convolutions remain expensive in
+comparison to a traditional 2D convolution, limiting the practical use of this
+approach. While a comparison is theoretically possible, the experiments
+of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
+do not provide any code for the Healpix one. Hence, a practical comparison is
+not possible.
 
-\cite{boomsma2017spherical}
-,
+A second direction has been followed in~\cite{boomsma2017spherical}. The idea is
+to use the traditional 2D convolution on an irregular grid defined on the
+sphere. In the paper, two grids are used: the geodesic grid and the “cubed
+sphere” grid defined by Ronchi et. al~\cite{ronchi1996cubed}. Because this
+approach is based on the traditional 2D convolution, it is very likely to be the
+most efficient one. However, it suffers that it can only be used using very
+specific grid sampling sets which are NOT including HealPix. Furthermore, the
+grid requirement makes it impossible for the convolution to capture the
+spherical properties of the domain, i.e. the "cubed sphere” sampling is by
+definition adapted to a cube and not to a sphere. \nati{Michael: Under some very
+specific hypothesis, this second approach is a particular case of our method,
+i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
+on a grid == 2d convolution. Do you think we should mention that? I think we
+should not.}
+
+In an attempt to get the best of the two approaches, we follow a third
+direction. We use a graph to adapt to the particular structure of the sphere.
+While the convolution remains efficient, it still captures well the spherical
+structure and is particularly adapted to the HealPix sampling.
+
 \subsection{Convolutions on graphs}
 \assign{Michaël}
 
@@ -177,7 +217,7 @@ Very recently, a version of spherical convolutional neural networks have been pr
 
 Previous work: [Bruna] which needed the full eigendecomposition of the Laplacian, costing $O(n^3)$ operations.
 
-In this work, we are using the graph CNN formulation introduced in \cite{defferrard2016convolutional}.
+In this work, we are using the graph CNN formulation introduced in~\cite{defferrard2016convolutional}.
 
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
