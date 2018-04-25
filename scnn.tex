@@ -184,17 +184,17 @@ transform can be accelerated for special samplings set (theoretically including
 HealPix). The main advantage of this approach is that it provides a
 mathematically well defined rotational equivariant network. Nevertheless, even
 with these Fourier transform acceleration, the convolutions remain expensive in
-comparison to a traditional 2D convolution, limiting the practical use of this
+comparison to a traditional 2-dimensional convolution, limiting the practical use of this
 approach. While a comparison is theoretically possible, the experiments
 of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
 do not provide any code for the Healpix one. Hence, a practical comparison is
 not possible.
 
 A second direction has been followed in~\cite{boomsma2017spherical}. The idea is
-to use the traditional 2D convolution on an irregular grid defined on the
+to use the traditional 2-dimensional convolution on an irregular grid defined on the
 sphere. In the paper, two grids are used: the geodesic grid and the “cubed
 sphere” grid defined by Ronchi et. al~\cite{ronchi1996cubed}. Because this
-approach is based on the traditional 2D convolution, it is very likely to be the
+approach is based on the traditional 2-dimensional convolution, it is very likely to be the
 most efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are NOT including HealPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
@@ -233,46 +233,53 @@ PointNet and co. Related but we are loosing the structure. Also coarsening.
 
 \section{Method}
 
+The gist of our method is to define the convolution on a sphere using a graph.
+The graph is here seen as a discrete approximation of the sphere $S^2$, a
+2-dimensional manifold embedded in $\mathbb{R}^3$.
 
-
-The gist of our method is to define the convolution on a sphere using a graph. The graph is here seen as a discrete approximation of the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$.
-
-As presented in~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which is, even with accelerated algorithms, rather expensive. For 2-dimensional images, an efficient convolution can be achieved when the convolution kernel is localized (for example a 5x5 pixel patch) by doing the computation directly in the signal domain. Unfortunately, this approach cannot be directly extended to the spherical case. Hence, the main idea of this contribution is to leverage graph signal processing~\cite{shuman2013emerging} to define a spherical convolution that can be computed directly in the signal domain. 
-
-In this section, we follow classical constructions presented in~\cite{cohen2018spherical,...} and \nati{show} that the resulting spherical convolution is close to one corresponding to spherical approach.
+As presented in~\cite{cohen2018spherical}, the most mathematical approach to
+extend the convolution on a sphere is to use a spherical Fourier transform. The
+convolution is then simply defined as the product in the spectral domain. This
+approach requires one Fourier and one inverse Fourier transform per convolution
+which remain, even with accelerated algorithms, expensive. For 2-dimensional
+images, an efficient convolution can be achieved when the convolution kernel is
+localized (for example a 5x5 pixel patch) by doing the computation directly in
+the signal domain. Unfortunately, this approach cannot be directly extended to
+the spherical case. Hence, the main idea of this contribution is to leverage
+graph signal processing~\cite{shuman2013emerging} to define a spherical
+convolution that can be computed directly in the signal domain.
 
 \subsection{Graph creation}
 \assign{Nathanaël}
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
-\includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
-\caption{Left: Healpix graph for the full sphere using a nside parameter of $4$. Right: Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
-\label{fig:healpix_graph_4}
-\end{figure}
-
-From the ubiquitous HealPix sampling~\citep{gorski2005healpix}, we create a weighted undirected graph where each pixel is a node (vertex) that is connected to his $8$ or $7$ closest neighbors.\footnote{For some pixels, the $8^{th}$ nearest neighbor is not well defined.} Given the set of nearest neighbors, we define the weight matrix $W$ using the following scheme
+In the classical 2-dimenstional convolution, each pixel is connected with the
+same weight to its 4 closest neighbors. We use a graph to generalize this to the
+irregular sphear sampling. From the ubiquitous HealPix
+sampling~\citep{gorski2005healpix}, we create a weighted undirected graph where
+each pixel is a node (vertex) that is connected to his $8$ or $7$ closest
+neighbors.\footnote{For some pixels, the $8^{th}$ nearest neighbor is not well
+defined.} Given the set of nearest neighbors, we define the weight matrix $W$
+using the following scheme
 \begin{equation}
 W[i,j]=\begin{cases}
 e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connected, and}\\
 0 & \text{otherwise.}\\
 \end{cases}
 \end{equation}
-Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$ on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected pixels $i$ and $j$. The degree of a node (or a pixel) is defined as $d_i = \sum_j W[i,j]$. The degree matrix $D$ is the diagonal matrix where $D_{ii}=d_i$.
-
-Figure Graph (show also the triangle, separate plot?) + sampling
-
-\subsection{Coarsening}
-\assign{Nathanaël}
-
-How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 12$ points.
+Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$
+on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected
+pixels $i$ and $j$. The degree of a node (or a pixel) is defined as $d_i =
+\sum_j W[i,j]$. The degree matrix $D$ is the diagonal matrix where $D_{ii}=d_i$. 
+An example of the resulting graph is displayed in Figure~\ref{fig:healpix_graph_4}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/pooling.pdf}
-\caption{Pooling, 1/12 of the sphere, 2 levels, molview projection.}
-\label{fig:pooling}
+% \includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
+\includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
+\caption{
+% Left: Healpix graph for the full sphere using a nside parameter of $4$. 
+Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
+\label{fig:healpix_graph_4}
 \end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
@@ -336,6 +343,20 @@ Figure filters 3 representations for both graph + spherical Fourier
 	\item Explain the different between a polynomial filter convolution and a traditional patch restricted convolution
 	\item Define spherical CNN using graph CNN
 \end{itemize}
+
+
+\subsection{Coarsening}
+\assign{Nathanaël}
+
+How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 12$ points.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/pooling.pdf}
+\caption{Pooling, 1/12 of the sphere, 2 levels, molview projection.}
+\label{fig:pooling}
+\end{figure}
+
 
 \section{Experiments}
 
