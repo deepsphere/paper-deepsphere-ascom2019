@@ -232,6 +232,12 @@ Related to this, convolutional neural networks have been defined on manifolds an
 PointNet and co. Related but we are loosing the structure. Also coarsening.
 
 \section{Method}
+% \begin{itemize}
+% 	\item We build a graph using the healpix sampling
+% 	\item Define Fourier transform and show that the harmonics are visually close to the spherical harmonics
+% 	\item Define spherical convolution using the graph Fourier transform and show heat diffusion example
+% 	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
+% \end{itemize}
 
 The gist of our method is to define the convolution on a sphere using a graph.
 The graph is here seen as a discrete approximation of the sphere $S^2$, a
@@ -250,8 +256,6 @@ graph signal processing~\cite{shuman2013emerging} to define a spherical
 convolution that can be computed directly in the signal domain.
 
 \subsection{Graph creation}
-\assign{Nathanaël}
-
 In the classical 2-dimenstional convolution, each pixel is connected with the
 same weight to its 4 closest neighbors. We use a weighted undirected graph to
 generalize this idea to the ubiquitous HealPix
@@ -272,13 +276,15 @@ pixels varries du to the small sampling irregularities. Some of the
 irregularities have been highlighted in the graph displayed in
 Figure~\ref{fig:healpix_graph_4}.
 
-These small irregularities are important as they prevent our approach to be affect slightly the degree of a node (or a pixel), defined as $d_i =
-\sum_j W[i,j]$. The degree matrix $D$ is the diagonal matrix where $D_{ii}=d_i$. 
+These small irregularities are important and affect slightly the degree of a 
+node (or a pixel), defined as $d_i =\sum_j W[i,j]$. 
 
 \begin{figure}[!ht]
 \centering
 % \includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
+\vspace{-0.5cm}
 \includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
+\vspace{-0.5cm}
 \caption{
 % Left: Healpix graph for the full sphere using a nside parameter of $4$. 
 Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
@@ -286,11 +292,18 @@ Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
 \end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
-\assign{Nathanaël}
-% TODO: basis or transform?
 
+Because of the irregular sampling, there is no obvious way to define convolution
+directly from the pixel values. Hence we first define a Fourier transform on the
+graph.
 
-The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator that can be used to define the graph Fourier basis. 
+Following~\cite{shuman2013emerging}, the graph normalized graph Laplacian
+defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator
+that can be used to define the graph Fourier basis. Here $D$ is the diagonal
+matrix where $D_{ii}=d_i$. The graph Fourier basis is defined as the harmonic
+decomposition of the graph Laplacian $L=U \Lambda U^*$, where $U$ is the
+orthonormal matrix of eigenvectors and $\Lambda$, the diagonal matrix of
+eigenvalues.
 
 \begin{figure}[!ht]
 \centering
@@ -298,18 +311,16 @@ The graph normalized graph Laplacian defined as $L = I - D^{-1/2} W D^{-1/2}$ is
 \caption{12 first graph Fourier eigenvectors.}
 \label{fig:graph_harmonics}
 \end{figure}
- 
-\begin{itemize}
-	\item We build a graph using the healpix sampling
-	\item Define Fourier transform and show that the harmonics are visually close to the spherical harmonics
-	\item Define spherical convolution using the graph Fourier transform and show heat diffusion example
-	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
-\end{itemize}
+
+As shown in Figure~\ref{fig:graph_harmonics}, it turns out that using the graph
+construction described above, the graph Fourier harmonics ressembles the
+classical spherical harmonics giving us an indication that the graph is able to
+capture the spherical properties of the HealPix sampling.
 
 \subsection{Convolutions on graphs}
 \assign{Nathanaël, Michaël}
 
-With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for the eigendecomposition, plus $O(n^2)$ for the transform (to be done for each forward and backward pass).
+Convolution 
 
 Example on the heat equation
 \begin{figure}[!ht]
@@ -329,11 +340,9 @@ Figure filters 3 representations for both graph + spherical Fourier
 \label{fig:gaussian_filters_visualization}
 \end{figure}
 
-
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/index_plotting_order20_nside16.pdf}
-
 \caption{Indexes selected for the section ploting of the filter.}
 \label{fig:index_section}
 \end{figure}
@@ -341,7 +350,7 @@ Figure filters 3 representations for both graph + spherical Fourier
 
 \subsection{Efficient convolutions}
 \assign{Michaël}
-
+With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for the eigendecomposition, plus $O(n^2)$ for the transform (to be done for each forward and backward pass).
 \begin{itemize}
 	\item We need efficient convolution, hence the Chebysheff trick
 	\item Explain the different between a polynomial filter convolution and a traditional patch restricted convolution
