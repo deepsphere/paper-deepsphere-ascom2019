@@ -49,6 +49,7 @@
 \usepackage{graphicx,array}
 \usepackage{amsmath}
 \usepackage{siunitx}
+\usepackage{bm}
 
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
@@ -62,6 +63,19 @@
 \newcommand{\assign}[1]{{\color[rgb]{.8,.5,.8}{Assigned: #1 }}}
 
 
+\renewcommand{\b}[1]{{\bm{#1}}}   % bold symbol
+
+% MATH SYMBOLS
+\newcommand{\1}{\b{1}}              % all-ones vector
+\newcommand{\0}{\b{0}}              % all-zero vector
+\newcommand{\g}[1]{\b{#1}}
+\renewcommand{\L}{\b{L}} % the laplacian matrix
+\newcommand{\W}{\b{W}} 
+\newcommand{\I}{\b{I}} 
+\newcommand{\D}{\b{D}} 
+\newcommand{\U}{\b{U}}
+\newcommand{\bLambda}{\b{\Lambda}} 
+\newcommand{\blambda}{\b{\lambda}} 
 
 
 \journal{Astronomy and Computing}
@@ -298,12 +312,17 @@ directly from the pixel values. Hence we first define a Fourier transform on the
 graph.
 
 Following~\cite{shuman2013emerging}, the graph normalized graph Laplacian
-defined as $L = I - D^{-1/2} W D^{-1/2}$ is a second order differential operator
+defined as $\L = \I - \D^{-1/2} \W \D^{-1/2}$ is a second order differential operator
 that can be used to define the graph Fourier basis. Here $D$ is the diagonal
-matrix where $D_{ii}=d_i$. The graph Fourier basis is defined as the harmonic
-decomposition of the graph Laplacian $L=U \Lambda U^*$, where $U$ is the
-orthonormal matrix of eigenvectors and $\Lambda$, the diagonal matrix of
-eigenvalues.
+matrix where $\D_{ii}=\b{d}_i$. By construction the Laplacian is symetric postive
+semi-definite and hence can be decomposed as $\L=\U \bLambda \U^*$, where $U$ is an
+orthonormal matrix of eigenvectors and $\bLambda$, the diagonal matrix of
+eigenvalues. The graph Fourier basis is defined as the Laplacian eigenvectors.
+The graph Fourier transform of $f$ is simply its projection on $U$ given by 
+$\hat{\b{f}}=\U^*\b{f}$. Similarly the inverse graph Fourier transform reads $\b{f}=\U\hat{\b{f}}$.
+Note that instead of frequencies, the Fourier modes are crescently ordered with
+respect of the Laplacian eigenvalues $\bLambda$. In a sense, the Laplacian
+eigenvalues correspond to the squared frequencies. 
 
 \begin{figure}[!ht]
 \centering
@@ -320,7 +339,42 @@ capture the spherical properties of the HealPix sampling.
 \subsection{Convolutions on graphs}
 \assign{Nathanaël, Michaël}
 
-Convolution 
+Graph convolution is defined by generalizing the concept that convolution is a
+multiplication in the spectral domain. Given a convolution kernel 
+$h:\mathbb{R}_+\rightarrow\mathbb{R}$, the convolution of a signal $\b{f}$ 
+is defined as
+\begin{equation} \label{def:graph_convolution}
+h(L)\b{f} = \U h(\bLambda) \U^* \b{f},
+\end{equation}
+where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii}=h(\bLambda_{ii})$.
+Equation~\ref{def:graph_convolution} contains three parts: a) $\U^* \b{f}$, the 
+Fourier transform of $\b{f}$; b) $h(\bLambda)$ the multiplication with the Fourier 
+kernel $h(\blambda)$; and c) $\U$ the inverse Fourier transform.
+
+The major difference with classical convolution is that the convolution kernel
+$h$ cannot be thought as $n \times n$ pattern, but is a continuous function
+applied to the graph eigenvalues $\bLambda$. For visualization puposes, one can
+look at effect of the convolution on a dirac, i.e. one column of the matrix
+$h(\L)$. \nati{However, due to the non regularity of the graph (i.e. the fact
+that there is not perfect sampling on the sphere), this visualization will
+differ from one node to another. In the specific case of the full sphere, these
+difference are negligible in most of the cases. When considering only subpart of
+the sphere, one will observe important border effects.}
+
+\paragraph{Example: heat diffusion}
+Let us consider the heat diffusion problem 
+\begin{equation} \label{eq:heat_equation}
+\L \b{f}(t) = \tau \partial_t \b{f}(t),
+\end{equation}
+where $\b{f}(t): \mathbb{R}_+ \rightarrow \mathbb{R}^N$. Given the initial condition 
+$\b{f}(0)$, the solution of~\ref{eq:heat_equation} can be expressed as
+\begin{equation}
+\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U^* \g{f}(0) = K_t(\L) \b{f}(0), 
+\end{equation}
+which is a convolution of the signal $\b{f}(0)$ with the kernel 
+$K_t(x)=e^{-\tau t x}$. Here the kernel $K_t$ is applied to the correspond
+In Figure~\ref{fig:gaussian_filters_comparizon}, we show the effect of the convolution by diffusing a unit of heat for various amount of time. 
+
 
 Example on the heat equation
 \begin{figure}[!ht]
