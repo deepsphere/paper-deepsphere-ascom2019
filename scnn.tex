@@ -415,14 +415,15 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 
 
 \subsection{Coarsening}
-\assign{Nathanaël}
-
-How we get coarser or finer sampling of the sphere with Healpix. The $2^k \cdot 12$ points.
-
+The HealPix sampling present the advantage to have a natural corsening method
+based on its construction. Each nside level divides each pixel into 4 subpixels.
+We define the pooling process as the inverse operation grouping the 4 subpixels.
+Figure~\ref{fig:pooling} illustrates the process.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/pooling.pdf}
-\caption{Pooling, 1/12 of the sphere, 2 levels, molview projection.}
+\caption{Pooling illustration for 2 levels using some part of the the mollview projection. 
+The final patch represent 1/12 of the sphere.}
 \label{fig:pooling}
 \end{figure}
 
