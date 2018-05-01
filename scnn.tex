@@ -306,6 +306,7 @@ Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
 \end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
+\todo{Add a few extra references}
 
 Because of the irregular sampling, there is no obvious way to define convolution
 directly from the pixel values. Hence we first define a Fourier transform on the
@@ -337,7 +338,7 @@ classical spherical harmonics giving us an indication that the graph is able to
 capture the spherical properties of the HealPix sampling.
 
 \subsection{Convolutions on graphs}
-\assign{Nathanaël, Michaël}
+\assign{Nathanaël, Michaël} \todo{Add a few extra references}
 
 Graph convolution is defined by generalizing the concept that convolution is a
 multiplication in the spectral domain. Given a convolution kernel 
@@ -371,36 +372,37 @@ $\b{f}(0)$, the solution of~\ref{eq:heat_equation} can be expressed as
 \begin{equation}
 \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U^* \g{f}(0) = K_t(\L) \b{f}(0), 
 \end{equation}
-which is a convolution of the signal $\b{f}(0)$ with the kernel 
-$K_t(x)=e^{-\tau t x}$. Here the kernel $K_t$ is applied to the correspond
-In Figure~\ref{fig:gaussian_filters_comparizon}, we show the effect of the convolution by diffusing a unit of heat for various amount of time. 
+which is a convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
+t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$ that
+correspond to the squared frequencies and hence $K_t$ can be considered a
+Gaussian kernel. In Figure~\ref{fig:gaussian_filters_comparizon} top, we show
+the effect of the convolution by diffusing a unit of heat for $\tau=1$ and various 
+time $t$. In  Figure~\ref{fig:gaussian_filters_visualization} of
+Appendix~\ref{app:filter_visualization}, we show different visualizaton of the
+convolution kernel $K_t$. We also compare the graph convolution with the
+spherical symmetric Gaussian smoothing
+(Figure~\ref{fig:gaussian_filters_comparizon} bottom) and observe that both
+techniques lead to similar results. While the graph convolution is different
+from a true spherical convolution, it can, providing the correct
+parametrization, well approximate it.
 
-
-Example on the heat equation
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
-\caption{Top: Diffusion of a unit of heat for different time using the graph. Bottom: gaussian filtering on the sphere. Relative difference of the two diffusions: $13.5$\%, $6.1$\%, $5.2$\%, $3.8$\% }
+\caption{Convolution comparizon (Nside=16). 
+Top: Diffusion of a unit of heat for different time $t$ using the graph. 
+Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin). 
+Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\% }
 \label{fig:gaussian_filters_comparizon}
 \end{figure}
 
-Figure filters 3 representations for both graph + spherical Fourier
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_spectral.pdf}
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_gnomonic.pdf}
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_section.pdf}
-\caption{3 Different effet visualization of filters. Top: Graph spectral domain. Middle: gnomonic projection on the sphere. Bottom: section of filter.}
-\label{fig:gaussian_filters_visualization}
-\end{figure}
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.45\textwidth]{figures/index_plotting_order20_nside16.pdf}
-\caption{Indexes selected for the section ploting of the filter.}
-\label{fig:index_section}
-\end{figure}
-
+It is another sign that the constructed graph is able to capture the spherical
+structure of the healpix sampling. Furthemore, in some application, where the
+exactitude of the convolution is not requirement, such as de-noising, it means
+that we could use graph convolution instead. Depending on the convolution kernel
+this may reveal much more efficient. In the case of a neural network, the fact
+that both convolution are not identical is not very relevant since the network
+will adapt the convolution at use.
 
 \subsection{Efficient convolutions}
 \assign{Michaël}
@@ -485,10 +487,42 @@ Show the learned filters and feature maps and try to interpret them.
 
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
-%% \appendix
+\appendix
 
-%% \section{}
-%% \label{}
+\section{Filter visualization}
+\label{app:filter_visualization}
+
+In Figure~\ref{fig:gaussian_filters_visualization}, we present three different
+ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$.  First, it can
+be ploted in the graph spectral domain. In this case, we simply evaluate $K_t$
+at the graph eigenvalues $\text{diag}(\bLambda)$. Second, we can convolve a
+delta on the sphere and plot a gnomonic view of the results. Third, since we are
+working on the sphere, we can only plot the section of the convoluted delta. In
+Figure~\ref{fig:index_section}, we display the selected indexes for the section
+plotting. Note that, because of the small irregularities in the HealPix
+sampling, the second and the third methods are likely to change depending on the
+chosen delta.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_spectral.pdf}
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_gnomonic.pdf}
+\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_section.pdf}
+\caption{3 different visualizations of the convolution kernel $K_t(x)=e^{-\tau t x}$.  
+Top: graph spectral domain. 
+Middle: gnomonic projection.
+Bottom: section plot.}
+\label{fig:gaussian_filters_visualization}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/index_plotting_order20_nside16.pdf}
+\caption{Indexes selected for the section ploting of Figure~\ref{fig:gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
+\label{fig:index_section}
+\end{figure}
+
+
 
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
