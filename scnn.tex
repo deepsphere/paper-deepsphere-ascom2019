@@ -219,6 +219,8 @@ i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
 on a grid == 2d convolution. Do you think we should mention that? I think we
 should not.}
 
+\todo{Check this unpublished work \cite{khasanova2017graph}}
+
 In an attempt to get the best of the two approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
 While the convolution remains efficient, it still captures well the spherical
@@ -430,25 +432,50 @@ The final patch represent 1/12 of the sphere.}
 
 \section{Experiments}
 
-What do we want to show? The graph CNN is able to discriminate ??? using higher order statistics.
+% Structure of the section
+% 1) Present the goal
+% 2) Explain briefly the dataset
+% 3) Present the setting
+% 4) Describe the result
+In this section, we demonstrate the usefulness of the spherical neural network
+on a discrimination problem. Our implementation is availlable as small python package at \url{https://our.code.link.com}. 
+Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
 
 \subsection{Data}
 \assign{Tomek}
 
-Our data comes from a simulation with software ??? using the following parameters ???. All the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
+Our data comes from a simulation with software ??? using the following parameters ???. 
+
+As a preprocssing step, we first remove the mean of each sample and apply a
+spherical gaussian smoothing kernel with a radius of $1$ arcmin.
+
+We made 30 simulations for each class. Out of the 60 simulations, 20 are kept
+for the test set. The training and validation set are created later on.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/smooth_map_class_1.pdf}
 \includegraphics[width=0.45\textwidth]{figures/smooth_map_class_2.pdf}
-\caption{One sample of each class }
+\caption{One sample of each class.}
 \label{fig:map_sample}
 \end{figure}
+
+\subsection{Problem formulation}
+
+Leveraging the properties of the HealPix sampling, we can split each simulation
+into $12*4^o$ ($o=0,1,2,\dots$) samples that span a smaller part of the sphere.
+As shown in Figure~\ref{fig:subpart_sphere}, we used $o=0,1,2$ as the resulting
+samples are large enough to suffer from the effet of the spherical geometry. We
+decided to only report simulation results for this specific setting as spherical
+cosmological data usually does not span the full sphere. However, our code
+includes an example using the full sphere.
+
+
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/part_sphere.pdf}
-\caption{3 subparts of the sphere with different sizes. Blue: order 1. Green: order 2. Yellow: order 3.}
+\caption{3 subparts of the sphere with different sizes. Blue: $o=0$. Green: order $o=1$. Yellow: order $o=2$.}
 \label{fig:subpart_sphere}
 \end{figure}
 
