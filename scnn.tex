@@ -18,7 +18,8 @@
 %% with harvard style bibliographic references
 %% SP 2008/03/01
 
-\documentclass[preprint,12pt,authoryear]{elsarticle}
+% \documentclass[preprint,12pt,authoryear]{elsarticle}
+\documentclass[final,twocolumn,3p,times,authoryear]{elsarticle}
 
 %% Use the option review to obtain double line spacing
 %% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
@@ -169,12 +170,12 @@ Should we have this subsection to explain the advantages of Healpix?
 \end{itemize}
 }
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/healpix-3layers.jpg}
 \caption{3 smaller sclales of the healpix sampling.}
 \label{fig:healpix_sampling}
-\end{figure}
+\end{figure*}
 
 \section{Related work}
 \label{sec:related}
@@ -327,12 +328,12 @@ Note that instead of frequencies, the Fourier modes are crescently ordered with
 respect of the Laplacian eigenvalues $\bLambda$. In a sense, the Laplacian
 eigenvalues correspond to the squared frequencies. 
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
 \caption{12 first graph Fourier eigenvectors.}
 \label{fig:graph_harmonics}
-\end{figure}
+\end{figure*}
 
 As shown in Figure~\ref{fig:graph_harmonics}, it turns out that using the graph
 construction described above, the graph Fourier harmonics ressembles the
@@ -388,7 +389,7 @@ techniques lead to similar results. While the graph convolution is different
 from a true spherical convolution, it can, providing the correct
 parametrization, well approximate it.
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
 \caption{Convolution comparizon (Nside=16). 
@@ -396,7 +397,7 @@ Top: Diffusion of a unit of heat for different time $t$ using the graph.
 Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin). 
 Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\% }
 \label{fig:gaussian_filters_comparizon}
-\end{figure}
+\end{figure*}
 
 It is another sign that the constructed graph is able to capture the spherical
 structure of the healpix sampling. Furthemore, in some application, where the
@@ -423,7 +424,7 @@ We define the pooling process as the inverse operation grouping the 4 subpixels.
 Figure~\ref{fig:pooling} illustrates the process.
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/pooling.pdf}
+\includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
 \caption{Pooling illustration for 2 levels using some part of the the mollview projection. 
 The final patch represent 1/12 of the sphere.}
 \label{fig:pooling}
@@ -467,10 +468,8 @@ into $12*4^o$ ($o=0,1,2,\dots$) samples that span a smaller part of the sphere.
 As shown in Figure~\ref{fig:subpart_sphere}, we used $o=0,1,2$ as the resulting
 samples are large enough to suffer from the effet of the spherical geometry. We
 decided to only report simulation results for this specific setting as spherical
-cosmological data usually does not span the full sphere. However, our code
+cosmological data usually does not span the full sphere. Nevertheless, our code
 includes an example using the full sphere.
-
-
 
 \begin{figure}[!ht]
 \centering
@@ -478,6 +477,9 @@ includes an example using the full sphere.
 \caption{3 subparts of the sphere with different sizes. Blue: $o=0$. Green: order $o=1$. Yellow: order $o=2$.}
 \label{fig:subpart_sphere}
 \end{figure}
+
+Given the data
+
 
 \subsection{Results}
 
@@ -531,7 +533,7 @@ plotting. Note that, because of the small irregularities in the HealPix
 sampling, the second and the third methods are likely to change depending on the
 chosen delta.
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/gaussian_filters_spectral.pdf}
 \includegraphics[width=0.95\textwidth]{figures/gaussian_filters_gnomonic.pdf}
@@ -541,7 +543,7 @@ Top: graph spectral domain.
 Middle: gnomonic projection.
 Bottom: section plot.}
 \label{fig:gaussian_filters_visualization}
-\end{figure}
+\end{figure*}
 
 \begin{figure}[!ht]
 \centering
