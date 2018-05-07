@@ -172,7 +172,7 @@ Should we have this subsection to explain the advantages of Healpix?
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/healpix-3layers.jpg}
+\includegraphics[width=0.7\textwidth]{figures/healpix-3layers.jpg}
 \caption{3 smaller sclales of the healpix sampling.}
 \label{fig:healpix_sampling}
 \end{figure*}
@@ -303,8 +303,9 @@ node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
 \includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
 \vspace{-0.5cm}
 \caption{
-% Left: Healpix graph for the full sphere using a nside parameter of $4$. 
-Top view of a Healpix graph for half the sphere using a nside parameter of $4$.}
+Top view of a Healpix graph for half the sphere using a nside parameter of $4$.
+Nodes with 7 neighboors are highlighted.
+}
 \label{fig:healpix_graph_4}
 \end{figure}
 
@@ -478,37 +479,48 @@ includes an example using the full sphere.
 \label{fig:subpart_sphere}
 \end{figure}
 
-Given the data
+We would like to build a robust classifier, i.e. an automatic way to
+discriminate between the two classes with the presence of noise. For all the
+eperiment, we work with zero mean Gaussian noise. \todo{Tomek: could you put a
+justification.} All classifiers are trained with noisy samples. To improve the
+stability of the spherical CNN, we slowly increase the amount of noise added to
+the training data over the iterations. Furthermore in order to avoid
+overfitting, the noise is randomly produced at each iterations. We trained our
+model between $5$ and $40$ epochs depending of the complexity and the size of
+the problem. The testing set was simply used to assess the global performance of
+the network and if the it was overfitting. 
+Training took between $1$ and $10$ hours using a Nvidia 1080 TI.
 
+We compare the spherical CNN with a handcrafted feature classifier. \cite{...}
+\todo{Tomek: we need probably 1 or two other classifiers.} The features are
+constructed using a normalized histogram of the values. We then train a linear
+SVN classifier. We tried different kernels, but they where not leading to better
+results. For a fair comparizon, we increase the amount of training data of the
+SVN classifier until the testing error plateau to fix value.
 
 \subsection{Results}
+\assign{Nathanaël, Tomek}
+
+We present in Figure~\ref{fig:results} the results for 5 different noise levels and $3$ different data sizes. The spherical neural network is always significantly better than the hand-crafted classfier.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.32\textwidth]{figures/result_order1.pdf}
 \includegraphics[width=0.32\textwidth]{figures/result_order2.pdf}
 \includegraphics[width=0.32\textwidth]{figures/result_order4.pdf}
-\caption{Classification errors for the 3 different problems.}
+\caption{Classification errors for the 3 different problems. \nati{TODO: order is not correct} }
 \label{fig:results}
 \end{figure}
 
-\assign{Nathanaël, Tomek}
-
-\begin{itemize}
-	\item With the entire sphere / different PSD (The PSD features + linear SVM is equivalently good)
-	\item Without the entire sphere / same PSD (1 sample: the histogram features + kernelized SVM is equivalently good)
-	\item ??
-\end{itemize}
 
 
-Figure: Result curves 
-
-Figure: Filters 1D and Gnonomic
 
 \subsection{Interpretation}
 \assign{Nathanaël, Tomek, Michaël}
 
 Show the learned filters and feature maps and try to interpret them.
+
+Figure: Filters 1D and Gnonomic
 
 \section{Conclusion}
 \assign{Nathanaël, Tomek, Michaël}
