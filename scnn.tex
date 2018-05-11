@@ -185,18 +185,18 @@ Should we have this subsection to explain the advantages of Healpix?
 \subsection{Spherical convolutions} 
 The major challenge to define Convolution Neural Network (CNN) onto a
 spherical domain is to handle a convolution suitable for this irregular domain. 
-We found two particular approaches to address this issue.
+They exist three approaches to address this issue.
 
 The first approach, leveraging the continuous spherical convolution, has been
-proposed in~\cite{cohen2017convolutional,cohen2018spherical}. These
-contributions propose to use a convolution that is rotational equivariant on the
+proposed by~\cite{cohen2017convolutional,cohen2018spherical}. The goal of these
+contributions it to use a rotational equivariant convolution on the
 sphere, i.e. a rotation of the input implies the same rotation of the output.
-The convolution is performed by a spherical Fourier transform (i.e. a projection
+The resulting convolution is performed by a spherical Fourier transform (i.e. a projection
 on the spherical harmonics), a  multiplication in the spectral domain and an
-inverse spherical Fourier tranform. Hence the main computational cost of a
+inverse spherical Fourier transform. Hence the main computational cost of a
 convolution comes from the two Fourier transforms. Fortunately, the Fourier
 transform can be accelerated for special samplings set (theoretically including
-HealPix). The main advantage of this approach is that it provides a
+HealPix, \cite{...}). The main advantage of this approach is that it provides a
 mathematically well defined rotational equivariant network. Nevertheless, even
 with these Fourier transform acceleration, the convolutions remain expensive in
 comparison to a traditional 2-dimensional convolution, limiting the practical use of this
