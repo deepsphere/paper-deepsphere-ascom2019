@@ -165,7 +165,7 @@ Finally, not that those neural networks are not restricted to the sphere and can
 \subsection{Healpix sampling}
 Should we have this subsection to explain the advantages of Healpix?
 \begin{itemize}
-	\item Define the gedesic grid?
+	\item Define the spherical grid?
 	\item reference the "cubed sphere"~\cite{ronchi1996cubed}?
 \end{itemize}
 }
@@ -183,9 +183,9 @@ Should we have this subsection to explain the advantages of Healpix?
 
 
 \subsection{Spherical convolutions} 
-The major challenge to generalize CNN to a
-spherical domain is to generalize convolution. In the context of CNN, we found
-two particular approaches to address this issue.
+The major challenge to define Convolution Neural Network (CNN) onto a
+spherical domain is to handle a convolution suitable for this irregular domain. 
+We found two particular approaches to address this issue.
 
 The first approach, leveraging the continuous spherical convolution, has been
 proposed in~\cite{cohen2017convolutional,cohen2018spherical}. These
@@ -214,18 +214,25 @@ most efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are NOT including HealPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
 spherical properties of the domain, i.e. the "cubed sphere” sampling is by
-definition adapted to a cube and not to a sphere. \nati{Michael: Under some very
-specific hypothesis, this second approach is a particular case of our method,
-i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
-on a grid == 2d convolution. Do you think we should mention that? I think we
-should not.}
-
-\todo{Check this unpublished work \cite{khasanova2017graph}}
+definition adapted to a cube and not to a sphere. 
+% \nati{Michael: Under some very
+% specific hypothesis, this second approach is a particular case of our method,
+% i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
+% on a grid == 2d convolution. Do you think we should mention that? I think we
+% should not.}
 
 In an attempt to get the best of the two approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
 While the convolution remains efficient, it still captures well the spherical
 structure and is particularly adapted to the HealPix sampling.
+
+We are not the first one to leverage a graph to define a CNN on a sphere.
+\cite{khasanova2017graph} use the same idea to handle omnidirectional images.
+Besides the different application covered by the paper, there are two important
+differences. First the sampling is different as \cite{khasanova2017graph} uses a
+grid. Second, it uses a different graph CNN based on a different parameterization
+of the convolution kernel.
+
 
 \subsection{Convolutions on graphs}
 \assign{Michaël}
@@ -289,7 +296,7 @@ e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connecte
 Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$
 on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected
 pixels $i$ and $j$. This weighting scheme is important as the distances between
-pixels varries du to the small sampling irregularities. Some of the
+pixels varies due to the small sampling irregularities. Some of the
 irregularities have been highlighted in the graph displayed in
 Figure~\ref{fig:healpix_graph_4}.
 
@@ -303,8 +310,8 @@ node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
 \includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
 \vspace{-0.5cm}
 \caption{
-Top view of a Healpix graph for half the sphere using a nside parameter of $4$.
-Nodes with 7 neighboors are highlighted.
+Top view of a Healpix graph for half the sphere using an nside parameter of $4$.
+Nodes with 7 neighbors are highlighted.
 }
 \label{fig:healpix_graph_4}
 \end{figure}
@@ -312,14 +319,14 @@ Nodes with 7 neighboors are highlighted.
 \subsection{Graph Fourier basis and spherical harmonics}
 \todo{Add a few extra references}
 
-Because of the irregular sampling, there is no obvious way to define convolution
+Because of the irregular sampling, there is no obvious way to define the convolution
 directly from the pixel values. Hence we first define a Fourier transform on the
 graph.
 
 Following~\cite{shuman2013emerging}, the graph normalized graph Laplacian
 defined as $\L = \I - \D^{-1/2} \W \D^{-1/2}$ is a second order differential operator
 that can be used to define the graph Fourier basis. Here $D$ is the diagonal
-matrix where $\D_{ii}=\b{d}_i$. By construction the Laplacian is symetric postive
+matrix where $\D_{ii}=\b{d}_i$. By construction the Laplacian is symetric positive
 semi-definite and hence can be decomposed as $\L=\U \bLambda \U^*$, where $U$ is an
 orthonormal matrix of eigenvectors and $\bLambda$, the diagonal matrix of
 eigenvalues. The graph Fourier basis is defined as the Laplacian eigenvectors.
@@ -337,7 +344,7 @@ eigenvalues correspond to the squared frequencies.
 \end{figure*}
 
 As shown in Figure~\ref{fig:graph_harmonics}, it turns out that using the graph
-construction described above, the graph Fourier harmonics ressembles the
+construction described above, the graph Fourier harmonics resemble the
 classical spherical harmonics giving us an indication that the graph is able to
 capture the spherical properties of the HealPix sampling.
 
@@ -356,14 +363,14 @@ Equation~\ref{def:graph_convolution} contains three parts: a) $\U^* \b{f}$, the
 Fourier transform of $\b{f}$; b) $h(\bLambda)$ the multiplication with the Fourier 
 kernel $h(\blambda)$; and c) $\U$ the inverse Fourier transform.
 
-The major difference with classical convolution is that the convolution kernel
-$h$ cannot be thought as $n \times n$ pattern, but is a continuous function
-applied to the graph eigenvalues $\bLambda$. For visualization puposes, one can
-look at effect of the convolution on a dirac, i.e. one column of the matrix
-$h(\L)$. \nati{However, due to the non regularity of the graph (i.e. the fact
+The major difference with the classical convolution is that the convolution kernel
+$h$ cannot be thought as a $n \times n$ pattern, but is a continuous function
+applied to the graph eigenvalues $\bLambda$. For visualization purposes, one can
+look at the effect of the convolution on a Kronecker, i.e. one column of the matrix
+$h(\L)$. \nati{However, due to the non-regularity of the graph (i.e. the fact
 that there is not perfect sampling on the sphere), this visualization will
 differ from one node to another. In the specific case of the full sphere, these
-difference are negligible in most of the cases. When considering only subpart of
+differences are negligible in most of the cases. When considering only subpart of
 the sphere, one will observe important border effects.}
 
 \paragraph{Example: heat diffusion}
@@ -382,28 +389,28 @@ correspond to the squared frequencies and hence $K_t$ can be considered a
 Gaussian kernel. In Figure~\ref{fig:gaussian_filters_comparizon} top, we show
 the effect of the convolution by diffusing a unit of heat for $\tau=1$ and various 
 time $t$. In  Figure~\ref{fig:gaussian_filters_visualization} of
-Appendix~\ref{app:filter_visualization}, we show different visualizaton of the
+Appendix~\ref{app:filter_visualization}, we show different visualizations of the
 convolution kernel $K_t$. We also compare the graph convolution with the
 spherical symmetric Gaussian smoothing
 (Figure~\ref{fig:gaussian_filters_comparizon} bottom) and observe that both
 techniques lead to similar results. While the graph convolution is different
 from a true spherical convolution, it can, providing the correct
-parametrization, well approximate it.
+parameterization, well approximate it.
 
 \begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
-\caption{Convolution comparizon (Nside=16). 
-Top: Diffusion of a unit of heat for different time $t$ using the graph. 
+\caption{Convolution comparison (Nside=16). 
+Top: Diffusion of a unit of heat for different times $t$ using the graph. 
 Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin). 
 Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\% }
 \label{fig:gaussian_filters_comparizon}
 \end{figure*}
 
 It is another sign that the constructed graph is able to capture the spherical
-structure of the healpix sampling. Furthemore, in some application, where the
-exactitude of the convolution is not requirement, such as de-noising, it means
-that we could use graph convolution instead. Depending on the convolution kernel
+structure of the HealPix sampling. Furthermore, in some application, where the
+exactitude of the convolution is not a requirement, such as de-noising, it means
+that we could use the graph convolution instead. Depending on the convolution kernel
 this may reveal much more efficient. In the case of a neural network, the fact
 that both convolution are not identical is not very relevant since the network
 will adapt the convolution at use.
@@ -419,15 +426,15 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 
 
 \subsection{Coarsening}
-The HealPix sampling present the advantage to have a natural corsening method
-based on its construction. Each nside level divides each pixel into 4 subpixels.
+The HealPix sampling presents the advantage to have a natural coarsening method
+based on its construction. Each Nside level divides each pixel into 4 subpixels.
 We define the pooling process as the inverse operation grouping the 4 subpixels.
 Figure~\ref{fig:pooling} illustrates the process.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
-\caption{Pooling illustration for 2 levels using some part of the the mollview projection. 
-The final patch represent 1/12 of the sphere.}
+\caption{Pooling illustration for 2 levels using some part of the mollview projection. 
+The final patch represents 1/12 of the sphere.}
 \label{fig:pooling}
 \end{figure}
 
@@ -440,7 +447,7 @@ The final patch represent 1/12 of the sphere.}
 % 3) Present the setting
 % 4) Describe the result
 In this section, we demonstrate the usefulness of the spherical neural network
-on a discrimination problem. Our implementation is availlable as small python package at \url{https://our.code.link.com}. 
+on a discrimination problem. Our implementation is available as a small python package at \url{https://our.code.link.com}. 
 Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
 
 \subsection{Data}
@@ -448,8 +455,8 @@ Furthermore, all the data to reproduce our experiments are available online.\foo
 
 Our data comes from a simulation with software ??? using the following parameters ???. 
 
-As a preprocssing step, we first remove the mean of each sample and apply a
-spherical gaussian smoothing kernel with a radius of $1$ arcmin.
+As a pre-processing step, we first remove the mean of each sample and we apply a
+spherical Gaussian smoothing kernel with a radius of $1$ arcmin.
 
 We made 30 simulations for each class. Out of the 60 simulations, 20 are kept
 for the test set. The training and validation set are created later on.
@@ -467,7 +474,7 @@ for the test set. The training and validation set are created later on.
 Leveraging the properties of the HealPix sampling, we can split each simulation
 into $12*4^o$ ($o=0,1,2,\dots$) samples that span a smaller part of the sphere.
 As shown in Figure~\ref{fig:subpart_sphere}, we used $o=0,1,2$ as the resulting
-samples are large enough to suffer from the effet of the spherical geometry. We
+samples are large enough to suffer from the effects of the spherical geometry. We
 decided to only report simulation results for this specific setting as spherical
 cosmological data usually does not span the full sphere. Nevertheless, our code
 includes an example using the full sphere.
@@ -481,27 +488,27 @@ includes an example using the full sphere.
 
 We would like to build a robust classifier, i.e. an automatic way to
 discriminate between the two classes with the presence of noise. For all the
-eperiment, we work with zero mean Gaussian noise. \todo{Tomek: could you put a
+experiments, we work with zero mean Gaussian noise. \todo{Tomek: could you put a
 justification.} All classifiers are trained with noisy samples. To improve the
 stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
-overfitting, the noise is randomly produced at each iterations. We trained our
-model between $5$ and $40$ epochs depending of the complexity and the size of
+overfitting, the noise is randomly produced at each iteration. We trained our
+model between $5$ and $40$ epochs depending on the complexity and the size of
 the problem. The testing set was simply used to assess the global performance of
-the network and if the it was overfitting. 
+the network and to assess if were overfitting. 
 Training took between $1$ and $10$ hours using a Nvidia 1080 TI.
 
 We compare the spherical CNN with a handcrafted feature classifier. \cite{...}
-\todo{Tomek: we need probably 1 or two other classifiers.} The features are
+\todo{Tomek: we probably need 1 or two other classifiers.} The features are
 constructed using a normalized histogram of the values. We then train a linear
-SVN classifier. We tried different kernels, but they where not leading to better
-results. For a fair comparizon, we increase the amount of training data of the
+SVN classifier. We tried different kernels, but they were not leading to better
+results. For a fair comparison, we increase the amount of training data of the
 SVN classifier until the testing error plateau to fix value.
 
 \subsection{Results}
 \assign{Nathanaël, Tomek}
 
-We present in Figure~\ref{fig:results} the results for 5 different noise levels and $3$ different data sizes. The spherical neural network is always significantly better than the hand-crafted classfier.
+We present in Figure~\ref{fig:results} the results for 5 different noise levels and $3$ different data sizes. The spherical neural network is always significantly better than the hand-crafted classifier.
 
 \begin{figure}[!ht]
 \centering
@@ -535,8 +542,8 @@ Figure: Filters 1D and Gnonomic
 \label{app:filter_visualization}
 
 In Figure~\ref{fig:gaussian_filters_visualization}, we present three different
-ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$.  First, it can
-be ploted in the graph spectral domain. In this case, we simply evaluate $K_t$
+ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$.  First, they can
+be plotted in the graph spectral domain. In this case, we simply evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. Second, we can convolve a
 delta on the sphere and plot a gnomonic view of the results. Third, since we are
 working on the sphere, we can only plot the section of the convoluted delta. In
