@@ -221,7 +221,7 @@ definition adapted to a cube and not to a sphere.
 % on a grid == 2d convolution. Do you think we should mention that? I think we
 % should not.}
 
-In an attempt to get the best of the two approaches, we follow a third
+In an attempt to get the best of the two first approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
 While the convolution remains efficient, it still captures well the spherical
 structure and is particularly adapted to the HealPix sampling.
@@ -267,7 +267,7 @@ The gist of our method is to define the convolution on a sphere using a graph.
 The graph is here seen as a discrete approximation of the sphere $S^2$, a
 2-dimensional manifold embedded in $\mathbb{R}^3$.
 
-As presented in~\cite{cohen2018spherical}, the most mathematical approach to
+As presented by~\cite{cohen2018spherical}, the most mathematical approach to
 extend the convolution on a sphere is to use a spherical Fourier transform. The
 convolution is then simply defined as the product in the spectral domain. This
 approach requires one Fourier and one inverse Fourier transform per convolution
@@ -277,7 +277,7 @@ localized (for example a 5x5 pixel patch) by doing the computation directly in
 the signal domain. Unfortunately, this approach cannot be directly extended to
 the spherical case. Hence, the main idea of this contribution is to leverage
 graph signal processing~\cite{shuman2013emerging} to define a spherical
-convolution that can be computed directly in the signal domain.
+convolution that can be computed (and back-propagated) directly in the signal domain.
 
 \subsection{Graph creation}
 In the classical 2-dimenstional convolution, each pixel is connected with the
@@ -320,7 +320,7 @@ Nodes with 7 neighbors are highlighted.
 \todo{Add a few extra references}
 
 Because of the irregular sampling, there is no obvious way to define the convolution
-directly from the pixel values. Hence we first define a Fourier transform on the
+directly from the pixel values. Hence we will first make a detour and define a Fourier transform on the
 graph.
 
 Following~\cite{shuman2013emerging}, the graph normalized graph Laplacian
@@ -385,8 +385,8 @@ $\b{f}(0)$, the solution of~\ref{eq:heat_equation} can be expressed as
 \end{equation}
 which is a convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
 t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$ that
-correspond to the squared frequencies and hence $K_t$ can be considered a
-Gaussian kernel. In Figure~\ref{fig:gaussian_filters_comparizon} top, we show
+are one generalization of the squared frequencies on the graph. Hence the kernel $K_t$ is also a generalization of the
+Gaussian kernel on the sphere. In Figure~\ref{fig:gaussian_filters_comparizon} top, we show
 the effect of the convolution by diffusing a unit of heat for $\tau=1$ and various 
 time $t$. In  Figure~\ref{fig:gaussian_filters_visualization} of
 Appendix~\ref{app:filter_visualization}, we show different visualizations of the
@@ -407,7 +407,7 @@ Relative difference between graph convolution and spherical smoothing: $10.4$\%,
 \label{fig:gaussian_filters_comparizon}
 \end{figure*}
 
-It is another sign that the constructed graph is able to capture the spherical
+This result is another sign that the constructed graph is able to capture the spherical
 structure of the HealPix sampling. Furthermore, in some application, where the
 exactitude of the convolution is not a requirement, such as de-noising, it means
 that we could use the graph convolution instead. Depending on the convolution kernel
@@ -488,14 +488,14 @@ includes an example using the full sphere.
 
 We would like to build a robust classifier, i.e. an automatic way to
 discriminate between the two classes with the presence of noise. For all the
-experiments, we work with zero mean Gaussian noise. \todo{Tomek: could you put a
+experiments, we work with centered Gaussian noise. \todo{Tomek: could you put a
 justification.} All classifiers are trained with noisy samples. To improve the
 stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
-overfitting, the noise is randomly produced at each iteration. We trained our
+overfitting, the noise is randomly produced during the training process. We trained our
 model between $5$ and $40$ epochs depending on the complexity and the size of
 the problem. The testing set was simply used to assess the global performance of
-the network and to assess if were overfitting. 
+the network and to assess if it was overfitting. 
 Training took between $1$ and $10$ hours using a Nvidia 1080 TI.
 
 We compare the spherical CNN with a handcrafted feature classifier. \cite{...}
@@ -503,7 +503,7 @@ We compare the spherical CNN with a handcrafted feature classifier. \cite{...}
 constructed using a normalized histogram of the values. We then train a linear
 SVN classifier. We tried different kernels, but they were not leading to better
 results. For a fair comparison, we increase the amount of training data of the
-SVN classifier until the testing error plateau to fix value.
+SVN classifier until the testing error plateau to a fix value.
 
 \subsection{Results}
 \assign{Nathanaël, Tomek}
@@ -542,7 +542,7 @@ Figure: Filters 1D and Gnonomic
 \label{app:filter_visualization}
 
 In Figure~\ref{fig:gaussian_filters_visualization}, we present three different
-ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$.  First, they can
+ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$. First, they can
 be plotted in the graph spectral domain. In this case, we simply evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. Second, we can convolve a
 delta on the sphere and plot a gnomonic view of the results. Third, since we are
