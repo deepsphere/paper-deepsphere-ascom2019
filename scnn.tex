@@ -78,6 +78,7 @@
 \newcommand{\U}{\b{U}}
 \newcommand{\bLambda}{\b{\Lambda}}
 \newcommand{\blambda}{\b{\lambda}}
+\newcommand{\pkg}[1]{\texttt{#1}}
 
 
 \journal{Astronomy and Computing}
@@ -148,8 +149,15 @@
 %\subsection{Motivation}
 \assign{Tomek}
 
-Cosmological data often comes in a form of spherical sky maps.
-Observables such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others have been used to constrain cosmological models
+Cosmological and astrophysical data often comes in a form of spherical sky maps.
+Observables such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others have been used to constrain cosmological and astrophysical models. Deep Learning methods have recently started to gain popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}.
+So far these algorithms have been demonstrated on the flat images.
+Analysis of larger survey area in this form requires dividing the data into smaller chunks and projecting them on a flat, 2D surface.
+While this process can work efficiently as already demonstrated, it may be more convenient do work with deep learning directly on the sphere.
+The most commonly used scheme in astrophysics to divide a sphere into pixels is \pkg{Healpix} \citep{gorski2005healpix}, which uses pixels with the same area.
+
+In this work we present an algorithm and software package to implement efficient deep convolutional neural networks on Healpix maps.
+
 
 
 Cite the following papers:
@@ -158,7 +166,7 @@ Cite the following papers:
     \item First DES mass maps \citep{chang2017curvedsky}
     \item Healpix convolutions with asymetric beams \citep{mitra2011fastpixel}
     \item Mass mapping on the sphere \citep{wallis2017mappingdark}
-    \item Wavelets on the sphere \citep{leistedt2016wavelet}
+    \item Wavelets on the sphere \citep{leistedt2016wavelet} and ball \citep{leistedt2012exactwavelets}
     \item Planck main result \citep{planck2015cosmologicalparameters,komatsu2011sevenyear}
     \item HI map \citep{HI4PI2016fullskyHI,}
     \item more radio maps from Adam+Hamsa \citep{santos2015cosmologySKA}
