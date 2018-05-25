@@ -243,8 +243,8 @@ We conclude in Section \ref{sec:conclusion}.
 
 \subsection{Spherical convolutions}
 The major challenge to define Convolution Neural Network (CNN) onto a
-spherical domain is to handle a convolution suitable for this irregular domain.
-They exist three approaches to address this issue.
+spherical domain is to handle a convolution that is suitable for this irregular sampling domain.
+Three approaches exist to address this issue.
 
 The first approach, leveraging the continuous spherical convolution, has been
 proposed by~\cite{cohen2017convolutional,cohen2018spherical}. The goal of these
@@ -289,7 +289,7 @@ We are not the first one to leverage a graph to define a CNN on a sphere.
 \cite{khasanova2017graph} use the same idea to handle omnidirectional images.
 Besides the different application covered by the paper, there are two important
 differences. First the sampling is different as \cite{khasanova2017graph} uses a
-grid. Second, it uses a different graph CNN based on a different parameterization
+grid. Second, it uses a different graph CNN based on a different parametrisation
 of the convolution kernel.
 
 
@@ -507,12 +507,48 @@ The final patch represents 1/12 of the sphere.}
 % 2) Explain briefly the dataset
 % 3) Present the setting
 % 4) Describe the result
-In this section, we demonstrate the usefulness of the spherical neural network
-on a discrimination problem. Our implementation is available as a small python package at \url{https://our.code.link.com}.
-Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}
+In this section, we demonstrate the performance of the spherical neural network on a discrimination problem.
+Our implementation is available as a small python package\url{https://our.code.link.com}.
+Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}.
+
+In our experiment we classify convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
+We compare the performance of the spherical CNN to a simple benchmark algorithm.
+This algorithm is based on classification of histogram of pixels in the maps.
+We use an SVM to perform that task.
+The benchmark method uses the information about the distribution of pixels, but does not include any spatial information.
+The CNN can exploit the spatial information.
+The performance is assessed by measuring the classification error on the test set.
+
+Convergence maps represent the dimensionless distribution of over- and underdensities of mass in the universe, projected on the sky plane.
+The 3D structures are projected using a geometric kernel, value of which depends on the radial distance.
+In gravitational lensing, this kernel is dependent on the radial distances between the observer, the mass plane and the plane of source galaxies \citep[see][for review of gravitational lensing]{bartelman2010gravitationallensing}.
+The redshifts of the sources was set to $z=1$.
+
+We make full sky N-body simulations for two parameter set for $\Lambda \rm{CDM} $ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
+Other parameter parameters were set to $h=0.7$ (MORE PARAMS HERE - CHECK WITH RAPHAEL).
+These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
+That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
+We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel.
+
 
 \subsection{Data}
-\assign{Tomek}
+\label{sec:data}
+
+The simulations are created using the fast lightcone method described in \citep{sgier2018fastgeneration}.
+However, we use only a single simulation box, as opposed to two used in \citep{sgier2018fastgeneration}, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
+As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
+For each class, we generate 30 simulations.
+In the experiment we use data on a parts of the sphere, and we check the performance as a function of the area used.
+We also test the performance as a function of noise level of the pixels.
+
+
+
+% sim1: planck
+% omega_m=0.31, pk_norm=0.82, h=0.7
+
+% sim2: alternative model
+% omega_m=0.26, sigma_8=0.91, h=0.7
 
 Our data comes from a simulation with software ??? using the following parameters ???.
 
