@@ -124,6 +124,7 @@
 	\todo{(Michaël) I would not invent a new term, SCNN, but rather say that convolutional neural networks on graphs (or GCNs) can be efficiently applied to (spherical?) cosmological applications.
 	Arguments: the method is not new and hence don't deserve a new name. Emphasize that it is generic to the data structure, and that the sphere is simply a particular graph.
 	Ideas: Graph Convolutional Networks for efficient spherical ???, Efficient spherical ??? with GCNs and Healpix sampling
+    We make the code publicly available.
 }
 
 \end{abstract}
@@ -150,61 +151,90 @@
 \assign{Tomek}
 
 Cosmological and astrophysical data often comes in a form of spherical sky maps.
-Observables such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others have been used to constrain cosmological and astrophysical models. Deep Learning methods have recently started to gain popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}.
+Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning methods have recently started to gain popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}.
+Convolutional Neural Networks (CNNs) are particularly well suited for analysis of astrophysical data due to their ability to capture complicated, non-linear patterns, which are often present in the data.
+
 So far these algorithms have been demonstrated on the flat images.
-Analysis of larger survey area in this form requires dividing the data into smaller chunks and projecting them on a flat, 2D surface.
+Deep learning-based analysis of larger survey area form requires dividing the data into smaller chunks and projecting them on a flat, 2D surface.
 While this process can work efficiently as already demonstrated, it may be more convenient do work with deep learning directly on the sphere.
-The most commonly used scheme in astrophysics to divide a sphere into pixels is \pkg{Healpix} \citep{gorski2005healpix}, which uses pixels with the same area.
+The most commonly used scheme in astrophysics to divide a sphere into pixels is Healpix \citep{gorski2005healpix}, which uses isolatitude sampling and pixels with the same area.
 
-In this work we present an algorithm and software package to implement efficient deep convolutional neural networks on Healpix maps.
+In this work we present an algorithm and software package \pkg{SCNN-temp-name}\footnote{github.com/SwissDataScienceCenter/scnn} which implements efficient deep convolutional neural networks on Healpix maps.
+To achieve this, we represent the sphere $S^2$ as a graph of connected pixels, which forms a 2D manifold embedded in 3D space $\mathbb{R}^3$.
+This approach is based on CNN formulations on graphs described by \citet{defferrard2016convolutional} and runs using the \pkg{TensorFlow} \citep{abadi2016tensorflow} engine.
+The flexibility of the graph approach allows for faster analysis when data spans only a part of the sphere.
+It is also possible to use multiple Healpix maps within our framework and use datasets in form of ``shells''.
+These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
+
+Formulations of deep learning on the sphere have been proposed by ~\citet{cohen2017convolutional,cohen2018spherical}.
+In that method, a different sphere pixelisation scheme is used: the sphere pixels are mapped to flat space (??) and then generalized Fast Fourier Transform (FFT) is used for convolutions.
+Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
+In our work we focused on the Healpix sampling, as it is the most commonly used in cosmology.
+It can be, however, extended to other sampling schemes, by straightforward change in definition of the graph.
+
+Another advantage of our method is the speed of the convolution operation.
+It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
+MORE HERE
+
+The method presented here restricts the shape of the filters learned by the network to be radial.
+While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
+The layered structure of the network can partially compensate for that.
+Further generalisations to non-radial filters may be possible [cite?], but we leave it to future work.
+
+We give a practical demonstration of the application of our package to cosmological model discrimination using convergence maps, similar to \citep{schmelze2017cosmologicalmodel}.
+In a simplified scenario, we classify convergence maps on parts of a sphere into two cosmological models.
+These models were designed to have the same power spectrum in range $\ell < 1000$.
+We compare the performance of the spherical CNN to a baseline algorithm, a SVM classifier which takes pixel histograms of these maps as input.
+The comparison is made as a function of noise level on convergence maps and area of the sphere used.
+
+The paper is organised as follows.
+In Section \ref{sec:related} we describe existing approaches to convolutions on the sphere, graphs, and manifolds.
+Section \ref{sec:method} we show the way to construct a graph using Healpix sampling and define the convolution operation.
+The comparison between the spherical CNN and the benchmark method using the weak lensing mass map classification is presented in Section \ref{sec:experiments}.
+We conclude in Section \ref{sec:conclusion}.
+% Cite the following papers:
+% \begin{itemize}
+%     \item Healpix paper \citep{gorski2005healpix}
+%     \item First DES mass maps \citep{chang2017curvedsky}
+%     \item Healpix convolutions with asymetric beams \citep{mitra2011fastpixel}
+%     \item Mass mapping on the sphere \citep{wallis2017mappingdark}
+%     \item Wavelets on the sphere \citep{leistedt2016wavelet} and ball \citep{leistedt2012exactwavelets}
+%     \item Planck main result \citep{planck2015cosmologicalparameters,komatsu2011sevenyear}
+%     \item HI map \citep{HI4PI2016fullskyHI,}
+%     \item more radio maps from Adam+Hamsa \citep{santos2015cosmologySKA}
+%     \item more astro science on the sphere, what other survey make maps?
+%     \item alternative sampling on the sphere \citep{mcewen2011novelsampling} MW sampling
+%     \item cite kids tomographic power spectrum \citep{koehlinger2017kidstomographic}
+% \end{itemize}
 
 
+% a) Cosmology has a lot of spherical data. Our method is simple and easy to use. Moreover, it is based on the widely used healpix sampling.
+% b) It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
 
-Cite the following papers:
-\begin{itemize}
-    \item Healpix paper \citep{gorski2005healpix}
-    \item First DES mass maps \citep{chang2017curvedsky}
-    \item Healpix convolutions with asymetric beams \citep{mitra2011fastpixel}
-    \item Mass mapping on the sphere \citep{wallis2017mappingdark}
-    \item Wavelets on the sphere \citep{leistedt2016wavelet} and ball \citep{leistedt2012exactwavelets}
-    \item Planck main result \citep{planck2015cosmologicalparameters,komatsu2011sevenyear}
-    \item HI map \citep{HI4PI2016fullskyHI,}
-    \item more radio maps from Adam+Hamsa \citep{santos2015cosmologySKA}
-    \item more astro science on the sphere, what other survey make maps?
-    \item alternative sampling on the sphere \citep{mcewen2011novelsampling} MW sampling
-    \item cite kids tomographic power spectrum \citep{koehlinger2017kidstomographic}
-\end{itemize}
+% \subsection{Potential applications}
+% 	\assign{Tomek, Nathanaël, Michaël}
 
+% The analysis of spherical cosmological data, such as the cosmic microwave background \cite{...}, as done in \cite{he2018analysis}, is the target application of our method.
 
-a) Cosmology has a lot of spherical data. Our method is simple and easy to use. Moreover, it is based on the widely used healpix sampling.
-b) It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
+% While our method was developed with cosmology in mind, it can easily target any problem where data live on a sphere. Examples include, but are certainly not limited to, (i) efficient compression and decompression of \ang{360} videos (see \cite{su2017learning}), (ii) \todo{data analysis on planets? (climate, forecasting, temperature, wind)}, (iii) \todo{particle physics? (jets on detectors, but they are usually cylindrical)}, (iv) \todo{applications in Cohen's papers?}.
 
-\subsection{Potential applications}
-	\assign{Tomek, Nathanaël, Michaël}
-
-The analysis of spherical cosmological data, such as the cosmic microwave background \cite{...}, as done in \cite{he2018analysis}, is the target application of our method.
-
-While our method was developed with cosmology in mind, it can easily target any problem where data live on a sphere. Examples include, but are certainly not limited to, (i) efficient compression and decompression of \ang{360} videos (see \cite{su2017learning}), (ii) \todo{data analysis on planets? (climate, forecasting, temperature, wind)}, (iii) \todo{particle physics? (jets on detectors, but they are usually cylindrical)}, (iv) \todo{applications in Cohen's papers?}.
-
-Finally, not that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks [some citations, e.g. brain Alzeihmer, particle physics, computer graphics].
+% Finally, not that those neural networks are not restricted to the sphere and can be applied to any problem where we have data on a graph, such as social, biological or infrastructure networks [some citations, e.g. brain Alzeihmer, particle physics, computer graphics].
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
 
-\todo{
-\subsection{Healpix sampling}
-Should we have this subsection to explain the advantages of Healpix?
-\begin{itemize}
-	\item Define the spherical grid?
-	\item reference the "cubed sphere"~\cite{ronchi1996cubed}?
-\end{itemize}
-}
+% \section{Healpix sampling}
+% Should we have this subsection to explain the advantages of Healpix?
+% \begin{itemize}
+% 	\item Define the spherical grid?
+% 	\item reference the "cubed sphere"~\cite{ronchi1996cubed}?
+% \end{itemize}
 
-\begin{figure*}[!ht]
-\centering
-\includegraphics[width=0.7\textwidth]{figures/healpix-3layers.jpg}
-\caption{3 smaller sclales of the healpix sampling.}
-\label{fig:healpix_sampling}
-\end{figure*}
+% \begin{figure}[!ht]
+% \centering
+% \includegraphics[width=0.45\textwidth]{figures/healpix-3layers.jpg}
+% \caption{3 smaller sclales of the healpix sampling.}
+% \label{fig:healpix_sampling}
+% \end{figure}
 
 \section{Related work}
 \label{sec:related}
@@ -285,6 +315,7 @@ Related to this, convolutional neural networks have been defined on manifolds an
 PointNet and co. Related but we are loosing the structure. Also coarsening.
 
 \section{Method}
+\label{sec:method}
 % \begin{itemize}
 % 	\item We build a graph using the healpix sampling
 % 	\item Define Fourier transform and show that the harmonics are visually close to the spherical harmonics
@@ -469,6 +500,7 @@ The final patch represents 1/12 of the sphere.}
 
 
 \section{Experiments}
+\label{sec:experiments}
 
 % Structure of the section
 % 1) Present the goal
@@ -490,13 +522,13 @@ spherical Gaussian smoothing kernel with a radius of $1$ arcmin.
 We made 30 simulations for each class. Out of the 60 simulations, 20 are kept
 for the test set. The training and validation set are created later on.
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/smooth_map_class_1.pdf}
-\includegraphics[width=0.45\textwidth]{figures/smooth_map_class_2.pdf}
+\includegraphics[width=0.95\textwidth]{figures/smooth_map_class_1.pdf}
+\includegraphics[width=0.95\textwidth]{figures/smooth_map_class_2.pdf}
 \caption{One sample of each class.}
 \label{fig:map_sample}
-\end{figure}
+\end{figure*}
 
 \subsection{Problem formulation}
 
@@ -539,14 +571,14 @@ SVN classifier until the testing error plateau to a fix value.
 
 We present in Figure~\ref{fig:results} the results for 5 different noise levels and $3$ different data sizes. The spherical neural network is always significantly better than the hand-crafted classifier.
 
-\begin{figure}[!ht]
+\begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.32\textwidth]{figures/result_order1.pdf}
 \includegraphics[width=0.32\textwidth]{figures/result_order2.pdf}
 \includegraphics[width=0.32\textwidth]{figures/result_order4.pdf}
 \caption{Classification errors for the 3 different problems. \nati{TODO: order is not correct} }
 \label{fig:results}
-\end{figure}
+\end{figure*}
 
 
 
@@ -559,6 +591,7 @@ Show the learned filters and feature maps and try to interpret them.
 Figure: Filters 1D and Gnonomic
 
 \section{Conclusion}
+\label{sec:conclusion}
 \assign{Nathanaël, Tomek, Michaël}
 
 \section*{Thanks}
