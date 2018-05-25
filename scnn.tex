@@ -536,33 +536,24 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 \label{sec:data}
 
 The simulations are created using the fast lightcone method described in \citep{sgier2018fastgeneration}.
-However, we use only a single simulation box, as opposed to two used in \citep{sgier2018fastgeneration}, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
+However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
 For each class, we generate 30 simulations.
 In the experiment we use data on a parts of the sphere, and we check the performance as a function of the area used.
 We also test the performance as a function of noise level of the pixels.
 
-
-
-% sim1: planck
-% omega_m=0.31, pk_norm=0.82, h=0.7
-
-% sim2: alternative model
-% omega_m=0.26, sigma_8=0.91, h=0.7
-
-Our data comes from a simulation with software ??? using the following parameters ???.
-
-As a pre-processing step, we first remove the mean of each sample and we apply a
-spherical Gaussian smoothing kernel with a radius of $1$ arcmin.
-
-We made 30 simulations for each class. Out of the 60 simulations, 20 are kept
-for the test set. The training and validation set are created later on.
+As a pre-processing step, we first remove the mean of each sample and we apply a spherical Gaussian smoothing kernel with a radius of $1$ arcmin.
+Out of the 60 simulations, 20 are kept for the test set.
+% The training and validation set are created later on.
+Figure \ref{fig:map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
+Initial conditions for these simulations were the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
 
 \begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/smooth_map_class_1.pdf}
 \includegraphics[width=0.95\textwidth]{figures/smooth_map_class_2.pdf}
-\caption{One sample of each class.}
+\caption{Example maps from two classes. Top: model 1 ($\Omega_m=0.31, \sigma_8=0.82$). Bottom: model 2 ($\Omega_m=0.26, \sigma_8=0.91$).
+The initial conditions for these simulations were the same, so differences arise only due to different cosmological parameters.}
 \label{fig:map_sample}
 \end{figure*}
 
