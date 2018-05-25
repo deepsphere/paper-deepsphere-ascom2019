@@ -121,10 +121,28 @@
 \begin{abstract}
 %% Text of abstract
 
+Convolutional Neural Networks (CNNs) are becoming an important analysis tool in cosmology and astrophysics.
+In many applications, the data comes in a form of spherical maps.
+A popular format for these maps is Healpix, which uses equal-area, isolatitude sampling.
+We present a CNNs for analysis of full- and partial sky Healpix maps, which we call HealpixCNN (???).
+This approach is based on representing a sphere as a graph of connected nodes.
+We describe a convolution operation defined on that graph.
+HealpixCNN (???) uses Tensorflow as the underlying engine and can utilise most of it functionalities.
+Architectures can be designed in a similar way as standard CNNs used for image analysis.
+We find that the graph-based convolution is very efficient (MORE HERE)..
+The filters learned by the HealpixCNN are restricted to being radial.
+We demonstrate the method on a simple classification problem of mass maps from two cosmological models.
+We compare the performance to a simple benchmark classifier, which uses histograms of map pixel values.
+HealpixCNN achieves much better testing accuracy than the benchmark approach.
+We make the code and examples available to the public.
+
 	\todo{(Michaël) I would not invent a new term, SCNN, but rather say that convolutional neural networks on graphs (or GCNs) can be efficiently applied to (spherical?) cosmological applications.
 	Arguments: the method is not new and hence don't deserve a new name. Emphasize that it is generic to the data structure, and that the sphere is simply a particular graph.
 	Ideas: Graph Convolutional Networks for efficient spherical ???, Efficient spherical ??? with GCNs and Healpix sampling
     We make the code publicly available.
+    \\
+    \todo{(Tomek) How about HealpixCNN? Or HealpixNet? Or HealNet?}
+
 }
 
 \end{abstract}
