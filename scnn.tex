@@ -107,7 +107,7 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\title{Efficient spherical Convolutional Neural Networks with Healpix sampling for cosmological applications}
+\title{HealpixNet: Efficient spherical Convolutional Neural Networks with Healpix sampling for cosmological applications}
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -160,6 +160,24 @@ We make the code and examples available to the public.
 \end{frontmatter}
 
 %% \linenumbers
+
+\section{TODO list}
+\begin{itemize}
+    \item Michael, do you agree with the title HealpixNet
+    \item Emphaise the novelty of using it on Helapix in abstract, into and rest of the paper
+    \item Finish section on Convolutions on graphs
+    \item Plot of filters from Mass maps
+    \item check the power spectrum after smoothing
+    \item upgrade the plot of pooling
+    \item new plot for network structure (teaser plot)
+    \item add info on comparison with histogram, so that it's just a demonstration
+    \item Figure 1 to be round
+    \item finish section on Efficient convolutions
+    \item conclusions
+    \item (done!) results
+    \item Results figure, add sigma8
+    \item possibly move the eigen decomposition and heat into appendix + add discussion
+\end{itemize}
 
 %% main text
 \section{Introduction}
@@ -325,10 +343,12 @@ Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an ori
 \todo{Cool to have a global illustration of the network (CNN like)}
 
 \subsection{Convolutions on manifolds}
+\todo{TK and NP: maybe we just describe convolutions on sphere and graph}
 
 Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
 
 \subsection{Convolutions on point clouds?}
+\todo{TK and NP: maybe we just describe convolutions on sphere and graph}
 
 PointNet and co. Related but we are loosing the structure. Also coarsening.
 
@@ -604,7 +624,7 @@ the problem. The testing set was simply used to assess the global performance of
 the network and to assess if it was overfitting.
 Training took between $1$ and $10$ hours using a Nvidia 1080 TI.
 
-We compare the spherical CNN with a handcrafted feature classifier. \cite{...}
+We compare the spherical CNN with a handcrafted feature classifier. CITE \cite{...}
 \todo{Tomek: we probably need 1 or two other classifiers.} The features are
 constructed using a normalized histogram of the values. We then train a linear
 SVN classifier. We tried different kernels, but they were not leading to better
@@ -625,10 +645,13 @@ We present in Figure~\ref{fig:results} the results for 5 different noise levels 
 \label{fig:results}
 \end{figure*}
 
+
 \begin{itemize}
 	\item Spherical CNN has the advantage to have some geometry information => one of the reason better than histogram
 	\item PSD...
 \end{itemize}
+
+\citep{patton2017cosmologicalconstraints}
 
 
 
@@ -636,6 +659,7 @@ We present in Figure~\ref{fig:results} the results for 5 different noise levels 
 \assign{Nathanaël, Tomek, Michaël}
 
 Show the learned filters and feature maps and try to interpret them.
+\todo{\\ TK and NP: Figure of filters from the mass map clasification}
 
 Figure: Filters 1D and Gnonomic
 
