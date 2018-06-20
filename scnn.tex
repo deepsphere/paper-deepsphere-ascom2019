@@ -122,12 +122,11 @@
 %% Text of abstract
 
 Convolutional Neural Networks (CNNs) are becoming an important analysis tool in cosmology and astrophysics.
-In many applications, the data comes in a form of spherical maps.
-A popular format for these maps is Healpix, which uses equal-area, isolatitude sampling.
-We present a CNNs for analysis of full- and partial sky Healpix maps, which we call HealpixCNN (???).
-This approach is based on representing a sphere as a graph of connected nodes.
+While CNN apply to images, in many applications, the data comes in a form of spherical maps with the popular Healpix format, which uses equal-area, isolatitude sampling.
+Hence, we present a spherical CNNs for analysis of full- and partial sky Healpix maps, which we call HealpixCNN (???) \nati{HealpixNet??? To be decided}.
+Our approach is based on representing a sphere as a graph of connected nodes.
 We describe a convolution operation defined on that graph.
-HealpixCNN (???) uses Tensorflow as the underlying engine and can utilise most of it functionalities.
+HealpixCNN (???) uses Tensorflow as the underlying engine and can utilize most of it functionalities.
 Architectures can be designed in a similar way as standard CNNs used for image analysis.
 We find that the graph-based convolution is very efficient (MORE HERE)..
 The filters learned by the HealpixCNN are restricted to being radial.
@@ -149,11 +148,7 @@ We make the code and examples available to the public.
 
 \begin{keyword}
 %% keywords here, in the form: keyword \sep keyword
-
-%% PACS codes here, in the form: \PACS code \sep code
-
-%% MSC codes here, in the form: \MSC code \sep code
-%% or \MSC[2008] code \sep code (2000 is the default)
+Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN 
 
 \end{keyword}
 
@@ -164,7 +159,7 @@ We make the code and examples available to the public.
 \section{TODO list}
 \begin{itemize}
     \item Michael, do you agree with the title HealpixNet
-    \item Emphaise the novelty of using it on Helapix in abstract, into and rest of the paper
+    \item Emphasize the novelty of using it on Helapix in abstract, into and rest of the paper
     \item Finish section on Convolutions on graphs (Michael - Nathanael)
     \item Plot of the new filters from Mass maps (Michael)
     \item (done!, plot to be added) check the power spectrum after smoothing
@@ -176,10 +171,10 @@ We make the code and examples available to the public.
     \item conclusions
     \item (done!) new simulations with 3 arcmin smoothing
     \item (done!) simulation with cross-validation for the histogram
-    \item Update result section according to the new simulations...
+    \item (done!) Update result section according to the new simulations...
     \item (done!) simulation PSD
     \item (done!) Results figure, add sigma8
-    \item possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael)
+    \item (more or less done!) possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael I am not sure about the heat diffusion example...)
 \end{itemize}
 
 %% main text
@@ -204,32 +199,33 @@ The flexibility of the graph approach allows for faster analysis when data spans
 It is also possible to use multiple Healpix maps within our framework and use datasets in form of ``shells''.
 These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
 
-Formulations of deep learning on the sphere have been proposed by ~\citet{cohen2017convolutional,cohen2018spherical}.
-In that method, a different sphere pixelisation scheme is used: the sphere pixels are mapped to flat space (??) and then generalized Fast Fourier Transform (FFT) is used for convolutions.
-Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
-In our work we focused on the Healpix sampling, as it is the most commonly used in cosmology.
-It can be, however, extended to other sampling schemes, by straightforward change in definition of the graph.
+Different formulations of deep learning on the sphere have been proposed in~\citet{cohen2017convolutional,cohen2018spherical,boomsma2017spherical,khasanova2017graph}.
+In all of these methods, a different sphere pixelisation scheme is used, making them unsuitable for most cosmological application. 
+Hence, our work we focused on the Healpix sampling, as it is the most commonly used in cosmology.
+It can be, however, extended to other sampling schemes, by straightforward change in definition of the graph. These approach are discussed in Section~\ref{sec:spherical_conv}.
+%\nati{I am not sure this goes there...} Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
 
-Another advantage of our method is the speed of the convolution operation.
-It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
+An important advantage of our method is the speed of its convolution operation as it is of order $\mathcal{O}(n)$, where $n$ is the number of points, which is the lowest possible complexity for convolution without approximations, e.g. sketching.
+While our implementation is slower than traditional convolution on a 2 dimensional image, it remain in the same order of magnitude.
 MORE HERE
 
-The method presented here restricts the shape of the filters learned by the network to be radial.
+Because of the spherical domain, the method presented here restricts the shape of the filters learned by the network to be radial.
 While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
 The layered structure of the network can partially compensate for that.
-Further generalisations to non-radial filters may be possible [cite?], but we leave it to future work.
+Further generalizations to non-radial filters may be possible [cite?], but we leave it to future work.
 
 We give a practical demonstration of the application of our package to cosmological model discrimination using convergence maps, similar to \citep{schmelze2017cosmologicalmodel}.
 In a simplified scenario, we classify convergence maps on parts of a sphere into two cosmological models.
 These models were designed to have the same power spectrum in range $\ell < 1000$.
-We compare the performance of the spherical CNN to a baseline algorithm, a SVM classifier which takes pixel histograms of these maps as input.
+We compare the performance of the spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or Power Spectrum Densities (PSD) of these maps as input.
 The comparison is made as a function of noise level on convergence maps and area of the sphere used.
 
 The paper is organised as follows.
-In Section \ref{sec:related} we describe existing approaches to convolutions on the sphere, graphs, and manifolds.
-Section \ref{sec:method} we show the way to construct a graph using Healpix sampling and define the convolution operation.
-The comparison between the spherical CNN and the benchmark method using the weak lensing mass map classification is presented in Section \ref{sec:experiments}.
-We conclude in Section \ref{sec:conclusion}.
+In Section~\ref{sec:related}, we describe existing approaches to convolutions on the sphere, graphs, and manifolds.
+In Section~\ref{sec:method}, we show the way to construct a graph using Healpix sampling and define the convolution operation.
+The comparison between the spherical CNN and the benchmark method using the weak lensing mass map classification is presented in Section~\ref{sec:experiments}.
+We conclude in Section~\ref{sec:conclusion}.
+
 % Cite the following papers:
 % \begin{itemize}
 %     \item Healpix paper \citep{gorski2005healpix}
@@ -246,9 +242,6 @@ We conclude in Section \ref{sec:conclusion}.
 % \end{itemize}
 
 
-% a) Cosmology has a lot of spherical data. Our method is simple and easy to use. Moreover, it is based on the widely used healpix sampling.
-% b) It is the most efficient spherical convolution\footnote{\todo{provably? cannot be faster than O(n) without approximations, e.g. sketching}}, requiring only $O(n)$ operations, where $n$ is the number of points.
-
 % \subsection{Potential applications}
 % 	\assign{Tomek, Nathanaël, Michaël}
 
@@ -260,19 +253,14 @@ We conclude in Section \ref{sec:conclusion}.
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
 
-% \section{Healpix sampling}
-% Should we have this subsection to explain the advantages of Healpix?
+
+
+% About the the different sphere sampling.
 % \begin{itemize}
 % 	\item Define the spherical grid?
 % 	\item reference the "cubed sphere"~\cite{ronchi1996cubed}?
 % \end{itemize}
 
-% \begin{figure}[!ht]
-% \centering
-% \includegraphics[width=0.45\textwidth]{figures/healpix-3layers.jpg}
-% \caption{3 smaller sclales of the healpix sampling.}
-% \label{fig:healpix_sampling}
-% \end{figure}
 
 \section{Related work}
 \label{sec:related}
@@ -280,6 +268,7 @@ We conclude in Section \ref{sec:conclusion}.
 
 
 \subsection{Spherical convolutions}
+\label{sec:spherical_conv}
 The major challenge to define Convolution Neural Network (CNN) onto a
 spherical domain is to handle a convolution that is suitable for this irregular sampling domain.
 Three approaches exist to address this issue.
@@ -293,7 +282,8 @@ a projection on the spherical harmonics), a  multiplication in the spectral
 domain and an inverse spherical Fourier transform. Hence the main
 computational cost of a convolution comes from the two Fourier transforms.
 Fortunately, the Fourier transform can be accelerated for special samplings
-set (theoretically including HealPix, \cite{...}). The main advantage of this
+set (theoretically including HealPix, \cite{mohlenkamp1999fast,rokhlin2006fast}). 
+The main advantage of this
 approach is that it provides a mathematically well defined rotational
 equivariant network. Nevertheless, even with these Fourier transform
 acceleration, the convolutions remain expensive in comparison to a traditional
@@ -310,7 +300,7 @@ to use the traditional 2-dimensional convolution on an irregular grid defined on
 sphere. In the paper, two grids are used: the geodesic grid and the “cubed
 sphere” grid defined by Ronchi et. al~\cite{ronchi1996cubed}. Because this
 approach is based on the traditional 2-dimensional convolution, it is very likely to be the
-most efficient one. However, it suffers that it can only be used using very
+most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are NOT including HealPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
 spherical properties of the domain, i.e. the "cubed sphere” sampling is by
@@ -329,9 +319,12 @@ structure and is particularly adapted to the HealPix sampling.
 We are not the first one to leverage a graph to define a CNN on a sphere.
 \cite{khasanova2017graph} use the same idea to handle omnidirectional images.
 Besides the different application covered by the paper, there are two important
-differences. First the sampling is different as \cite{khasanova2017graph} uses a
-grid. Second, it uses a different graph CNN based on a different parametrisation
+differences. First the sampling is different as~\cite{khasanova2017graph} uses a
+grid. Second, it uses a different graph CNN based on a different parametrization
 of the convolution kernel.
+
+\todo{Cool to have a global illustration of the network (CNN like)}
+
 
 \subsection{Convolutions on graphs}
 \assign{Michaël}
@@ -344,15 +337,15 @@ In this work, we are using the graph CNN formulation introduced in~\cite{defferr
 
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
-\todo{Cool to have a global illustration of the network (CNN like)}
 
+\todo{Maybe we just describe convolutions on sphere and graph, i.e: do we really need this two subsections? Maybe simply merge them?}
 \subsection{Convolutions on manifolds}
-\todo{TK and NP: maybe we just describe convolutions on sphere and graph}
+
 
 Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
 
 \subsection{Convolutions on point clouds?}
-\todo{TK and NP: maybe we just describe convolutions on sphere and graph}
+
 
 PointNet and co. Related but we are loosing the structure. Also coarsening.
 
@@ -409,13 +402,13 @@ node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
 \centering
 % \includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
 \vspace{-0.5cm}
-\includegraphics[width=0.45\textwidth]{figures/half_graph_4.pdf}
+\includegraphics[width=0.35\textwidth]{figures/half_graph_4.pdf}
 \vspace{-0.5cm}
 \caption{
 Top view of a Healpix graph for half the sphere using an nside parameter of $4$.
-Nodes with 7 neighbors are highlighted.
+Nodes with 7 neighbors are highlighted. \label{fig:healpix_graph_4}
 }
-\label{fig:healpix_graph_4}
+
 \end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
@@ -438,17 +431,10 @@ Note that instead of frequencies, the Fourier modes are crescently ordered with
 respect of the Laplacian eigenvalues $\bLambda$. In a sense, the Laplacian
 eigenvalues correspond to the squared frequencies.
 
-\begin{figure*}[!ht]
-\centering
-\includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
-\caption{12 first graph Fourier eigenvectors.}
-\label{fig:graph_harmonics}
-\end{figure*}
-
 As shown in Figure~\ref{fig:graph_harmonics}, it turns out that using the graph
 construction described above, the graph Fourier harmonics resemble the
 classical spherical harmonics giving us an indication that the graph is able to
-capture the spherical properties of the HealPix sampling.
+capture the spherical properties of the HealPix sampling. This topic is further discusses in Appendix~\ref{sec:spherical_harmonics}.
 
 \subsection{Convolutions on graphs}
 \assign{Nathanaël, Michaël} \todo{Add a few extra references}
@@ -469,13 +455,14 @@ The major difference with the classical convolution is that the convolution kern
 $h$ cannot be thought as a $n \times n$ pattern, but is a continuous function
 applied to the graph eigenvalues $\bLambda$. For visualization purposes, one can
 look at the effect of the convolution on a Kronecker, i.e. one column of the matrix
-$h(\L)$. \nati{However, due to the non-regularity of the graph (i.e. the fact
-that there is not perfect sampling on the sphere), this visualization will
+$h(\L)$. 
+Due to the non-regularity of the graph (i.e. the fact
+that there is not perfect sampling on the sphere), the convolution effect will slightly
 differ from one node to another. In the specific case of the full sphere, these
-differences are negligible in most of the cases. When considering only subpart of
-the sphere, one will observe important border effects.}
+differences are negligible in most of the cases. However, when considering only subpart of
+the sphere, one can observe important border effects.
 
-\paragraph{Example: heat diffusion}
+\paragraph{Example:}
 Let us consider the heat diffusion problem
 \begin{equation} \label{eq:heat_equation}
 \L \b{f}(t) = \tau \partial_t \b{f}(t),
@@ -516,6 +503,7 @@ that we could use the graph convolution instead. Depending on the convolution ke
 this may reveal much more efficient. In the case of a neural network, the fact
 that both convolution are not identical is not very relevant since the network
 will adapt the convolution at use.
+
 
 \subsection{Efficient convolutions}
 \assign{Michaël}
@@ -688,6 +676,30 @@ Figure: Filters 1D and Gnonomic
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
 \appendix
+
+\section{Spherical harmonics VS graph Fourier eigenvectors}
+Figure~\ref{fig:graph_harmonics} displays the first 16 eigenvectors of the
+graph Fourier basis used for the convolution. While their is a clear
+resemblance with the spherical harmonic, the small irregularities in the
+sampling (see~\ref{fig:healpix_graph_4}) have two important effects on the
+graph Fourier eigenvectors.  First, some graph eigenvectors will be
+localized~\cite{perraudin2018global}, i.e: they will span only a small subpart
+of the sphere.  Second, as Nside increase toward infinity and hence the number
+of pixel $n\rightarrow \infty$, we are still unsure if the graph eigenvectors
+converge toward the spherical harmonics. We believe that it might be the case
+for a different graph construction (fully connected) and that a proof could be
+built on top of the work of~\cite{belkin2007convergence}. This is obviously
+out of the scope of this contribution.
+
+\label{sec:spherical_harmonics}
+\begin{figure*}[!ht]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
+\caption{12 first graph Fourier eigenvectors.}
+\label{fig:graph_harmonics}
+\end{figure*}
+
+
 
 \section{Filter visualization}
 \label{app:filter_visualization}
