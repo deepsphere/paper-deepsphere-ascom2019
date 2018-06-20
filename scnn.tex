@@ -285,22 +285,25 @@ spherical domain is to handle a convolution that is suitable for this irregular 
 Three approaches exist to address this issue.
 
 The first approach, leveraging the continuous spherical convolution, has been
-proposed by~\cite{cohen2017convolutional,cohen2018spherical}. The goal of these
-contributions it to use a rotational equivariant convolution on the
+proposed by~\cite{cohen2017convolutional,cohen2018spherical}. The goal of
+these contributions it to use a rotational equivariant convolution on the
 sphere, i.e. a rotation of the input implies the same rotation of the output.
-The resulting convolution is performed by a spherical Fourier transform (i.e. a projection
-on the spherical harmonics), a  multiplication in the spectral domain and an
-inverse spherical Fourier transform. Hence the main computational cost of a
-convolution comes from the two Fourier transforms. Fortunately, the Fourier
-transform can be accelerated for special samplings set (theoretically including
-HealPix, \cite{...}). The main advantage of this approach is that it provides a
-mathematically well defined rotational equivariant network. Nevertheless, even
-with these Fourier transform acceleration, the convolutions remain expensive in
-comparison to a traditional 2-dimensional convolution, limiting the practical use of this
-approach. While a comparison is theoretically possible, the experiments
+The resulting convolution is performed by a spherical Fourier transform (i.e.
+a projection on the spherical harmonics), a  multiplication in the spectral
+domain and an inverse spherical Fourier transform. Hence the main
+computational cost of a convolution comes from the two Fourier transforms.
+Fortunately, the Fourier transform can be accelerated for special samplings
+set (theoretically including HealPix, \cite{...}). The main advantage of this
+approach is that it provides a mathematically well defined rotational
+equivariant network. Nevertheless, even with these Fourier transform
+acceleration, the convolutions remain expensive in comparison to a traditional
+2-dimensional convolution, limiting the practical use of this approach. While
+a comparison is theoretically possible, the experiments
 of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
 do not provide any code for the Healpix one. Hence, a practical comparison is
-not possible.
+not possible. We also note that this approach cannot be trivially accelerated
+if only one part of the sphere is used. This is impractical in the field of
+cosmology as the data often observed only on a subpart of the sphere.
 
 A second direction has been followed in~\cite{boomsma2017spherical}. The idea is
 to use the traditional 2-dimensional convolution on an irregular grid defined on the
@@ -329,7 +332,6 @@ Besides the different application covered by the paper, there are two important
 differences. First the sampling is different as \cite{khasanova2017graph} uses a
 grid. Second, it uses a different graph CNN based on a different parametrisation
 of the convolution kernel.
-
 
 \subsection{Convolutions on graphs}
 \assign{Michaël}
@@ -552,12 +554,9 @@ Our implementation is available as a small python package\url{https://our.code.l
 Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}.
 
 In our experiment we classify convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
-We compare the performance of the spherical CNN to a simple benchmark algorithm.
-This algorithm is based on classification of histogram of pixels in the maps.
-We use an SVM to perform that task.
-The benchmark method uses the information about the distribution of pixels, but does not include any spatial information.
-The CNN can exploit the spatial information.
-The performance is assessed by measuring the classification error on the test set.
+
+\subsection{Data}
+\label{sec:data}
 
 Convergence maps represent the dimensionless distribution of over- and underdensities of mass in the universe, projected on the sky plane.
 The 3D structures are projected using a geometric kernel, value of which depends on the radial distance.
@@ -569,11 +568,7 @@ Other parameter parameters were set to $h=0.7$ (MORE PARAMS HERE - CHECK WITH RA
 These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
 That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
-To remove this information, we additionally smooth the spherical maps with a Gaussian kernel.
-
-
-\subsection{Data}
-\label{sec:data}
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in Figure~\ref{fig:psd_sigma3}.
 
 The simulations are created using the fast lightcone method described in \citep{sgier2018fastgeneration}.
 However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
@@ -593,15 +588,16 @@ Initial conditions for these simulations were the same, so the differences in st
 \includegraphics[width=0.95\textwidth]{figures/smooth_map_class_1.pdf}
 \includegraphics[width=0.95\textwidth]{figures/smooth_map_class_2.pdf}
 \caption{Example maps from two classes. Top: model 1 ($\Omega_m=0.31, \sigma_8=0.82$). Bottom: model 2 ($\Omega_m=0.26, \sigma_8=0.91$).
-The initial conditions for these simulations were the same, so differences arise only due to different cosmological parameters.}
+The initial conditions for these simulations were the same, so differences arise only due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
 \end{figure*}
 
 \subsection{Problem formulation}
 
-Leveraging the properties of the HealPix sampling, we can split each simulation
-into $12*4^o$ ($o=0,1,2,\dots$) samples that span a smaller part of the sphere.
-As shown in Figure~\ref{fig:subpart_sphere}, we used $o=0,1,2$ as the resulting
+Leveraging the properties of the HealPix sampling, we can split each maps
+into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere. 
+The area of the pixels for an Nside of $o$ correspond to the different split of the data.
+As shown in Figure~\ref{fig:subpart_sphere}, we used $o=1,2,4$ as the resulting
 samples are large enough to suffer from the effects of the spherical geometry. We
 decided to only report simulation results for this specific setting as spherical
 cosmological data usually does not span the full sphere. Nevertheless, our code
@@ -610,24 +606,35 @@ includes an example using the full sphere.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/part_sphere.pdf}
-\caption{3 subparts of the sphere with different sizes. Blue: $o=0$. Green: order $o=1$. Yellow: order $o=2$.}
+\caption{3 subparts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
 \label{fig:subpart_sphere}
 \end{figure}
 
-We would like to build a robust classifier, i.e. an automatic way to
-discriminate between the two classes with the presence of noise. For all the
+The goal is build a robust classifier, i.e. an automatic way to
+discriminate between the two classes in the presence of noise. For all the
 experiments, we work with centered Gaussian noise. \todo{Tomek: could you put a
 justification.} All classifiers are trained with noisy samples. To improve the
 stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
 overfitting, the noise is randomly produced during the training process. We trained our
-model between $5$ and $40$ epochs depending on the complexity and the size of
+model between $50$ and $200$ epochs depending on the complexity and the size of
 the problem. The testing set was simply used to assess the global performance of
 the network and to assess if it was overfitting.
-Training took between $1$ and $10$ hours using a Nvidia 1080 TI.
+Training took less that a day for each model using a Nvidia 1080 TI.
+
+We compare the performance of the spherical CNN to two simple benchmark algorithms.
+The two baselines are based on building features with a) the Power Spectral Densities or b) the histogram of pixels in the maps.
+Those features are then classified use a Support Vector Machine (SVM) with a linear kernel. Other kernels did provide better result while having worse scaling properties.
+For fairness, we augmented the dataset of the baseline in a similar way as for the network, i.e: 
+
+The histogram features contains information about the distribution of pixels, but does not include any spatial information.
+Both the PSD features and the CNN can exploit the spatial information.
+
+For The maps
+The performance is assessed by measuring the classification error on a test set.
 
 We compare the spherical CNN with a handcrafted feature classifier. CITE \cite{...}
-\todo{Tomek: we probably need 1 or two other classifiers.} The features are
+The features are
 constructed using a normalized histogram of the values. We then train a linear
 SVN classifier. We tried different kernels, but they were not leading to better
 results. For a fair comparison, we increase the amount of training data of the
@@ -712,16 +719,16 @@ Bottom: section plot.}
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/psd_sigma3.pdf}
-\caption{TODO: PSD of the data with 3 arcmin smoothing.}
-\label{fig:index_section}
+\caption{Power spectrum densities of the noiseless maps. The maps have be smoothed with a Gaussian kernel of radius $3$ arcmins in the preprocessing step.}
+\label{fig:psd_sigma3}
 \end{figure}
 
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/hist_error_order4_noise1.5.pdf}
+\includegraphics[width=0.45\textwidth]{figures/hist_error_order4_noise1_5.pdf}
 \caption{TODO}
-\label{fig:index_section}
+\label{fig:hist_error_evolution}
 \end{figure}
 
 
