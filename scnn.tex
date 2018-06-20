@@ -622,28 +622,35 @@ the problem. The testing set was simply used to assess the global performance of
 the network and to assess if it was overfitting.
 Training took less that a day for each model using a Nvidia 1080 TI.
 
-We compare the performance of the spherical CNN to two simple benchmark algorithms.
-The two baselines are based on building features with a) the Power Spectral Densities or b) the histogram of pixels in the maps.
-Those features are then classified use a Support Vector Machine (SVM) with a linear kernel. Other kernels did provide better result while having worse scaling properties.
-For fairness, we augmented the dataset of the baseline in a similar way as for the network, i.e: 
+We compare the performance of the spherical CNN to two simple benchmark
+algorithms. The two baselines are based on building features with a) the Power
+Spectral Densities or b) the histogram of pixels in the maps. CITE~\cite{...}
+After a normalization, those features are then classified use a Support Vector
+Machine (SVM) with a linear kernel. Other kernels did provide better result
+while having worse scaling properties. For fairness, we augmented the dataset
+of the baseline algorithm in a similar way as for the network, i.e, with
+created an "unlimited" number of samples by adding new random realizations of
+the noise. We stop adding new samples in the classifier once the validation
+error converge to a values. This process is depicted in
+Figure~\ref{fig:hist_error_evolution}.
 
-The histogram features contains information about the distribution of pixels, but does not include any spatial information.
-Both the PSD features and the CNN can exploit the spatial information.
-
-For The maps
-The performance is assessed by measuring the classification error on a test set.
-
-We compare the spherical CNN with a handcrafted feature classifier. CITE \cite{...}
-The features are
-constructed using a normalized histogram of the values. We then train a linear
-SVN classifier. We tried different kernels, but they were not leading to better
-results. For a fair comparison, we increase the amount of training data of the
-SVN classifier until the testing error plateau to a fix value.
+The maps are separated into a training and a testing set. The performance is
+assessed by measuring the classification error on a test set. Once the
+training maps are sliced into samples, we split them into a training samples
+and validation samples. The validation samples is used to tune the
+regularization parameter of the SVM using a standard cross-validation
+technique\footnote{We also give a small advantage to the SVM classifiers by
+using cross-validation on the testing set.}.
 
 \subsection{Results}
 \assign{Nathanaël, Tomek}
 
 We present in Figure~\ref{fig:results} the results for 5 different noise levels and $3$ different data sizes. The spherical neural network is always significantly better than the hand-crafted classifier.
+
+The histogram features contains information about the distribution of pixels, but does not include any spatial information.
+In contrast, both the PSD features and the CNN can exploit the spatial information.
+
+
 
 \begin{figure*}[!ht]
 \centering
