@@ -107,7 +107,13 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\title{HealpixNet: Efficient spherical Convolutional Neural Networks with Healpix sampling for cosmological applications}
+\title{HealpixNet: Efficient spherical Convolutional Neural Network with Healpix sampling for cosmological applications}
+% \title{HealpixNet: Efficient spherical Convolutional Neural Network with graphs and Healpix sampling for cosmological applications}
+%\title{HealpixNet: Graph Convolutional Neural Network for efficient spherical convolutions on Healpix sampling for cosmological applications}
+% Graph Convolutional Networks for efficient spherical ???
+% Efficient spherical ??? with GCNs and Healpix sampling
+% (Tomek) How about HealpixCNN? Or HealpixNet? Or HealNet?}
+% spherical convolutions with graphs
 
 %% use optional labels to link authors explicitly to addresses:
 %% \author[label1,label2]{}
@@ -119,37 +125,30 @@
 \address{}
 
 \begin{abstract}
-%% Text of abstract
 
-Convolutional Neural Networks (CNNs) are becoming an important analysis tool in cosmology and astrophysics.
-While CNN apply to images, in many applications, the data comes in a form of spherical maps with the popular Healpix format, which uses equal-area, isolatitude sampling.
-Hence, we present a spherical CNNs for analysis of full- and partial sky Healpix maps, which we call HealpixCNN (???) \nati{HealpixNet??? To be decided}.
-Our approach is based on representing a sphere as a graph of connected nodes.
-We describe a convolution operation defined on that graph.
-HealpixCNN (???) uses Tensorflow as the underlying engine and can utilize most of it functionalities.
-Architectures can be designed in a similar way as standard CNNs used for image analysis.
-We find that the graph-based convolution is very efficient (MORE HERE)..
-The filters learned by the HealpixCNN are restricted to being radial.
-We demonstrate the method on a simple classification problem of mass maps from two cosmological models.
-We compare the performance to a simple benchmark classifier, which uses histograms of map pixel values.
-HealpixCNN achieves much better testing accuracy than the benchmark approach.
-We make the code and examples available to the public.
+%Convolutional Neural Networks (CNNs) are becoming an important analysis tool in cosmology and astrophysics.
+% Michaël: useful info? To me this is not an argument for our approach. Maybe we have to expand it?
 
-	\todo{(Michaël) I would not invent a new term, SCNN, but rather say that convolutional neural networks on graphs (or GCNs) can be efficiently applied to (spherical?) cosmological applications.
-	Arguments: the method is not new and hence don't deserve a new name. Emphasize that it is generic to the data structure, and that the sphere is simply a particular graph.
-	Ideas: Graph Convolutional Networks for efficient spherical ???, Efficient spherical ??? with GCNs and Healpix sampling
-    We make the code publicly available.
-    \\
-    \todo{(Tomek) How about HealpixCNN? Or HealpixNet? Or HealNet?}
+% Architectures are then designed similarly to the classical CNNs used for image analysis.
+% HealpixCNN (???) uses Tensorflow as the underlying engine and can utilize most of it functionalities.
+% Michaël: not relevant for the abstract in my opinion
 
-}
-
+Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence. Despite their successes, they still are mostly developed and applied to regular Euclidean domains such as those supporting images, audio, or video. For many applications however, the data domain is not regular.
+As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs. Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
+In this paper we take the latter view and represent a sampled sphere as a graph, for which we define the convolution and pooling operations.
+Spherical maps appear in many applications, such as the study of phenomena on the Earth for meteorologists or on the sky for cosmologists.
+A popular format for spherical maps is Healpix, which uses an equal-area, isolatitude sampling. Hence, we present a spherical CNN for analysis of full- and partial Healpix maps, which we call HealpixNet.
+While convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered. As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
+This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that as been explored.
+% The filters learned by the HealpixNet are restricted to being radial.
+% Michaël: not necessary in the abstract?
+We demonstrate the method on a classification problem of mass maps from two cosmological models. A standard benchmark for that problem is to train an SVM on the histograms of map pixel values. Another is to use the power spectral density instead.
+HealpixNet achieves \todo{xx\%} better accuracy than those baselines, is more robust to noise, and is \todo{faster?}.
+Code and examples are available at \url{https://github.com/xxx}.
 \end{abstract}
 
 \begin{keyword}
-%% keywords here, in the form: keyword \sep keyword
 Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN 
-
 \end{keyword}
 
 \end{frontmatter}
@@ -158,7 +157,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 
 \section{TODO list}
 \begin{itemize}
-    \item Michael, do you agree with the title HealpixNet
+	\item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
     \item Emphasize the novelty of using it on Helapix in abstract, into and rest of the paper
     \item Finish section on Convolutions on graphs (Michael - Nathanael)
     \item Plot of the new filters from Mass maps (Michael)
@@ -177,7 +176,6 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
     \item (more or less done!) possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael I am not sure about the heat diffusion example...)
 \end{itemize}
 
-%% main text
 \section{Introduction}
 \label{sec:intro}
 
