@@ -556,6 +556,14 @@ That means that it is not possible to distinguish between these cosmological mod
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in Figure~\ref{fig:psd_sigma3}.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/psd_sigma3.pdf}
+\caption{Power spectrum densities of the noiseless maps. The maps have be smoothed with a Gaussian kernel of radius $3$ arcmins in the preprocessing step.}
+\label{fig:psd_sigma3}
+\end{figure}
+
+
 The simulations are created using the fast lightcone method described in \citep{sgier2018fastgeneration}.
 However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
@@ -571,8 +579,8 @@ Initial conditions for these simulations were the same, so the differences in st
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/smooth_map_class_1.pdf}
-\includegraphics[width=0.95\textwidth]{figures/smooth_map_class_2.pdf}
+\includegraphics[width=0.48\textwidth]{figures/smooth_map_class_1.pdf}
+\includegraphics[width=0.48\textwidth]{figures/smooth_map_class_2.pdf}
 \caption{Example maps from two classes. Top: model 1 ($\Omega_m=0.31, \sigma_8=0.82$). Bottom: model 2 ($\Omega_m=0.26, \sigma_8=0.91$).
 The initial conditions for these simulations were the same, so differences arise only due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
@@ -610,31 +618,40 @@ Training took less that a day for each model using a Nvidia 1080 TI.
 
 We compare the performance of the spherical CNN to two simple benchmark
 algorithms. The two baselines are based on building features with a) the Power
-Spectral Densities or b) the histogram of pixels in the maps. CITE~\cite{...}
+Spectral Densities or b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
 After a normalization, those features are then classified use a Support Vector
-Machine (SVM) with a linear kernel. Other kernels did provide better result
+Machine (SVM) with a linear kernel. Other kernels did not provide better result
 while having worse scaling properties. For fairness, we augmented the dataset
 of the baseline algorithm in a similar way as for the network, i.e, with
 created an "unlimited" number of samples by adding new random realizations of
 the noise. We stop adding new samples in the classifier once the validation
-error converge to a values. This process is depicted in
-Figure~\ref{fig:hist_error_evolution}.
+error converge to a value. This process is detailled in Appendix~\ref{sec:dataset_augmentation}.
 
 The maps are separated into a training and a testing set. The performance is
 assessed by measuring the classification error on a test set. Once the
 training maps are sliced into samples, we split them into a training samples
 and validation samples. The validation samples is used to tune the
 regularization parameter of the SVM using a standard cross-validation
-technique\footnote{We also give a small advantage to the SVM classifiers by
+technique\footnote{We also give a small edge to the SVM classifiers by
 using cross-validation on the testing set.}.
 
 \subsection{Results}
 \assign{Nathanaël, Tomek}
 
-We present in Figure~\ref{fig:results} the results for 5 different noise levels and $3$ different data sizes. The spherical neural network is always significantly better than the hand-crafted classifier.
+We present in Figure~\ref{fig:results} the results for 5 different noise
+levels and $3$ different data sizes.  We observe that the PSD features, i.e.
+one of the most used technique for model discrimination in cosmology is unable
+to perform the desired task. The main reason is that the two different model
+have very similar PSDs (see Figure~\ref{fig:psd_sigma3}).   As a result, one
+need to use other statistics to solve the problem. In this case, we use
+histogram features and observe a significant improvement over the PSD.  The
+SCNN present the advantage to learn automatically specific features for the
+task and also the usual Deep Learning performance bump.
 
-The histogram features contains information about the distribution of pixels, but does not include any spatial information.
-In contrast, both the PSD features and the CNN can exploit the spatial information.
+We also note that the histogram features contains information about the
+distribution of pixels, but does not include any spatial information. In
+contrast, both the PSD features and the SCNN can exploit the spatial
+information. Without this scructure, a non scallable fully connected neural network approach would have to be used.
 
 
 
@@ -646,15 +663,6 @@ In contrast, both the PSD features and the CNN can exploit the spatial informati
 \caption{Classification errors for the 3 different problems. \nati{TODO: order is not correct} }
 \label{fig:results}
 \end{figure*}
-
-
-\begin{itemize}
-	\item Spherical CNN has the advantage to have some geometry information => one of the reason better than histogram
-	\item PSD...
-\end{itemize}
-
-\citep{patton2017cosmologicalconstraints}
-
 
 
 \subsection{Interpretation}
@@ -690,7 +698,7 @@ built on top of the work of~\cite{belkin2007convergence}. This is obviously
 out of the scope of this contribution.
 
 \label{sec:spherical_harmonics}
-\begin{figure*}[!ht]
+\begin{figure*}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
 \caption{12 first graph Fourier eigenvectors.}
@@ -732,14 +740,25 @@ Bottom: section plot.}
 \label{fig:index_section}
 \end{figure}
 
+\section{Augementation of the dataset for the SVM classifier}
+\label{sec:dataset_augmentation} The original number of samples $480$, $1920$,
+$7680$ respectively for order $o=1,2,4$ is considered rather low for usual
+deep learning technique, especially when one desire to build a noise robust
+classifier. As a result, we use a classical dataset augmentation technique.
+Before entering the network for training each sample is added a random
+realization of Gaussian noise. The effect is twofold. First, the network never
+ends up seing the same sample and is less likely to overfit the training set.
+Second the trained network will be robust to Gaussian noise.
 
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=0.45\textwidth]{figures/psd_sigma3.pdf}
-\caption{Power spectrum densities of the noiseless maps. The maps have be smoothed with a Gaussian kernel of radius $3$ arcmins in the preprocessing step.}
-\label{fig:psd_sigma3}
-\end{figure}
-
+When comparing the network, we want to ensure that the SVM classifier has
+access to the same amount of data that the network, i.e, potentially an
+infinite number of sample. Hence, we fit different linear SVM classifier using
+various amount of training set size until we oberve experimentally that
+increasing the amount of data does not improve the classifier. The validation
+set remain the same and is used for cross-validation to tune the L2
+penalization parameter of SVM. Eventually, we evaluate the final classifier on
+the testing set. An example of the evolution of the training and valdication
+error is show in Figure~\ref{fig:hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
