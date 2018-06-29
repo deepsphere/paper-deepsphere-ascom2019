@@ -59,11 +59,14 @@
 %% \usepackage{lineno}
 
 \newcommand{\nati}[1]{{\color[rgb]{.1,.6,.1}{#1}}}
-
 \newcommand{\todo}[1]{{\color[rgb]{.6,.1,.6}{#1}}}
-
 \newcommand{\assign}[1]{{\color[rgb]{.8,.5,.8}{Assigned: #1 }}}
 
+\newcommand{\figref}[1]{Figure~\ref{fig:#1}}
+\newcommand{\tabref}[1]{Table~\ref{tab:#1}}
+\newcommand{\secref}[1]{Section~\ref{sec:#1}}
+%\newcommand{\secref}[1]{\S\ref{sec:#1}}
+\newcommand{\eqnref}[1]{(\ref{eqn:#1})}
 
 \renewcommand{\b}[1]{{\bm{#1}}}   % bold symbol
 
@@ -219,10 +222,10 @@ We compare the performance of the spherical CNN to a baseline algorithm, an SVM 
 The comparison is made as a function of noise level on convergence maps and area of the sphere used.
 
 The paper is organised as follows.
-In Section~\ref{sec:related}, we describe existing approaches to convolutions on the sphere, graphs, and manifolds.
-In Section~\ref{sec:method}, we show the way to construct a graph using Healpix sampling and define the convolution operation.
-The comparison between the spherical CNN and the benchmark method using the weak lensing mass map classification is presented in Section~\ref{sec:experiments}.
-We conclude in Section~\ref{sec:conclusion}.
+In \secref{related}, we describe existing approaches to convolutions on spheres, graphs, and manifolds.
+\secref{method} exposes the construction of a graph given the Healpix sampling of a sphere and defines the convolution operation.
+Finally, \secref{experiments} presents our experimental results on the weak lensing mass map classification problem. There we compare our method to two standard benchmarks and show its superiority.
+%We conclude in \secref{conclusion}.
 
 % Cite the following papers:
 % \begin{itemize}
@@ -391,7 +394,7 @@ on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected
 pixels $i$ and $j$. This weighting scheme is important as the distances between
 pixels varies due to the small sampling irregularities. Some of the
 irregularities have been highlighted in the graph displayed in
-Figure~\ref{fig:healpix_graph_4}.
+\figref{healpix_graph_4}.
 
 These small irregularities are important and affect slightly the degree of a
 node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
@@ -429,7 +432,7 @@ Note that instead of frequencies, the Fourier modes are crescently ordered with
 respect of the Laplacian eigenvalues $\bLambda$. In a sense, the Laplacian
 eigenvalues correspond to the squared frequencies.
 
-As shown in Figure~\ref{fig:graph_harmonics}, it turns out that using the graph
+As shown in \figref{graph_harmonics}, it turns out that using the graph
 construction described above, the graph Fourier harmonics resemble the
 classical spherical harmonics giving us an indication that the graph is able to
 capture the spherical properties of the HealPix sampling. This topic is further discusses in Appendix~\ref{sec:spherical_harmonics}.
@@ -441,11 +444,11 @@ Graph convolution is defined by generalizing the concept that convolution is a
 multiplication in the spectral domain. Given a convolution kernel
 $h:\mathbb{R}_+\rightarrow\mathbb{R}$, the convolution of a signal $\b{f}$
 is defined as
-\begin{equation} \label{def:graph_convolution}
+\begin{equation} \label{eqn:graph_convolution}
 h(L)\b{f} = \U h(\bLambda) \U^* \b{f},
 \end{equation}
 where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii}=h(\bLambda_{ii})$.
-Equation~\ref{def:graph_convolution} contains three parts: a) $\U^* \b{f}$, the
+Equation~\eqnref{graph_convolution} contains three parts: a) $\U^* \b{f}$, the
 Fourier transform of $\b{f}$; b) $h(\bLambda)$ the multiplication with the Fourier
 kernel $h(\blambda)$; and c) $\U$ the inverse Fourier transform.
 
@@ -462,24 +465,24 @@ the sphere, one can observe important border effects.
 
 \paragraph{Example:}
 Let us consider the heat diffusion problem
-\begin{equation} \label{eq:heat_equation}
+\begin{equation} \label{eqn:heat_equation}
 \L \b{f}(t) = \tau \partial_t \b{f}(t),
 \end{equation}
 where $\b{f}(t): \mathbb{R}_+ \rightarrow \mathbb{R}^N$. Given the initial condition
-$\b{f}(0)$, the solution of~\ref{eq:heat_equation} can be expressed as
+$\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation}
 \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U^* \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation}
 which is a convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
 t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$ that
 are one generalization of the squared frequencies on the graph. Hence the kernel $K_t$ is also a generalization of the
-Gaussian kernel on the sphere. In Figure~\ref{fig:gaussian_filters_comparizon} top, we show
+Gaussian kernel on the sphere. In \figref{gaussian_filters_comparizon} top, we show
 the effect of the convolution by diffusing a unit of heat for $\tau=1$ and various
-time $t$. In  Figure~\ref{fig:gaussian_filters_visualization} of
-Appendix~\ref{app:filter_visualization}, we show different visualizations of the
+time $t$. In \figref{gaussian_filters_visualization} of
+Appendix~\ref{sec:filter_visualization}, we show different visualizations of the
 convolution kernel $K_t$. We also compare the graph convolution with the
 spherical symmetric Gaussian smoothing
-(Figure~\ref{fig:gaussian_filters_comparizon} bottom) and observe that both
+(\figref{gaussian_filters_comparizon} bottom) and observe that both
 techniques lead to similar results. While the graph convolution is different
 from a true spherical convolution, it can, providing the correct
 parameterization, well approximate it.
@@ -517,7 +520,7 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 The HealPix sampling presents the advantage to have a natural coarsening method
 based on its construction. Each Nside level divides each pixel into 4 subpixels.
 We define the pooling process as the inverse operation grouping the 4 subpixels.
-Figure~\ref{fig:pooling} illustrates the process.
+\figref{pooling} illustrates the process.
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
@@ -554,7 +557,7 @@ Other parameter parameters were set to $h=0.7$ (MORE PARAMS HERE - CHECK WITH RA
 These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
 That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
-To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in Figure~\ref{fig:psd_sigma3}.
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}.
 
 \begin{figure}[!ht]
 \centering
@@ -574,7 +577,7 @@ We also test the performance as a function of noise level of the pixels.
 As a pre-processing step, we first remove the mean of each sample and we apply a spherical Gaussian smoothing kernel with a radius of $1$ arcmin.
 Out of the 60 simulations, 20 are kept for the test set.
 % The training and validation set are created later on.
-Figure \ref{fig:map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
+\figref{map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
 Initial conditions for these simulations were the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
 
 \begin{figure*}[!ht]
@@ -591,7 +594,7 @@ The initial conditions for these simulations were the same, so differences arise
 Leveraging the properties of the HealPix sampling, we can split each maps
 into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere. 
 The area of the pixels for an Nside of $o$ correspond to the different split of the data.
-As shown in Figure~\ref{fig:subpart_sphere}, we used $o=1,2,4$ as the resulting
+As shown in \figref{subpart_sphere}, we used $o=1,2,4$ as the resulting
 samples are large enough to suffer from the effects of the spherical geometry. We
 decided to only report simulation results for this specific setting as spherical
 cosmological data usually does not span the full sphere. Nevertheless, our code
@@ -638,11 +641,11 @@ using cross-validation on the testing set.}.
 \subsection{Results}
 \assign{Nathanaël, Tomek}
 
-We present in Figure~\ref{fig:results} the results for 5 different noise
+We present in \figref{results} the results for 5 different noise
 levels and $3$ different data sizes.  We observe that the PSD features, i.e.
 one of the most used technique for model discrimination in cosmology is unable
 to perform the desired task. The main reason is that the two different model
-have very similar PSDs (see Figure~\ref{fig:psd_sigma3}).   As a result, one
+have very similar PSDs (see \figref{psd_sigma3}).   As a result, one
 need to use other statistics to solve the problem. In this case, we use
 histogram features and observe a significant improvement over the PSD.  The
 SCNN present the advantage to learn automatically specific features for the
@@ -692,10 +695,10 @@ Figure: Filters 1D and Gnonomic
 \appendix
 
 \section{Spherical harmonics VS graph Fourier eigenvectors}
-Figure~\ref{fig:graph_harmonics} displays the first 16 eigenvectors of the
+\figref{g:graph_harmonics} displays the first 16 eigenvectors of the
 graph Fourier basis used for the convolution. While their is a clear
 resemblance with the spherical harmonic, the small irregularities in the
-sampling (see~\ref{fig:healpix_graph_4}) have two important effects on the
+sampling (see \figref{healpix_graph_4}) have two important effects on the
 graph Fourier eigenvectors.  First, some graph eigenvectors will be
 localized~\cite{perraudin2018global}, i.e: they will span only a small subpart
 of the sphere.  Second, as Nside increase toward infinity and hence the number
@@ -716,15 +719,15 @@ out of the scope of this contribution.
 
 
 \section{Filter visualization}
-\label{app:filter_visualization}
+\label{sec:filter_visualization}
 
-In Figure~\ref{fig:gaussian_filters_visualization}, we present three different
+In \figref{gaussian_filters_visualization}, we present three different
 ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$. First, they can
 be plotted in the graph spectral domain. In this case, we simply evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. Second, we can convolve a
 delta on the sphere and plot a gnomonic view of the results. Third, since we are
 working on the sphere, we can only plot the section of the convoluted delta. In
-Figure~\ref{fig:index_section}, we display the selected indexes for the section
+\figref{index_section}, we display the selected indexes for the section
 plotting. Note that, because of the small irregularities in the HealPix
 sampling, the second and the third methods are likely to change depending on the
 chosen delta.
@@ -744,7 +747,7 @@ Bottom: section plot.}
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/index_plotting_order20_nside16.pdf}
-\caption{Indexes selected for the section ploting of Figure~\ref{fig:gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
+\caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
 \label{fig:index_section}
 \end{figure}
 
@@ -766,7 +769,7 @@ increasing the amount of data does not improve the classifier. The validation
 set remain the same and is used for cross-validation to tune the L2
 penalization parameter of SVM. Eventually, we evaluate the final classifier on
 the testing set. An example of the evolution of the training and valdication
-error is show in Figure~\ref{fig:hist_error_evolution}.
+error is show in \figref{hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
