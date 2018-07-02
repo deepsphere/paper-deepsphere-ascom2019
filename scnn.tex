@@ -539,7 +539,7 @@ The final patch represents 1/12 of the sphere.}
 % 3) Present the setting
 % 4) Describe the result
 In this section, we demonstrate the performance of the spherical neural network on a discrimination problem.
-Our implementation is available as a small python package\url{https://our.code.link.com}.
+Our implementation is available as a small python package \url{https://our.code.link.com}.
 Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}.
 
 In our experiment we classify convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
@@ -552,12 +552,12 @@ The 3D structures are projected using a geometric kernel, value of which depends
 In gravitational lensing, this kernel is dependent on the radial distances between the observer, the mass plane and the plane of source galaxies \citep[see][for review of gravitational lensing]{bartelman2010gravitationallensing}.
 The redshifts of the sources was set to $z=1$.
 
-We make full sky N-body simulations for two parameter set for $\Lambda \rm{CDM} $ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
-Other parameter parameters were set to $h=0.7$ (MORE PARAMS HERE - CHECK WITH RAPHAEL).
+We make full sky N-body simulations for two parameter sets for $\Lambda \rm{CDM} $ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
+Other parameter parameters were set to $h=0.7$ \todo{(MORE PARAMS HERE - CHECK WITH RAPHAEL)}.
 These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
 That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
-To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}.
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}. In the pre-processing step, we also remove the mean of each map.
 
 \begin{figure}[!ht]
 \centering
@@ -566,17 +566,12 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 \label{fig:psd_sigma3}
 \end{figure}
 
-
-The simulations are created using the fast lightcone method described in \citep{sgier2018fastgeneration}.
+The simulations are created using the fast lightcone method described in~\citep{sgier2018fastgeneration}.
 However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
 For each class, we generate 30 simulations.
-In the experiment we use data on a parts of the sphere, and we check the performance as a function of the area used.
-We also test the performance as a function of noise level of the pixels.
 
-As a pre-processing step, we first remove the mean of each sample and we apply a spherical Gaussian smoothing kernel with a radius of $1$ arcmin.
 Out of the 60 simulations, 20 are kept for the test set.
-% The training and validation set are created later on.
 \figref{map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
 Initial conditions for these simulations were the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
 
@@ -589,11 +584,12 @@ The initial conditions for these simulations were the same, so differences arise
 \label{fig:map_sample}
 \end{figure*}
 
-\subsection{Problem formulation}
 
+
+\subsection{Problem formulation}
+While the number of maps might sound small for deep learning, the information contained in the maps is very recurrent, allowing us to use parts of the map as sample for our simulation.
 Leveraging the properties of the HealPix sampling, we can split each maps
 into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere. 
-The area of the pixels for an Nside of $o$ correspond to the different split of the data.
 As shown in \figref{subpart_sphere}, we used $o=1,2,4$ as the resulting
 samples are large enough to suffer from the effects of the spherical geometry. We
 decided to only report simulation results for this specific setting as spherical
@@ -608,13 +604,16 @@ includes an example using the full sphere.
 \end{figure}
 
 The goal is build a robust classifier, i.e. an automatic way to
-discriminate between the two classes in the presence of noise. For all the
+discriminate between the two classes in the presence of noise. 
+We check the performance of the classifier as a function of the area used, i.e "the order" $o$ and also as a function of the relative level of the noise.
+
+For all the
 experiments, we work with centered Gaussian noise. \todo{Tomek: could you put a
-justification.} All classifiers are trained with noisy samples. To improve the
+justification.} To improve the
 stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
 overfitting, the noise is randomly produced during the training process. We trained our
-model between $50$ and $200$ epochs depending on the complexity and the size of
+model between \nati{$50$ and $200$} epochs depending on the complexity and the size of
 the problem. The testing set was simply used to assess the global performance of
 the network and to assess if it was overfitting.
 Training took less that a day for each model using a Nvidia 1080 TI.
@@ -624,7 +623,7 @@ algorithms. The two baselines are based on building features with a) the Power
 Spectral Densities or b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
 After a normalization, those features are then classified use a Support Vector
 Machine (SVM) with a linear kernel. Other kernels did not provide better result
-while having worse scaling properties. For fairness, we augmented the dataset
+while having worse scaling properties. All classifiers are trained with noisy samples. For fairness, we augmented the dataset
 of the baseline algorithm in a similar way as for the network, i.e, with
 created an "unlimited" number of samples by adding new random realizations of
 the noise. We stop adding new samples in the classifier once the validation
@@ -635,8 +634,7 @@ assessed by measuring the classification error on a test set. Once the
 training maps are sliced into samples, we split them into a training samples
 and validation samples. The validation samples is used to tune the
 regularization parameter of the SVM using a standard cross-validation
-technique\footnote{We also give a small edge to the SVM classifiers by
-using cross-validation on the testing set.}.
+technique.
 
 \subsection{Results}
 \assign{Nathanaël, Tomek}
@@ -668,12 +666,20 @@ information. Without this scructure, a non scallable fully connected neural netw
 \end{figure*}
 
 
-\subsection{Filter visualization}
-\assign{Nathanaël, Tomek, Michaël}
-One common visualization for CNN is to display the shape of the learned filters. Since our construction lead to almost (up to the sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the section (on the sphere) and a gnomeview projection on a plane of a random selection of learned filters. The filters are selected from the last layer of the network corresponding the experiment with order $o=2$ for a relative noise level of $2$. Nevertheless, all networks presented similar pattern, at least from a human perspective. The gnomview projection clearly exibits the sampling issue of HealPix. For a detail, on how the filters are plot, please refer to Appendix~\ref{sec:filter_visualization}.
+\subsection{Filter visualization} 
+\assign{Nathanaël, Tomek, Michaël} 
+Onecommon visualization for CNN is to display the shape of the learned filters.
+Since our construction lead to almost (up to the sampling irregularities)
+spherical filters, we plot in \figref{learned_filter} both the section (on the
+sphere) and a gnomeview projection on a plane of a random selection of learned
+filters. The filters are selected from the last layer of the network
+corresponding the experiment with order $o=2$ for a relative noise level of
+$2$. Nevertheless, all networks presented similar gnomonic and section pattern, at least from a
+human perspective. The gnomonic projection clearly exibits the sampling issue
+of HealPix. For a detail, on how the convolution kernels are plot, please refer to
+Appendix~\ref{sec:filter_visualization}. 
 \todo{Tomek: can you say something about the filters.}
 
-Figure: Filters 1D and Gnonomic
 \begin{figure*}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/section_filter_last.pdf} 
