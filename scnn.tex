@@ -668,11 +668,10 @@ information. Without this scructure, a non scallable fully connected neural netw
 \end{figure*}
 
 
-\subsection{Interpretation}
+\subsection{Filter visualization}
 \assign{Nathanaël, Tomek, Michaël}
-
-Show the learned filters and feature maps and try to interpret them.
-\todo{\\ TK and NP: Figure of filters from the mass map clasification}
+One common visualization for CNN is to display the shape of the learned filters. Since our construction lead to almost (up to the sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the section (on the sphere) and a gnomeview projection on a plane of a random selection of learned filters. The filters are selected from the last layer of the network corresponding the experiment with order $o=2$ for a relative noise level of $2$. Nevertheless, all networks presented similar pattern, at least from a human perspective. The gnomview projection clearly exibits the sampling issue of HealPix. For a detail, on how the filters are plot, please refer to Appendix~\ref{sec:filter_visualization}.
+\todo{Tomek: can you say something about the filters.}
 
 Figure: Filters 1D and Gnonomic
 \begin{figure*}[!ht]
@@ -695,11 +694,11 @@ Figure: Filters 1D and Gnonomic
 \appendix
 
 \section{Spherical harmonics VS graph Fourier eigenvectors}
-\figref{g:graph_harmonics} displays the first 16 eigenvectors of the
+\ref{fig:graph_harmonics} displays the first 16 eigenvectors of the
 graph Fourier basis used for the convolution. While their is a clear
 resemblance with the spherical harmonic, the small irregularities in the
-sampling (see \figref{healpix_graph_4}) have two important effects on the
-graph Fourier eigenvectors.  First, some graph eigenvectors will be
+sampling (see \figref{healpix_graph_4}) have an effect on the
+graph Fourier eigenvectors. First, conterintuitively, some graph eigenvectors will be
 localized~\cite{perraudin2018global}, i.e: they will span only a small subpart
 of the sphere.  Second, as Nside increase toward infinity and hence the number
 of pixel $n\rightarrow \infty$, we are still unsure if the graph eigenvectors
@@ -712,7 +711,7 @@ out of the scope of this contribution.
 \begin{figure*}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
-\caption{12 first graph Fourier eigenvectors.}
+\caption{12 first graph Fourier eigenvectors. Eigenvectors 1-3 could be assotiated to spherical harmonics of order 1, eigenvectors 4-8 to order 2 and 9-15 to order 3. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics.}
 \label{fig:graph_harmonics}
 \end{figure*}
 
@@ -722,15 +721,13 @@ out of the scope of this contribution.
 \label{sec:filter_visualization}
 
 In \figref{gaussian_filters_visualization}, we present three different
-ways to plot the graph convolution kernel $K_t(x)=e^{-\tau t x}$. First, they can
-be plotted in the graph spectral domain. In this case, we simply evaluate $K_t$
-at the graph eigenvalues $\text{diag}(\bLambda)$. Second, we can convolve a
-delta on the sphere and plot a gnomonic view of the results. Third, since we are
-working on the sphere, we can only plot the section of the convoluted delta. In
-\figref{index_section}, we display the selected indexes for the section
-plotting. Note that, because of the small irregularities in the HealPix
-sampling, the second and the third methods are likely to change depending on the
-chosen delta.
+visualization for the a healpix graph convolution kernel. The kernel used is defined in the graph spectral domain as $K_t(x)=e^{-\tau t x}$. This is the domain used for our first visualization. In this case, we simply evaluate $K_t$
+at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e. the spectral mode with less variation. 
+As a second visualization, we can observe the kernel directly on the sphere. To do so, we perform the convolution of a
+Kroneker on the sphere plot the result with gnomonic projection. Eventually, as we are
+working on the sphere with theoretically spherical filters (up the the irregularities of the sampling), we could only plot the section of the convoluted Kroneker. To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}. Note that, because of the small irregularities in the HealPix
+sampling, the second and the third methods are subject to small varation depending on the
+chosen Kroneker. 
 
 \begin{figure*}[!ht]
 \centering
