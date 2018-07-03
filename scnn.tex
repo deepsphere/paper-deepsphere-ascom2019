@@ -55,6 +55,8 @@
 \usepackage{bm}
 \usepackage{aasmacros}
 
+\usepackage{enumitem} % to remove when done with todo list
+
 %% The lineno packages adds line numbers. Start line numbering with
 %% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
 %% for the whole article with \linenumbers.
@@ -162,14 +164,14 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 %% \linenumbers
 
 \section{TODO list}
-\begin{itemize}
+\begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 	\item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
     \item Emphasize the novelty of using it on Helapix in abstract, into and rest of the paper
     \item Finish section on Convolutions on graphs (Michael - Nathanael)
     \item Plot of the new filters from Mass maps (Michael)
     \item (done!, plot to be added) check the power spectrum after smoothing
     \item (done!) upgrade the plot of pooling (Nathanael)
-    \item new plot for network structure (teaser plot) (Michael)
+	\item (done!) new plot for network structure (teaser plot) (Michael) What do you think? Todo: link the points on the sphere to the fully connected
     \item add info on comparison with histogram, so that it's just a demonstration
     \item (done!) Figure 1 to be round
     \item finish section on Efficient convolutions (Michael)
@@ -181,6 +183,12 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
     \item (done!) Results figure, add sigma8
     \item (more or less done!) possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael I am not sure about the heat diffusion example...)
 \end{itemize}
+
+\begin{figure*}[!ht]
+	\centering
+	\includegraphics[width=\linewidth]{figures/architecture}
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.}
+\end{figure*}
 
 \section{Introduction}
 \label{sec:intro}
