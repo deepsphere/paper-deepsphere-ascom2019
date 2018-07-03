@@ -34,8 +34,9 @@
 %% \documentclass[final,5p,times,twocolumn,authoryear]{elsarticle}
 
 
+%\usepackage{lmodern}
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-
 
 
 %% For including figures, graphicx.sty has been loaded in
@@ -48,6 +49,7 @@
 \usepackage{url}
 \usepackage{hyperref}
 \usepackage{graphicx,array}
+\usepackage{subcaption}
 \usepackage{amsmath}
 \usepackage{siunitx}
 \usepackage{bm}
@@ -111,6 +113,7 @@
 %% \fntext[label3]{}
 
 \title{HealpixNet: Efficient spherical Convolutional Neural Network with Healpix sampling for cosmological applications}
+% \title{Efficient Spherical ConvNet with Graph Convolutions for Cosmological Applications}
 % \title{HealpixNet: Efficient spherical Convolutional Neural Network with graphs and Healpix sampling for cosmological applications}
 %\title{HealpixNet: Graph Convolutional Neural Network for efficient spherical convolutions on Healpix sampling for cosmological applications}
 % Graph Convolutional Networks for efficient spherical ???
@@ -140,14 +143,14 @@ Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning 
 As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs. Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
 In this paper we take the latter view and represent a sampled sphere as a graph, for which we define the convolution and pooling operations.
 Spherical maps appear in many applications, such as the study of phenomena on the Earth for meteorologists or on the sky for cosmologists.
-A popular format for spherical maps is Healpix, which uses an equal-area, isolatitude sampling. Hence, we present a spherical CNN for analysis of full- and partial Healpix maps, which we call HealpixNet.
-While convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered. As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
-This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that as been explored.
+A popular format for spherical maps is Healpix, which uses an equal-area, isolatitude sampling. Hence, we present a spherical CNN for analysis of full and partial Healpix maps, which we call HealpixNet.
+While convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far. As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
+This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that as been explored previously.
 % The filters learned by the HealpixNet are restricted to being radial.
 % Michaël: not necessary in the abstract?
 We demonstrate the method on a classification problem of mass maps from two cosmological models. A standard benchmark for that problem is to train an SVM on the histograms of map pixel values. Another is to use the power spectral density instead.
 HealpixNet achieves \todo{xx\%} better accuracy than those baselines, is more robust to noise, and is \todo{faster?}.
-Code and examples are available at \url{https://github.com/xxx}.
+Code and examples are available at \todo{\url{https://github.com/xxx}}.
 \end{abstract}
 
 \begin{keyword}
@@ -184,44 +187,39 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 
 %\subsection{Motivation}
 
-Cosmological and astrophysical data often comes in a form of spherical sky maps.
-Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning methods have recently started to gain popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}.
-Convolutional Neural Networks (CNNs) are particularly well suited for analysis of astrophysical data due to their ability to capture complicated, non-linear patterns, which are often present in the data.
+Cosmological and astrophysical data often comes in the form of spherical sky maps.
+Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning has recently gained popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}, thanks to its ability to capture complicated, non-linear patterns which are often present in the data. Convolutional Neural Networks (CNNs) are particularly well suited for analysis of astrophysical data due to the translation equivariance built into their architecture. Indeed, sky maps are translation equivariant, which means that rotating maps on the sphere doesn't change their interpretation (at least at the micro scale). As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
 
-So far these algorithms have been demonstrated on the flat images.
-Deep learning-based analysis of larger survey area form requires dividing the data into smaller chunks and projecting them on a flat, 2D surface.
-While this process can work efficiently as already demonstrated, it may be more convenient do work with deep learning directly on the sphere.
-The most commonly used scheme in astrophysics to divide a sphere into pixels is Healpix \citep{gorski2005healpix}, which uses isolatitude sampling and pixels with the same area.
+\todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
+\todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the Healpix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
 
-In this work we present an algorithm and software package \pkg{SCNN-temp-name}\footnote{github.com/SwissDataScienceCenter/scnn} which implements efficient deep convolutional neural networks on Healpix maps.
-To achieve this, we represent the sphere $S^2$ as a graph of connected pixels, which forms a 2D manifold embedded in 3D space $\mathbb{R}^3$.
-This approach is based on CNN formulations on graphs described by \citet{defferrard2016convolutional} and runs using the \pkg{TensorFlow} \citep{abadi2016tensorflow} engine.
-The flexibility of the graph approach allows for faster analysis when data spans only a part of the sphere.
-It is also possible to use multiple Healpix maps within our framework and use datasets in form of ``shells''.
-These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
+So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
+As such, perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
+While this mostly works, as demonstrated \todo{in ??? for example}, it is more natural and accurate to work directly on the sphere.
 
-Different formulations of deep learning on the sphere have been proposed in~\citet{cohen2017convolutional,cohen2018spherical,boomsma2017spherical,khasanova2017graph}.
-In all of these methods, a different sphere pixelisation scheme is used, making them unsuitable for most cosmological application. 
-Hence, our work we focused on the Healpix sampling, as it is the most commonly used in cosmology.
-It can be, however, extended to other sampling schemes, by straightforward change in definition of the graph. These approach are discussed in Section~\ref{sec:spherical_conv}.
+% cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
+A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those very specific grid samplings.
+A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast Fourier transforms for some samplings, this approach is still computationally expensive.
+Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well, towards the goal of building invariances in the network. As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
+
+To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
+Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. The convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. That is the lowest possible complexity for convolution without approximations (e.g. by sketching).
+The flexibility of modeling the data domain with a graph allows, for example, to easily model data which only spans a part of the sphere, or data which is not uniformly sampled.
+Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales. Such hierarchical pixelizations of the sphere have been well studied.
+
+In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/scnn} \todo{change location}}, an algorithm and software package which implements an efficient CNN on Healpix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
+As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling. However, only two elements depend on the sampling: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
+It is also possible to use multiple Healpix maps within our framework and use datasets in form of ``shells''. These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
+
 %\nati{I am not sure this goes there...} Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
-
-An important advantage of our method is the speed of its convolution operation as it is of order $\mathcal{O}(n)$, where $n$ is the number of points, which is the lowest possible complexity for convolution without approximations, e.g. sketching.
-While our implementation is slower than traditional convolution on a 2 dimensional image, it remain in the same order of magnitude.
-MORE HERE
-
-Because of the spherical domain, the method presented here restricts the shape of the filters learned by the network to be radial.
-While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
-The layered structure of the network can partially compensate for that.
-Further generalizations to non-radial filters may be possible [cite?], but we leave it to future work.
 
 We give a practical demonstration of the application of our package to cosmological model discrimination using convergence maps, similar to \citep{schmelze2017cosmologicalmodel}.
 In a simplified scenario, we classify convergence maps on parts of a sphere into two cosmological models.
 These models were designed to have the same power spectrum in range $\ell < 1000$.
 We compare the performance of the spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or Power Spectrum Densities (PSD) of these maps as input.
-The comparison is made as a function of noise level on convergence maps and area of the sphere used.
+The comparison is made as a function of noise level on convergence maps and area of the sphere used. Results show that our model is better at discriminating the maps, is more resilient to noise, and \todo{is faster?}.
 
-The paper is organised as follows.
+The paper is organized as follows.
 In \secref{related}, we describe existing approaches to convolutions on spheres, graphs, and manifolds.
 \secref{method} exposes the construction of a graph given the Healpix sampling of a sphere and defines the convolution operation.
 Finally, \secref{experiments} presents our experimental results on the weak lensing mass map classification problem. There we compare our method to two standard benchmarks and show its superiority.
@@ -288,37 +286,41 @@ The main advantage of this
 approach is that it provides a mathematically well defined rotational
 equivariant network. Nevertheless, even with these Fourier transform
 acceleration, the convolutions remain expensive in comparison to a traditional
-2-dimensional convolution, limiting the practical use of this approach. While
+2-dimensional convolution, limiting the practical use of this approach.
+\todo{to have numbers to back up our claim: have the theoretical complexities and measure the time needed for a convolution on graph and the healpix Fourier transform to get the constants}
+While
 a comparison is theoretically possible, the experiments
 of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
 do not provide any code for the Healpix one. Hence, a practical comparison is
 not possible. We also note that this approach cannot be trivially accelerated
 if only one part of the sphere is used. This is impractical in the field of
 cosmology as the data often observed only on a subpart of the sphere.
+\todo{slow: full sky maps are composed of millions of points. partial maps are hard to process}
 
-A second direction has been followed in~\cite{boomsma2017spherical}. The idea is
+A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
 to use the traditional 2-dimensional convolution on an irregular grid defined on the
-sphere. In the paper, two grids are used: the geodesic grid and the “cubed
-sphere” grid defined by Ronchi et. al~\cite{ronchi1996cubed}. Because this
+sphere. In the paper, two grids are used: the geodesic grid \todo{isn't it the equirectangular grid?} and the ``cubed
+sphere'' grid defined by~\citet{ronchi1996cubed}. Because this
 approach is based on the traditional 2-dimensional convolution, it is very likely to be the
 most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are NOT including HealPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
 spherical properties of the domain, i.e. the "cubed sphere” sampling is by
 definition adapted to a cube and not to a sphere.
+\todo{border effects?}
 % \nati{Michael: Under some very
 % specific hypothesis, this second approach is a particular case of our method,
 % i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
 % on a grid == 2d convolution. Do you think we should mention that? I think we
 % should not.}
+% I think we should!
 
 In an attempt to get the best of the two first approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
 While the convolution remains efficient, it still captures well the spherical
 structure and is particularly adapted to the HealPix sampling.
 
-We are not the first one to leverage a graph to define a CNN on a sphere.
-\cite{khasanova2017graph} use the same idea to handle omnidirectional images.
+The use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well. The authors map omnidirectional images to the sphere, with the goal of correcting for distortions induced by the lens used for the acquisition.
 Besides the different application covered by the paper, there are two important
 differences. First the sampling is different as~\cite{khasanova2017graph} uses a
 grid. Second, it uses a different graph CNN based on a different parametrization
@@ -331,6 +333,8 @@ of the convolution kernel.
 \assign{Michaël}
 
 \todo{other approaches? GNNs, Kipf first order approx, message passing}
+
+The connection has recently been made between graph CNNs and group equivariant CNNs \cite{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere.
 
 Previous work: [Bruna] which needed the full eigendecomposition of the Laplacian, costing $O(n^3)$ operations.
 
@@ -375,7 +379,49 @@ the spherical case. Hence, the main idea of this contribution is to leverage
 graph signal processing~\cite{shuman2013emerging} to define a spherical
 convolution that can be computed (and back-propagated) directly in the signal domain.
 
+\subsection{HEALPix sampling}
+\label{sec:healpix}
+
+Before doing any numerical analysis on the sphere, one first has to choose a tessellation, i.e., an exhaustive partition of the sphere into finite area elements, where the data under study is quantized.
+While our method is applicable to any pixelization of the sphere, two details depend on the chosen sampling: (i) the choice of neighbors in the construction of the graph, and (ii) the choice of parent nodes when coarsening the graph.
+As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology, our target application, we'll tailor the method to that particular sampling in the subsequent exposition.
+%We'll note in later sections where the method should be adapted for a different sampling.
+
+HEALPix is a particular case of a more general class of schemes which are based on a hierarchical subdivision of a base polyhedron.
+%Many discretized maps of the sphere are based on a hierarchical subdivision of a base polyhedron.
+Another example is the geodesic grids which are based on geodesic polyhedrons, i.e., polyhedrons made of triangular faces. A counter-example is the equirectangular projection, which is not constructed from a base polyhedron, although it can be subdivided.
+In the particular Healpix case, the base is a rhombic dodecahedron, i.e., a polyhedron made from 12 congruent rhombic faces.\footnote{A rhombus is a quadrilateral whose four sides all have the same length.} See \figref{pooling} for an illustration of the base rhombic dodecahedron and its subdivisions.
+
+HEALPix is an acronym for Hierarchical Equal Area isoLatitude Pixelization of a sphere. As suggested in the name, this pixelization produces a subdivision of a spherical surface in which each pixel covers the same surface area as every other pixel.
+The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal sized pixels (right-most sphere in \figref{pooling}). As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
+High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_maps} shows two examples.
+Another property of the HEALPix grid is that the pixel centers, represented by the black dots in \figref{pooling}, occur on a discrete number of rings of constant latitude (the number of which depends on the resolution).
+
+\begin{figure}[ht]
+	\centering
+	\begin{subfigure}[b]{0.45\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/exampleEarthTopo}
+		\caption{}
+		\label{fig:example_earth}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[b]{0.45\linewidth}
+		\centering
+		\includegraphics[width=\linewidth]{figures/exampleCMB}
+		\caption{}
+		\label{fig:example_cmb}
+	\end{subfigure}
+	\caption[]{Example of (a) an Earth topography map composed of \textasciitilde 3 million pixels (\textasciitilde 7 arcmin resolution) and (b) a model of the Cosmic Microwave Background (CMB) radiation temperature anisotropy, composed of \textasciitilde 13 million pixels (\textasciitilde 3.4 arcmin resolution).\footnotemark}
+	\label{fig:example_maps}
+\end{figure}
+
+\footnotetext{Figures from \url{https://healpix.jpl.nasa.gov/}.}
+
 \subsection{Graph creation}
+
+The graph approximates the 2D manifold that is the surface of the sphere. It can accommodate any sampling, regular or irregular.
+
 In the classical 2-dimenstional convolution, each pixel is connected with the
 same weight to its 4 closest neighbors. We use a weighted undirected graph to
 generalize this idea to the ubiquitous HealPix
@@ -389,6 +435,7 @@ e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connecte
 0 & \text{otherwise.}\\
 \end{cases}
 \end{equation}
+\todo{why not $1/d$? See Pascal's paper}
 Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$
 on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected
 pixels $i$ and $j$. This weighting scheme is important as the distances between
@@ -515,18 +562,18 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 	\item Define spherical CNN using graph CNN
 \end{itemize}
 
+\subsection{Coarsening and Pooling}
 
-\subsection{Coarsening}
-The HealPix sampling presents the advantage to have a natural coarsening method
-based on its construction. Each Nside level divides each pixel into 4 subpixels.
-We define the pooling process as the inverse operation grouping the 4 subpixels.
-\figref{pooling} illustrates the process.
+Hierarchical pixelization schemes present a natural coarsening. Indeed, each subdivision divides a cell in an equal number of sub-cells. Coarsening is the reverse operation: merging the sub-cells to summarize the data supported on them. Merging cells lead to a coarser graph, hence the name coarsening. Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one child cell. That operation is often taken as the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
+
+% The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graph})
+% nope: can also do a regular pooling on the equirectangular. It preserves the sampling, and the convolution is adapted to the sampling thanks to the edge weights.
+
 \begin{figure}[!ht]
-\centering
-\includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
-\caption{Pooling illustration for 2 levels using some part of the mollview projection.
-The final patch represents 1/12 of the sphere.}
-\label{fig:pooling}
+	\centering
+	\includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
+	\caption{Two levels of coarsening and pooling: groups of 4 cells are merged into one, then the data on them is summarized in one. The coarser cell covers $1/12$ of the sphere.}
+	\label{fig:pooling}
 \end{figure}
 
 
@@ -688,6 +735,12 @@ Appendix~\ref{sec:filter_visualization}.
 \label{fig:learned_filter}
 \end{figure*}
 
+\section{Discussion}
+
+Because of the spherical domain, the method presented here restricts the shape of the filters learned by the network to be radial.
+While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
+The layered structure of the network can partially compensate for that.
+Further generalizations to non-radial filters may be possible [cite?], but we leave it to future work.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -754,7 +807,7 @@ Bottom: section plot.}
 \label{fig:index_section}
 \end{figure}
 
-\section{Augementation of the dataset for the SVM classifier}
+\section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation} The original number of samples $480$, $1920$,
 $7680$ respectively for order $o=1,2,4$ is considered rather low for usual
 deep learning technique, especially when one desire to build a noise robust
