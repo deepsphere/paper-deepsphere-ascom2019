@@ -146,11 +146,15 @@ As a response to that fact, we are witnessing an increasing interest in the gene
 In this paper we take the latter view and represent a sampled sphere as a graph, for which we define the convolution and pooling operations.
 Spherical maps appear in many applications, such as the study of phenomena on the Earth for meteorologists or on the sky for cosmologists.
 A popular format for spherical maps is Healpix, which uses an equal-area, isolatitude sampling. Hence, we present a spherical CNN for analysis of full and partial Healpix maps, which we call HealpixNet.
-While convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far. As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
+\nati{I am not that we should talk about pooling in the abstract. Another angle would be to say that HealPix sampling is well suited for spherical CNN with graphs as a) it is very regular => the graph capture well the spherical Manifold structure and b) pooling is natural.} 
+While convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far. 
+As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
 This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that as been explored previously.
 % The filters learned by the HealpixNet are restricted to being radial.
 % Michaël: not necessary in the abstract?
-We demonstrate the method on a classification problem of mass maps from two cosmological models. A standard benchmark for that problem is to train an SVM on the histograms of map pixel values. Another is to use the power spectral density instead.
+We demonstrate the method on a classification problem of mass maps from two cosmological models. 
+\nati{Should we specify what are the baselines? I think not.}
+A standard benchmark for that problem is to train an SVM on the histograms of map pixel values. Another is to use the power spectral density instead.
 HealpixNet achieves \todo{xx\%} better accuracy than those baselines, is more robust to noise, and is \todo{faster?}.
 Code and examples are available at \todo{\url{https://github.com/xxx}}.
 \end{abstract}
@@ -200,10 +204,11 @@ Observables that cover large parts of the sky, such as the Cosmic Microwave Back
 
 \todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
 \todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the Healpix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
+\nati{@Tomek: I think what Michael has in mind is that the graph approach is very versatile and extendable. It can be used with other samplings (even irregular ones) or only part of the sphere. This flexibility might be an advantage to mention. In particular, compared to~\citet{cohen2018spherical} it allows us to do only do the required computation when only a part of the sphere is considered.}
 
 So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
 As such, perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
-While this mostly works, as demonstrated \todo{in ??? for example}, it is more natural and accurate to work directly on the sphere.
+While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek, do you have a citation for that? Otherwise, we need to reformulate this.} it is more natural and accurate to work directly on the sphere.
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
 A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those very specific grid samplings.
@@ -211,7 +216,7 @@ A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fou
 Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well, towards the goal of building invariances in the network. As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
 
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
-Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. The convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. That is the lowest possible complexity for convolution without approximations (e.g. by sketching).
+Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a k-nearest neigboors graph, the convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. That is the lowest possible complexity for convolution without approximations (e.g. by sketching).
 The flexibility of modeling the data domain with a graph allows, for example, to easily model data which only spans a part of the sphere, or data which is not uniformly sampled.
 Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales. Such hierarchical pixelizations of the sphere have been well studied.
 
@@ -226,6 +231,8 @@ In a simplified scenario, we classify convergence maps on parts of a sphere into
 These models were designed to have the same power spectrum in range $\ell < 1000$.
 We compare the performance of the spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or Power Spectrum Densities (PSD) of these maps as input.
 The comparison is made as a function of noise level on convergence maps and area of the sphere used. Results show that our model is better at discriminating the maps, is more resilient to noise, and \todo{is faster?}.
+\nati{I do not think we should argue for speed gain in this paper. We are probably much more efficient than scnns with the convolution done in the spectral domain. However compared to tradiationl methods, we are in most of the case slower.}
+
 
 The paper is organized as follows.
 In \secref{related}, we describe existing approaches to convolutions on spheres, graphs, and manifolds.
@@ -260,21 +267,10 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
 
-
-
-% About the the different sphere sampling.
-% \begin{itemize}
-% 	\item Define the spherical grid?
-% 	\item reference the "cubed sphere"~\cite{ronchi1996cubed}?
-% \end{itemize}
-
-
 \section{Related work}
 \label{sec:related}
 
-
-
-\subsection{Spherical convolutions}
+\subsection{Spherical convolutions and spherical CNNs}
 \label{sec:spherical_conv}
 The major challenge to define Convolution Neural Network (CNN) onto a
 spherical domain is to handle a convolution that is suitable for this irregular sampling domain.
@@ -307,8 +303,8 @@ cosmology as the data often observed only on a subpart of the sphere.
 
 A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
 to use the traditional 2-dimensional convolution on an irregular grid defined on the
-sphere. In the paper, two grids are used: the geodesic grid \todo{isn't it the equirectangular grid?} and the ``cubed
-sphere'' grid defined by~\citet{ronchi1996cubed}. Because this
+sphere. In the paper, two grids are used: the equirectangular grid and the ``cubed
+sphere'' grid defined by~\citet{ronchi1996cubed}. \nati{Do we need a plot of the equirectangular and cubed sphere sampling?} Because this
 approach is based on the traditional 2-dimensional convolution, it is very likely to be the
 most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are NOT including HealPix. Furthermore, the
@@ -334,10 +330,13 @@ differences. First the sampling is different as~\cite{khasanova2017graph} uses a
 grid. Second, it uses a different graph CNN based on a different parametrization
 of the convolution kernel.
 
-\todo{Cool to have a global illustration of the network (CNN like)}
-
 
 \subsection{Convolutions on graphs}
+\todo{Maybe we just describe convolutions on sphere and graph, i.e: do we really need all these three subsections? Maybe simply merge them?}
+
+\nati{I think that citing Bruna is to much... According to me, the goal of this subsection should not be to cite everything that exist. But should focus on
+1) be fair and say that they are other graph convolutions that can be used, 2) show some connections between graph CNNs ang group equivariant CNNs (Done), and 3) suggest that they are possible extensions of what we do.}
+
 \assign{Michaël}
 
 \todo{other approaches? GNNs, Kipf first order approx, message passing}
@@ -351,7 +350,7 @@ In this work, we are using the graph CNN formulation introduced in~\cite{defferr
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
 
-\todo{Maybe we just describe convolutions on sphere and graph, i.e: do we really need this two subsections? Maybe simply merge them?}
+
 \subsection{Convolutions on manifolds}
 
 
