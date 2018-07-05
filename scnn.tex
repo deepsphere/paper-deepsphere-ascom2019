@@ -592,6 +592,7 @@ Hierarchical pixelization schemes present a natural coarsening. Indeed, each sub
 
 \section{Experiments}
 \label{sec:experiments}
+\assign{Nathanaël, Tomek}
 
 % Structure of the section
 % 1) Present the goal
@@ -697,7 +698,6 @@ regularization parameter of the SVM using a standard cross-validation
 technique.
 
 \subsection{Results}
-\assign{Nathanaël, Tomek}
 
 We present in \figref{results} the results for 5 different noise
 levels and $3$ different data sizes.  We observe that the PSD features, i.e.
@@ -727,7 +727,6 @@ information. Without this scructure, a non scallable fully connected neural netw
 
 
 \subsection{Filter visualization} 
-\assign{Nathanaël, Tomek, Michaël} 
 Onecommon visualization for CNN is to display the shape of the learned filters.
 Since our construction lead to almost (up to the sampling irregularities)
 spherical filters, we plot in \figref{learned_filter} both the section (on the
@@ -757,7 +756,13 @@ Further generalizations to non-radial filters may be possible [cite?], but we le
 
 \section{Conclusion}
 \label{sec:conclusion}
-\assign{Nathanaël, Tomek, Michaël}
+
+In this contribution, we presented HealPixNet, a spherical CNN for the HealPix sampling. The gist of our construction reside in using a graph to model the sphere. 
+This allows us to leverage the advantages of graph convolution as it is both efficient $\mathcal{O}(n)$ and flexible (allow to work only on a subpart of the sphere) while still well capturing the spherical properties of the domain. 
+We also show on a range of classification problems that the neural network systematically significantly outperform classical methods. 
+
+We provide HealPixNet as a small easy to use package availlable at \todo{\url{https://github.com/xxx}}. 
+As a futur work, we intend to 1) further investigate the link between the graph Fourier basis and the spherical harmonic and 2) compare HealPixNet to other spherical CNN using different sampling schemes.
 
 \section*{Thanks}
 
@@ -842,8 +847,8 @@ error is show in \figref{hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/hist_error_order2_noise1.pdf}
-\caption{Evolution curve of the error with respect of the number of training sample for histogram features and a linear classifier (setting: order 2, relative noise level: 1). The validation error is slightly below the training error because we use the validation set for the cross-validation and hence we are probably slightly overfitting the validation set.}
+\includegraphics[width=0.45\textwidth]{figures/hist_error_order2_noise1_5.pdf}
+\caption{Evolution curve of the error with respect of the number of training sample for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
 \label{fig:hist_error_evolution}
 \end{figure}
 
