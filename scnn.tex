@@ -141,15 +141,15 @@
 % HealpixCNN (???) uses Tensorflow as the underlying engine and can utilize most of it functionalities.
 % Michaël: not relevant for the abstract in my opinion
 
-Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence. Despite their successes, they still are mostly developed and applied to regular Euclidean domains such as those supporting images, audio, or video. For many applications however, the data domain is not regular.
+Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence. Despite their successes, they still are mostly developed and applied to regular Euclidean domains such as those supporting images, audio, or video. Unfortunately, in many applications, the data domain is not regular.
 As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs. Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
 In this paper we take the latter view and represent a sampled sphere as a graph, for which we define the convolution and pooling operations.
 Spherical maps appear in many applications, such as the study of phenomena on the Earth for meteorologists or on the sky for cosmologists.
 A popular format for spherical maps is Healpix, which uses an equal-area, isolatitude sampling. Hence, we present a spherical CNN for analysis of full and partial Healpix maps, which we call HealpixNet.
-\nati{I am not that we should talk about pooling in the abstract. Another angle would be to say that HealPix sampling is well suited for spherical CNN with graphs as a) it is very regular => the graph capture well the spherical Manifold structure and b) pooling is natural.} 
-While convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far. 
+\nati{I am not that we should talk about pooling in the abstract. Another angle would be to say that HealPix sampling is well suited for spherical CNN with graphs as a) it is very regular => the graph capture well the spherical structure of the Manifold and b) pooling is natural.} 
+While the convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far. 
 As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
-This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that as been explored previously.
+This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
 % The filters learned by the HealpixNet are restricted to being radial.
 % Michaël: not necessary in the abstract?
 We demonstrate the method on a classification problem of mass maps from two cosmological models. 
@@ -169,17 +169,18 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-	\item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
-    \item Emphasize the novelty of using it on Helapix in abstract, into and rest of the paper
+    \item make the bibliography display only a few name	
+\item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
+    \item Emphasize the novelty of using it on Healpix in abstract, into and rest of the paper
+    \item add info on comparison with histograms, so that it's just a demonstration
     \item Finish section on Convolutions on graphs (Michael - Nathanael)
-    \item Plot of the new filters from Mass maps (Michael)
+    \item finish section on Efficient convolutions (Michael)
+    \item (done) Plot of the new filters from Mass maps
     \item (done!, plot to be added) check the power spectrum after smoothing
     \item (done!) upgrade the plot of pooling (Nathanael)
-	\item (done!) new plot for network structure (teaser plot) (Michael) What do you think? Todo: link the points on the sphere to the fully connected
-    \item add info on comparison with histogram, so that it's just a demonstration
+	\item (done!) new plot for network structure (teaser plot) (Michael) What do you think? Todo: link the points on the sphere to the fully connected \nati{I like the plot, but I am thinking about putting multiple spheres with different maps for the convolutiion instead…}
     \item (done!) Figure 1 to be round
-    \item finish section on Efficient convolutions (Michael)
-    \item conclusions
+    \item (first version done) conclusions
     \item (done!) new simulations with 3 arcmin smoothing
     \item (done!) simulation with cross-validation for the histogram
     \item (done!) Update result section according to the new simulations...
@@ -191,8 +192,8 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[width=\linewidth]{figures/architecture}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
-    \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot, they will be.}
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
+    \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot notebook, they will be.}
     }
 \end{figure*}
 
@@ -218,7 +219,7 @@ A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fou
 Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well, towards the goal of building invariances in the network. As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
 
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
-Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a k-nearest neigboors graph, the convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. That is the lowest possible complexity for convolution without approximations (e.g. by sketching).
+Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a k-nearest neigboors graph, the convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. This is the lowest possible complexity for a convolution operation without approximations (e.g. by sketching).
 The flexibility of modeling the data domain with a graph allows, for example, to easily model data which only spans a part of the sphere, or data which is not uniformly sampled.
 Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales. Such hierarchical pixelizations of the sphere have been well studied.
 
@@ -232,8 +233,8 @@ We give a practical demonstration of the application of our package to cosmologi
 In a simplified scenario, we classify convergence maps on parts of a sphere into two cosmological models.
 These models were designed to have the same power spectrum in range $\ell < 1000$.
 We compare the performance of the spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or Power Spectrum Densities (PSD) of these maps as input.
-The comparison is made as a function of noise level on convergence maps and area of the sphere used. Results show that our model is better at discriminating the maps, is more resilient to noise, and \todo{is faster?}.
-\nati{I do not think we should argue for speed gain in this paper. We are probably much more efficient than scnns with the convolution done in the spectral domain. However compared to tradiationl methods, we are in most of the case slower.}
+The comparison is made as a function of the noise level on convergence maps and the area of the sphere used. Results show that our model is better at discriminating the maps, is more resilient to noise, and \todo{is faster?}.
+\nati{I do not think we should argue for speed gain in this paper. We are probably much more efficient than scnns with the convolution done in the spectral domain. However compared to tradiational methods, we are in most of the cases slower.}
 
 
 The paper is organized as follows.
@@ -294,7 +295,7 @@ equivariant network. Nevertheless, even with these Fourier transform
 acceleration, the convolutions remain expensive in comparison to a traditional
 2-dimensional convolution, limiting the practical use of this approach.
 \todo{to have numbers to back up our claim: have the theoretical complexities and measure the time needed for a convolution on graph and the healpix Fourier transform to get the constants
-\nati{@mdeff: for the complexity we probably have $\mathcal{O}(n)$ instead of $\mathcal{O}(n^{3/2})$ (let assume that we have $\approx n^{1/2}$ points allong both axis, computation of the SO3 FFT is composed of 1) $n^{1/2}$ FFTs for a total cost of $n \log (n)$ and 2) $n^{1/2}$ matrix multiplications of size $n^{1/2}$ for a total cost of $n^{3/2}$)}
+\nati{@mdeff: for the complexity we probably have $\mathcal{O}(n)$ instead of $\mathcal{O}(n^{3/2})$ (let assume that we have $\approx n^{1/2}$ points allong both axis, computation of the SO3 FFT is composed of 1) $n^{1/2}$ FFTs for a total cost of $n \log (n)$ and 2) $n^{1/2}$ matrix multiplications of size $n^{1/2}$ for a total cost of $n^{3/2}$) For the number, it is a bit more complicated… I guess it is for the next paper.}
 }
 While a comparison is theoretically possible, the experiments
 of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
@@ -324,7 +325,7 @@ definition adapted to a cube and not to a sphere.
 % should not.}
 % I think we should!
 
-In an attempt to get the best of the two first approaches, we follow a third
+In an attempt to get the best of the first two approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
 While the convolution remains efficient, it still captures well the spherical
 structure and is particularly adapted to the HealPix sampling.
@@ -332,7 +333,7 @@ structure and is particularly adapted to the HealPix sampling.
 The use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well. The authors map omnidirectional images to the sphere, with the goal of correcting for distortions induced by the lens used for the acquisition.
 Besides the different application covered by the paper, there are two important
 differences. First the sampling is different as~\cite{khasanova2017graph} uses a
-grid. Second, it uses a different graph CNN based on a different parametrization
+grid. Second, it uses a different graph CNN based on a different parameterization
 of the convolution kernel.
 
 
@@ -408,7 +409,7 @@ HEALPix is an acronym for Hierarchical Equal Area isoLatitude Pixelization of a 
 The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal sized pixels (right-most sphere in \figref{pooling}). As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_maps} shows two examples.
 Another property of the HEALPix grid is that the pixel centers, represented by the black dots in \figref{pooling}, occur on a discrete number of rings of constant latitude (the number of which depends on the resolution).
-\nati{The figure is beautiful, but should we really show it? If we target cosmologists, we can simply list some type of data. If we target a more broad audience, maybe it makes sense to provide some illustration.}
+\nati{The figure is beautiful, but should we really show it? If we target cosmologists, we can simply list some type of data. If we target a broader audience, maybe it makes sense to provide some illustration.}
 
 \begin{figure}[ht]
 	\centering
@@ -435,7 +436,7 @@ Another property of the HEALPix grid is that the pixel centers, represented by t
 
 The graph approximates the 2D manifold that is the surface of the sphere. It can accommodate any sampling, regular or irregular.
 
-In the classical 2-dimenstional convolution, each pixel is connected with the
+In the classical 2-dimensional convolution, each pixel is connected with the
 same weight to its 4 closest neighbors. We use a weighted undirected graph to
 generalize this idea to the ubiquitous HealPix
 sampling~\citep{gorski2005healpix}.  Each pixel is represented by a node
@@ -466,7 +467,7 @@ node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
 \includegraphics[width=0.35\textwidth]{figures/half_graph_4.pdf}
 \vspace{-0.5cm}
 \caption{
-Top view of a Healpix graph for half the sphere using an nside parameter of $4$.
+Top view of a Healpix graph for half the sphere using a HealPix nside parameter of $4$.
 Nodes with 7 neighbors are highlighted. \label{fig:healpix_graph_4}
 }
 
@@ -494,7 +495,7 @@ eigenvalues correspond to the squared frequencies.
 As shown in \figref{graph_harmonics}, it turns out that using the graph
 construction described above, the graph Fourier harmonics resemble the
 classical spherical harmonics giving us an indication that the graph is able to
-capture the spherical properties of the Healpix sampling. This topic is further discussed in \ref{sec:spherical_harmonics}.
+capture the spherical properties of the Healpix sampling. This topic is further discussed in Appendix~\ref{sec:spherical_harmonics}.
 
 \subsection{Convolutions on graphs}
 \assign{Nathanaël, Michaël} \todo{Add a few extra references}
@@ -533,19 +534,18 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation}
 \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U^* \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation}
-which is a convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
-t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$ that
-are one generalization of the squared frequencies on the graph. Hence the kernel $K_t$ is also a generalization of the
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
+t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$. They are a generalization of the squared frequencies in the graph setting. Hence the kernel $K_t$ can also be considered as a generalization of the
 Gaussian kernel on the sphere. In \figref{gaussian_filters_comparizon} top, we show
 the effect of the convolution by diffusing a unit of heat for $\tau=1$ and various
-time $t$. In \figref{gaussian_filters_visualization} of
-\ref{sec:filter_visualization}, we show different visualizations of the
-convolution kernel $K_t$. We also compare the graph convolution with the
+time $t$. We also compare the graph convolution with the
 spherical symmetric Gaussian smoothing
 (\figref{gaussian_filters_comparizon} bottom) and observe that both
 techniques lead to similar results. While the graph convolution is different
 from a true spherical convolution, it can, providing the correct
 parameterization, well approximate it.
+In~\figref{gaussian_filters_visualization} of Appendix~\ref{sec:filter_visualization}, we provide additional visualizations of the
+convolution kernel $K_t$. 
 
 \begin{figure*}[!ht]
 \centering
