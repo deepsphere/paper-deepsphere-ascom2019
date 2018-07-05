@@ -599,11 +599,11 @@ Hierarchical pixelization schemes present a natural coarsening. Indeed, each sub
 % 2) Explain briefly the dataset
 % 3) Present the setting
 % 4) Describe the result
-In this section, we demonstrate the performance of the spherical neural network on a discrimination problem.
+In this section, we demonstrate the performance of the spherical neural network on a discrimination problem. Nevertheless, by simply changing the loss, one could use the network for regression.
 Our implementation is available as a small python package \url{https://our.code.link.com}.
-Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.????} \todo{correct DOI}}.
+Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.1303272} \todo{Check DOI}}.
 
-In our experiment we classify convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
+In our experiments we classify convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
 
 \subsection{Data}
 \label{sec:data}
@@ -630,9 +630,9 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 The simulations are created using the fast lightcone method described in~\citep{sgier2018fastgeneration}.
 However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
-For each class, we generate 30 simulations.
+For each class, we generate $30$ simulations (both class have the same initial parameters).
 
-Out of the 60 simulations, 20 are kept for the test set.
+Out of the $60$ simulations, $20$ are kept for the test set.
 \figref{map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
 Initial conditions for these simulations were the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
 
@@ -648,7 +648,7 @@ The initial conditions for these simulations were the same, so differences arise
 
 
 \subsection{Problem formulation}
-While the number of maps might sound small for deep learning, the information contained in the maps is very recurrent, allowing us to use parts of the map as sample for our simulation.
+While the number of maps might sound small for deep learning, the information contained in the maps is very recurrent, allowing us to use parts of the map as samples for our simulation.
 Leveraging the properties of the HealPix sampling, we can split each maps
 into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere. 
 As shown in \figref{subpart_sphere}, we used $o=1,2,4$ as the resulting
@@ -664,9 +664,9 @@ includes an example using the full sphere.
 \label{fig:subpart_sphere}
 \end{figure}
 
-The goal is build a robust classifier, i.e. an automatic way to
+We build a robust classifier, i.e. an automatic way to
 discriminate between the two classes in the presence of noise. 
-We check the performance of the classifier as a function of the area used, i.e "the order" $o$ and also as a function of the relative level of the noise.
+We check the classification performance as a function of the area used, i.e "the order" $o$ and also as a function of the relative level of the noise added to the map.
 
 For all the
 experiments, we work with centered Gaussian noise. \todo{Tomek: could you put a
@@ -674,45 +674,41 @@ justification.} To improve the
 stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
 overfitting, the noise is randomly produced during the training process. We trained our
-model between \nati{$50$ and $200$} epochs depending on the complexity and the size of
-the problem. The testing set was simply used to assess the global performance of
-the network and to assess if it was overfitting.
-Training took less that a day for each model using a Nvidia 1080 TI.
+model between $50$ and $290$ epochs depending on the complexity and the size of
+the problem. $20\%$ of the training set that we call "validation set" was left out of the training process and simply used to assess the global performance and overfitting of
+the network.
+Training took less than a day for each model using an NVIDIA Tesla K20.
 
-We compare the performance of the spherical CNN to two simple benchmark
+We compare the performance of the spherical CNN against two simple benchmark
 algorithms. The two baselines are based on building features with a) the Power
-Spectral Densities or b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
+Spectral Densities (PSD) and b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
 After a normalization, those features are then classified use a Support Vector
-Machine (SVM) with a linear kernel. Other kernels did not provide better result
+Machine (SVM) with a linear kernel. Other kernels did not provide better results
 while having worse scaling properties. All classifiers are trained with noisy samples. For fairness, we augmented the dataset
 of the baseline algorithm in a similar way as for the network, i.e, with
 created an "unlimited" number of samples by adding new random realizations of
 the noise. We stop adding new samples in the classifier once the validation
-error converge to a value. This process is detailed in \ref{sec:dataset_augmentation}.
-
-The maps are separated into a training and a testing set. The performance is
-assessed by measuring the classification error on a test set. Once the
-training maps are sliced into samples, we split them into a training samples
-and validation samples. The validation samples is used to tune the
-regularization parameter of the SVM using a standard cross-validation
-technique.
+error converge to a value. This process is detailed in Appendix~\ref{sec:dataset_augmentation}. We tuned the parameter using cross-validation with the validation set.
 
 \subsection{Results}
 
 We present in \figref{results} the results for 5 different noise
-levels and $3$ different data sizes.  We observe that the PSD features, i.e.
-one of the most used technique for model discrimination in cosmology is unable
-to perform the desired task. The main reason is that the two different model
-have very similar PSDs (see \figref{psd_sigma3}).   As a result, one
-need to use other statistics to solve the problem. In this case, we use
-histogram features and observe a significant improvement over the PSD.  The
-SCNN present the advantage to learn automatically specific features for the
-task and also the usual Deep Learning performance bump.
+levels and $3$ different sample areas. The spherical CNN has a significant lead for all levels of noise and sample areas. 
+In particular, the difference seems to increase as the problem becomes more complex, i.e as the order is increased and there is less information in each sample. 
+This is likely due to the fact that the SCNN can learn optimal features for the problem and do not rely on our humanly limited feature design.
 
-We also note that the histogram features contains information about the
-distribution of pixels, but does not include any spatial information. In
+We observe that the PSD features, i.e.
+one of the most used techniques for model discrimination in cosmology, is unable
+to perform the desired task. The main reason is that the two different models
+have very similar PSDs (see \figref{psd_sigma3}). As a result, one
+needs to use other statistics to solve the problem. In this case, the
+histogram features that have been built for the problem allow for a significant improvement over the PSD ones. 
+Unfortunately, while the histogram features contain information about the
+distribution of pixels, they do not include any spatial information. In
 contrast, both the PSD features and the SCNN can exploit the spatial
-information. Without this scructure, a non scallable fully connected neural network approach would have to be used.
+information. 
+Note that without this graph structure, a fully connected neural network approach would have to be used. Problematically, fully connected neural networks do not scale well with the number of pixels. 
+
 
 
 
@@ -727,16 +723,15 @@ information. Without this scructure, a non scallable fully connected neural netw
 
 
 \subsection{Filter visualization} 
-Onecommon visualization for CNN is to display the shape of the learned filters.
-Since our construction lead to almost (up to the sampling irregularities)
+One common visualization for CNN is to observe the shape of the learned filters.
+Since our construction leads to almost (up to the sampling irregularities)
 spherical filters, we plot in \figref{learned_filter} both the section (on the
-sphere) and a gnomeview projection on a plane of a random selection of learned
+sphere) and a gnomonic projection on a plane of a random selection of learned
 filters. The filters are selected from the last layer of the network
 corresponding the experiment with order $o=2$ for a relative noise level of
 $2$. Nevertheless, all networks presented similar gnomonic and section pattern, at least from a
 human perspective. The gnomonic projection clearly exibits the sampling issue
-of HealPix. For a detail, on how the convolution kernels are plot, please refer to
-\ref{sec:filter_visualization}. 
+of HealPix. For a detail, on how the convolution kernels are plotted, please refer to Appendix~\ref{sec:filter_visualization}. 
 \todo{Tomek: can you say something about the filters.}
 
 \begin{figure*}[!ht]
@@ -754,15 +749,17 @@ While this may be a less general design compared to the one used by conventional
 The layered structure of the network can partially compensate for that.
 Further generalizations to non-radial filters may be possible [cite?], but we leave it to future work.
 
+\nati{Should the discussion be merged with the result section?}
+
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this contribution, we presented HealPixNet, a spherical CNN for the HealPix sampling. The gist of our construction reside in using a graph to model the sphere. 
-This allows us to leverage the advantages of graph convolution as it is both efficient $\mathcal{O}(n)$ and flexible (allow to work only on a subpart of the sphere) while still well capturing the spherical properties of the domain. 
+In this contribution, we presented HealPixNet, a spherical CNN for the HealPix sampling. The gist of our construction resides in using a graph to model the sphere. 
+This allows us to leverage the advantages of the graph convolution, i.e it is both efficient (with a complexity of $\mathcal{O}(n)$) and flexible (allow to work only on a subpart of the sphere) while it still captures well the spherical properties of the domain. 
 We also show on a range of classification problems that the neural network systematically significantly outperform classical methods. 
 
-We provide HealPixNet as a small easy to use package availlable at \todo{\url{https://github.com/xxx}}. 
-As a futur work, we intend to 1) further investigate the link between the graph Fourier basis and the spherical harmonic and 2) compare HealPixNet to other spherical CNN using different sampling schemes.
+We provide HealPixNet as a small easy-to-use package available at \todo{\url{https://github.com/xxx}}. 
+As a future work, we intend to 1) further investigate the link between the graph Fourier basis and the spherical harmonic and 2) compare HealPixNet to other spherical CNN using different sampling schemes.
 
 \section*{Thanks}
 
@@ -772,13 +769,13 @@ As a futur work, we intend to 1) further investigate the link between the graph 
 
 \section{Spherical harmonics VS graph Fourier eigenvectors}
 \ref{fig:graph_harmonics} displays the first 16 eigenvectors of the
-graph Fourier basis used for the convolution. While their is a clear
+graph Fourier basis used for the convolution. While there is a clear
 resemblance with the spherical harmonic, the small irregularities in the
 sampling (see \figref{healpix_graph_4}) have an effect on the
 graph Fourier eigenvectors. First, conterintuitively, some graph eigenvectors will be
 localized~\cite{perraudin2018global}, i.e: they will span only a small subpart
 of the sphere.  Second, as Nside increase toward infinity and hence the number
-of pixel $n\rightarrow \infty$, we are still unsure if the graph eigenvectors
+of pixels $n\rightarrow \infty$, we are still unsure if the graph eigenvectors
 converge toward the spherical harmonics. We believe that it might be the case
 for a different graph construction (fully connected) and that a proof could be
 built on top of the work of~\cite{belkin2007convergence}. This is obviously
@@ -788,7 +785,7 @@ out of the scope of this contribution.
 \begin{figure*}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
-\caption{The 16 first Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the Healpix sampling of the sphere. Eigenvectors 1--3 could be associated to spherical harmonics of degree $\ell=1$, eigenvectors 4--8 to degree $\ell=2$, and eigenvectors 9--15 to degree $\ell=3$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics.}
+\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the Healpix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$, eigenvectors 4--8 with degree $\ell=2$, and eigenvectors 9--15 with degree $\ell=3$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics.}
 \label{fig:graph_harmonics}
 \end{figure*}
 
@@ -798,12 +795,12 @@ out of the scope of this contribution.
 \label{sec:filter_visualization}
 
 In \figref{gaussian_filters_visualization}, we present three different
-visualization for the a healpix graph convolution kernel. The kernel used is defined in the graph spectral domain as $K_t(x)=e^{-\tau t x}$. This is the domain used for our first visualization. In this case, we simply evaluate $K_t$
+visualization for a HealPix graph convolution kernel. The kernel used is defined in the graph spectral domain as $K_t(x)=e^{-\tau t x}$. This is the domain used for our first visualization. In this case, we simply evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e. the spectral mode with less variation. 
 As a second visualization, we can observe the kernel directly on the sphere. To do so, we perform the convolution of a
 Kroneker on the sphere plot the result with gnomonic projection. Eventually, as we are
-working on the sphere with theoretically spherical filters (up the the irregularities of the sampling), we could only plot the section of the convoluted Kroneker. To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}. Note that, because of the small irregularities in the HealPix
-sampling, the second and the third methods are subject to small varation depending on the
+working on the sphere with theoretically spherical filters (up to the irregularities of the sampling), we could only plot the section of the convoluted Kroneker. To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}. Note that, because of the small irregularities in the HealPix
+sampling, the second and the third methods are subject to small variations depending on the
 chosen Kroneker. 
 
 \begin{figure*}[!ht]
@@ -837,18 +834,18 @@ Second the trained network will be robust to Gaussian noise.
 
 When comparing the network, we want to ensure that the SVM classifier has
 access to the same amount of data that the network, i.e, potentially an
-infinite number of sample. Hence, we fit different linear SVM classifier using
-various amount of training set size until we oberve experimentally that
+infinite number of samples. Hence, we fit different linear SVM classifier using
+various training set size until we observe experimentally that
 increasing the amount of data does not improve the classifier. The validation
 set remain the same and is used for cross-validation to tune the L2
 penalization parameter of SVM. Eventually, we evaluate the final classifier on
 the testing set. An example of the evolution of the training and valdication
-error is show in \figref{hist_error_evolution}.
+error is shown in \figref{hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/hist_error_order2_noise1_5.pdf}
-\caption{Evolution curve of the error with respect of the number of training sample for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
+\caption{Evolution curve of the error with respect to the number of training samples for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
 \label{fig:hist_error_evolution}
 \end{figure}
 
@@ -859,7 +856,7 @@ The graph setting used through this contribution assumes reflective border condi
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.45\textwidth]{figures/border_effects.pdf}
-\caption{Graph convolution of a Kroneker placed at two different spots on the graph. The graph build from $1/12$ of the sphere and an Nside of 16. When the Kroneker is placed on the left corner, the resulting convolution is not circular anymore due to border effect. The graph setting assume reflective border conditions.}
+\caption{Graph convolution of a Kroneker placed at two different spots on the graph. The graph build from $1/12$ of the sphere and an Nside of 16. When the Kroneker is placed on the left corner, the resulting convolution is not circular anymore due to border effect. The graph setting assumes reflective border conditions.}
 \label{fig:border_effects}
 \end{figure}
 
