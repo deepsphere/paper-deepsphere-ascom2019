@@ -191,7 +191,9 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[width=\linewidth]{figures/architecture}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.}
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
+    \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot, they will be.}
+    }
 \end{figure*}
 
 \section{Introduction}
@@ -291,14 +293,17 @@ approach is that it provides a mathematically well defined rotational
 equivariant network. Nevertheless, even with these Fourier transform
 acceleration, the convolutions remain expensive in comparison to a traditional
 2-dimensional convolution, limiting the practical use of this approach.
-\todo{to have numbers to back up our claim: have the theoretical complexities and measure the time needed for a convolution on graph and the healpix Fourier transform to get the constants}
-While
-a comparison is theoretically possible, the experiments
+\todo{to have numbers to back up our claim: have the theoretical complexities and measure the time needed for a convolution on graph and the healpix Fourier transform to get the constants
+\nati{@mdeff: for the complexity we probably have $\mathcal{O}(n)$ instead of $\mathcal{O}(n^{3/2})$ (let assume that we have $\approx n^{1/2}$ points allong both axis, computation of the SO3 FFT is composed of 1) $n^{1/2}$ FFTs for a total cost of $n \log (n)$ and 2) $n^{1/2}$ matrix multiplications of size $n^{1/2}$ for a total cost of $n^{3/2}$)}
+}
+While a comparison is theoretically possible, the experiments
 of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
 do not provide any code for the Healpix one. Hence, a practical comparison is
 not possible. We also note that this approach cannot be trivially accelerated
 if only one part of the sphere is used. This is impractical in the field of
-cosmology as the data often observed only on a subpart of the sphere.
+cosmology as the data often observed only on a subpart of the sphere. 
+One could still pad the unused part of the sphere with 0. However, this would significantly increase the computational cost of the method.
+\nati{@mdeff: do you think we can say the method would be too slow for our dataset even without trying it? I am not so sure...}
 \todo{slow: full sky maps are composed of millions of points. partial maps are hard to process}
 
 A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
@@ -311,7 +316,7 @@ specific grid sampling sets which are NOT including HealPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
 spherical properties of the domain, i.e. the "cubed sphere” sampling is by
 definition adapted to a cube and not to a sphere.
-\todo{border effects?}
+\todo{border effects? \nati{@mdeff what are you thinking about here?}}
 % \nati{Michael: Under some very
 % specific hypothesis, this second approach is a particular case of our method,
 % i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
@@ -403,6 +408,7 @@ HEALPix is an acronym for Hierarchical Equal Area isoLatitude Pixelization of a 
 The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal sized pixels (right-most sphere in \figref{pooling}). As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_maps} shows two examples.
 Another property of the HEALPix grid is that the pixel centers, represented by the black dots in \figref{pooling}, occur on a discrete number of rings of constant latitude (the number of which depends on the resolution).
+\nati{The figure is beautiful, but should we really show it? If we target cosmologists, we can simply list some type of data. If we target a more broad audience, maybe it makes sense to provide some illustration.}
 
 \begin{figure}[ht]
 	\centering
@@ -442,7 +448,7 @@ e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connecte
 0 & \text{otherwise.}\\
 \end{cases}
 \end{equation}
-\todo{why not $1/d$? See Pascal's paper}
+\todo{why not $1/d$? See Pascal's paper, \nati{ The question is: is $1/d$ also good when we have 7/8 neighboors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.}}
 Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$
 on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected
 pixels $i$ and $j$. This weighting scheme is important as the distances between
@@ -514,8 +520,8 @@ Due to the non-regularity of the graph (i.e. the fact
 that there is no perfect sampling on the sphere), the convolution effect will slightly
 differ from one node to another. In the specific case of the full sphere, these
 differences are negligible in most of the cases. However, when considering only parts of
-the sphere, one can observe important border effects.
-\todo{can we show those?}
+the sphere, one can observe important border effects (See \figref{border_effects} in Appendix~\ref{sec:border_effects}). 
+\todo{can we show those?\nati{Sure I just added a figure in the Appendix.}}
 
 \paragraph{Example:}
 Let us consider the heat diffusion problem
@@ -809,7 +815,7 @@ Bottom: section plot.}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/index_plotting_order20_nside16.pdf}
+\includegraphics[width=0.3\textwidth]{figures/index_plotting_order20_nside16.pdf}
 \caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
 \label{fig:index_section}
 \end{figure}
@@ -836,12 +842,21 @@ error is show in \figref{hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/hist_error_order4_noise1_5.pdf}
-\caption{TODO}
+\includegraphics[width=0.45\textwidth]{figures/hist_error_order2_noise1.pdf}
+\caption{Evolution curve of the error with respect of the number of training sample for histogram features and a linear classifier (setting: order 2, relative noise level: 1). The validation error is slightly below the training error because we use the validation set for the cross-validation and hence we are probably slightly overfitting the validation set.}
 \label{fig:hist_error_evolution}
 \end{figure}
 
+\section{Border effects when only a part of the sphere is considered.}
+\label{sec:border_effects}
+The graph setting used through this contribution assumes reflective border conditions on a grid. While the complete sphere is not affected by this because it has no border, these border effects change slightly the effect of the convolution when working with only a part of the graph.  As depicted in \figref{border_effects}, the convolution of a Krnoneker near the border filters may no longer have a spherical profile. 
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.45\textwidth]{figures/border_effects.pdf}
+\caption{Graph convolution of a Kroneker placed at two different spots on the graph. The graph build from $1/12$ of the sphere and an Nside of 16. When the Kroneker is placed on the left corner, the resulting convolution is not circular anymore due to border effect. The graph setting assume reflective border conditions.}
+\label{fig:border_effects}
+\end{figure}
 
 %% If you have bibdatabase file and want bibtex to generate the
 %% bibitems, please use
