@@ -151,13 +151,14 @@ We construct a spherical CNNs by representing the sphere as a graph.
 Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
 For that graph, we define many of the standard CNN operations, such as convolution and pooling, with the filters restricted to being radial.
 HealpixNet is a special case of a graph CNN, tailored to the Healpix sampling of the sphere.
-This approach is computationally more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
+% TBD if we include it
+% This approach is computationally more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
 We demonstrate the method on a classification problem of mass maps from two cosmological models.
 We compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
 We find the performance of HealpixNet to always better or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
 Finally, we visualise filters learned by the HealpixNet from the mass maps.
-Code and examples are available at \todo{\url{https://github.com/xxx}}.
+Code and examples are available at \todo{\url{github.com/SwissDataScienceCenter/HealpixNet}}.
 
 %As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs.
 % Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
@@ -188,24 +189,38 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-    \item make the bibliography display only a few name
-\item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
-    \item Emphasize the novelty of using it on Healpix in abstract, into and rest of the paper
-    \item add info on comparison with histograms, so that it's just a demonstration
-    \item Finish section on Convolutions on graphs (Michael - Nathanael)
-    \item finish section on Efficient convolutions (Michael)
-    \item (done) Plot of the new filters from Mass maps
-    \item (done!, plot to be added) check the power spectrum after smoothing
-    \item (done!) upgrade the plot of pooling (Nathanael)
-	\item (done!) new plot for network structure (teaser plot) (Michael) What do you think? Todo: link the points on the sphere to the fully connected \nati{I like the plot, but I am thinking about putting multiple spheres with different maps for the convolutiion instead…}
-    \item (done!) Figure 1 to be round
+
+    \item (TK) update the README for data zip - file from NP
+    \item Finalise readme on Github code
+    \item TK check part sphere notebook and whole sphere
+    \item branch with notebooks with plots (results) NP
+    \item Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
+    \item NP move the repo to HealpixNet
+
+
+    \item (TK) make the bibliography display only a few name
+    % \item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
+    % \item Emphasize the novelty of using it on Healpix in abstract, into and rest of the paper
+    \item (TK) add info on comparison with histograms, so that it's just a demonstration
+    % \item Finish section on Convolutions on graphs (Michael - Nathanael)
+    % \item finish section on Efficient convolutions (Michael)
+    % \item (done) Plot of the new filters from Mass maps
+    % \item (done!, plot to be added) check the power spectrum after smoothing
+    % \item (done!) upgrade the plot of pooling (Nathanael)
+    \item (TK) possibly improve plot of pooling
+	% \item (done!) new plot for network structure (teaser plot) (Michael) What do you think? Todo: link the points on the sphere to the fully connected \nati{I like the plot, but I am thinking about putting multiple spheres with different maps for the convolutiion instead…}
+    \item (TK NP) if we have time make a new candidate for network plot (optional)
+    % \item (done!) Figure 1 to be round
     \item (first version done) conclusions
-    \item (done!) new simulations with 3 arcmin smoothing
-    \item (done!) simulation with cross-validation for the histogram
-    \item (done!) Update result section according to the new simulations...
-    \item (done!) simulation PSD
-    \item (done!) Results figure, add sigma8
-    \item (more or less done!) possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael I am not sure about the heat diffusion example...)
+    % \item (done!) new simulations with 3 arcmin smoothing
+    % \item (done!) simulation with cross-validation for the histogram
+    % \item (done!) Update result section according to the new simulations...
+    % \item (done!) simulation PSD
+    % \item (done!) Results figure, add sigma8
+    % \item (more or less done!) possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael I am not sure about the heat diffusion example...)
+    \item Should the heat example go to appendix
+    \item TK read the heat section again
+
 \end{itemize}
 
 \begin{figure*}[!ht]
@@ -240,7 +255,10 @@ Finally, the use of a graph to model the discretized sphere was considered by~\c
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
 Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a k-nearest neigboors graph, the convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. This is the lowest possible complexity for a convolution operation without approximations (e.g. by sketching).
 The flexibility of modeling the data domain with a graph allows, for example, to easily model data which only spans a part of the sphere, or data which is not uniformly sampled.
-Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales. Such hierarchical pixelizations of the sphere have been well studied.
+Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales.
+% Such hierarchical pixelizations of the sphere have been well studied.
+sdfsdfsd Such hierarchical pixelizations of the sphere have been well studied.
+%TK: chagned becasue of blahblah
 
 In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/scnn} \todo{change location}}, an algorithm and software package which implements an efficient CNN on Healpix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
 As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling. However, only two elements depend on the sampling: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
