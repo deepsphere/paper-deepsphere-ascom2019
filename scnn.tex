@@ -83,6 +83,7 @@
 \newcommand{\I}{\b{I}}
 \newcommand{\D}{\b{D}}
 \newcommand{\U}{\b{U}}
+\newcommand{\R}{\mathbb{R}}
 \newcommand{\bLambda}{\b{\Lambda}}
 \newcommand{\blambda}{\b{\lambda}}
 \newcommand{\pkg}[1]{\texttt{#1}}
@@ -234,6 +235,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
     \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot notebook, they will be.}
     }
+	\label{fig:architecture}
 \end{figure*}
 
 \section{Introduction}
@@ -261,9 +263,7 @@ To overcome those shortcomings, we introduce an efficient spherical CNN formulat
 Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a k-nearest neigboors graph, the convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. This is the lowest possible complexity for a convolution operation without approximations (e.g. by sketching).
 The flexibility of modeling the data domain with a graph allows, for example, to easily model data which only spans a part of the sphere, or data which is not uniformly sampled.
 Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales.
-% Such hierarchical pixelizations of the sphere have been well studied.
-sdfsdfsd Such hierarchical pixelizations of the sphere have been well studied.
-%TK: chagned becasue of blahblah
+Such hierarchical pixelizations of the sphere have been well studied.
 
 In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/scnn} \todo{change location}}, an algorithm and software package which implements an efficient CNN on Healpix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
 As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling. However, only two elements depend on the sampling: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
@@ -321,8 +321,10 @@ The major challenge to define Convolution Neural Network (CNN) onto a
 spherical domain is to handle a convolution that is suitable for this irregular sampling domain.
 Three approaches exist to address this issue.
 
+% As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
+
 The first approach, leveraging the continuous spherical convolution, has been
-proposed by~\cite{cohen2017convolutional,cohen2018spherical}. The goal of
+proposed by~\cite{cohen2018spherical}. The goal of
 these contributions it to use a rotational equivariant convolution on the
 sphere, i.e. a rotation of the input implies the same rotation of the output.
 The resulting convolution is performed by a spherical Fourier transform (i.e.
@@ -418,21 +420,16 @@ PointNet and co. Related but we are loosing the structure. Also coarsening.
 % 	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
 % \end{itemize}
 
-The gist of our method is to define the convolution on a sphere using a graph.
-The graph is here seen as a discrete approximation of the sphere $S^2$, a
-2-dimensional manifold embedded in $\mathbb{R}^3$.
+\todo{Should we give a more general / high-level description of a CNN?}
 
-As presented by~\cite{cohen2018spherical}, the most mathematical approach to
-extend the convolution on a sphere is to use a spherical Fourier transform. The
-convolution is then simply defined as the product in the spectral domain. This
-approach requires one Fourier and one inverse Fourier transform per convolution
-which remain, even with accelerated algorithms, expensive. For 2-dimensional
-images, an efficient convolution can be achieved when the convolution kernel is
-localized (for example a 5x5 pixel patch) by doing the computation directly in
-the signal domain. Unfortunately, this approach cannot be directly extended to
-the spherical case. Hence, the main idea of this contribution is to leverage
-graph signal processing~\cite{shuman2013emerging} to define a spherical
-convolution that can be computed (and back-propagated) directly in the signal domain.
+A CNN is composed of the following main building blocks~\citep{lecun1998cnn}, illustrated in~\figref{architecture}: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, some normalization.\footnote{A batch normalization has been shown to help the training.~\citep{ioffe2015batchnorm} We have verified this experimentally in our setting as well.} As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations however need to be generalized from Euclidean domains to the sphere.
+
+On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch 5x5 pixels) in the signal domain. Likewise, down-sampling can be achieved by taking one pixel out of $n$.
+Because of the irregular sampling, there is no straightforward way to define a convolution on the sphere directly in the pixel domain.
+
+We will hence make a detour by the spectrum to perform the convolution.\footnote{Note that we only use the spectrum to define the convolution. The implementation however does not need a direct access to the spectrum, which is much more computationally efficient. See \secref{sec:efficient_convolution}.}
+The gist of our method is to define the convolution on a sphere using a graph, and the down-sampling using a hierarchical pixelization of the sphere.
+This contribution leverages the emerging field of graph signal processing~\citep{shuman2013emerging} which defines fundamental signal processing tools such as the Fourier transform for signals defined on graphs.
 
 \subsection{HEALPix sampling}
 \label{sec:healpix}
@@ -514,15 +511,9 @@ node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
 Top view of a Healpix graph for half the sphere using a HealPix nside parameter of $4$.
 Nodes with 7 neighbors are highlighted. \label{fig:healpix_graph_4}
 }
-
 \end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
-\todo{Add a few extra references}
-
-Because of the irregular sampling, there is no obvious way to define the convolution
-directly from the pixel values. Hence we will first make a detour and define a Fourier transform on the
-graph.
 
 Following~\cite{shuman2013emerging}, the normalized graph Laplacian,
 defined as $\L = \I - \D^{-1/2} \W \D^{-1/2}$, is a second order differential operator
@@ -542,11 +533,10 @@ classical spherical harmonics giving us an indication that the graph is able to
 capture the spherical properties of the Healpix sampling. This topic is further discussed in Appendix~\ref{sec:spherical_harmonics}.
 
 \subsection{Convolutions on graphs}
-\assign{Nathanaël, Michaël} \todo{Add a few extra references}
 
-Graph convolution is defined by generalizing the concept that convolution is a
+A convolution can be defined on graphs by the convolution theorem which states that a convolution in the vertex (or time, or spatial) domain is a
 multiplication in the spectral domain. Given a convolution kernel
-$h:\mathbb{R}_+\rightarrow\mathbb{R}$, the convolution of a signal $\b{f}$
+$h: \R_+ \rightarrow \R$, the convolution of a signal $\b{f}$
 is defined as
 \begin{equation} \label{eqn:graph_convolution}
 h(L)\b{f} = \U h(\bLambda) \U^* \b{f},
@@ -565,8 +555,7 @@ Due to the non-regularity of the graph (i.e. the fact
 that there is no perfect sampling on the sphere), the convolution effect will slightly
 differ from one node to another. In the specific case of the full sphere, these
 differences are negligible in most of the cases. However, when considering only parts of
-the sphere, one can observe important border effects (See \figref{border_effects} in Appendix~\ref{sec:border_effects}).
-\todo{can we show those?\nati{Sure I just added a figure in the Appendix.}}
+the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
 
 \paragraph{Example:}
 Let us consider the heat diffusion problem
@@ -611,7 +600,11 @@ will adapt the convolution at use.
 
 
 \subsection{Efficient convolutions}
+\label{sec:efficient_convolution}
 \assign{Michaël}
+
+Transition from spectral to spatial domain.
+
 With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for the eigendecomposition, plus $O(n^2)$ for the transform (to be done for each forward and backward pass).
 \begin{itemize}
 	\item We need efficient convolution, hence the Chebysheff trick
@@ -621,7 +614,9 @@ With the Fourier basis. Because we don't have an FFT, that costs $O(n^3)$ for th
 
 \subsection{Coarsening and Pooling}
 
-Hierarchical pixelization schemes present a natural coarsening. Indeed, each subdivision divides a cell in an equal number of sub-cells. Coarsening is the reverse operation: merging the sub-cells to summarize the data supported on them. Merging cells lead to a coarser graph, hence the name coarsening. Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one child cell. That operation is often taken as the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
+Hierarchical pixelization schemes present a natural coarsening. Indeed, each subdivision divides a cell in an equal number of child sub-cells. Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them. Merging cells lead to a coarser graph, hence the name coarsening.
+
+Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one parent cell. That operation is often taken to be the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
 
 % The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graph})
 % nope: can also do a regular pooling on the equirectangular. It preserves the sampling, and the convolution is adapted to the sampling thanks to the edge weights.
