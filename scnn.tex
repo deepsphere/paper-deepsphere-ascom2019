@@ -239,7 +239,8 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
 
 \begin{figure*}[!ht]
 	\centering
-	\includegraphics[width=\linewidth]{figures/architecture}
+    % \includegraphics[width=\linewidth]{figures/architecture}
+	\includegraphics[width=\linewidth]{figures/figure_architecture.pdf}
 	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
     \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot notebook, they will be.}
     }
