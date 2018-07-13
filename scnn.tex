@@ -81,12 +81,15 @@
 \newcommand{\G}{\mathcal{G}}
 \newcommand{\V}{\mathcal{V}}
 \newcommand{\E}{\mathcal{E}}
-\renewcommand{\L}{\b{L}} % the laplacian matrix
+\renewcommand{\L}{\b{L}}
 \newcommand{\W}{\b{W}}
 \newcommand{\I}{\b{I}}
 \newcommand{\D}{\b{D}}
 \newcommand{\U}{\b{U}}
 \newcommand{\x}{\b{x}}
+\newcommand{\bu}{\b{u}}
+\newcommand{\f}{\b{f}}
+\newcommand{\trans}{^\intercal}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\bLambda}{\b{\Lambda}}
 \newcommand{\blambda}{\b{\lambda}}
@@ -481,7 +484,7 @@ High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_m
 
 Our graph is constructed as an approximation of the continuous 2D manifold that is the surface of the sphere. Indeed, \citet{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity. That construction can accommodate any sampling, regular or not.
 
-From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix. In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i \in \V$. Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \cdot 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W$ as
+From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix. In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i \in \V$. Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \cdot 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
 \begin{equation*}
 	\W_{ij} = \begin{cases}
 		\exp \left( -\frac{\|\x_i-\x_j\|_2^2}{\sigma^2} \right) & \text{if pixels $i$ and $j$ are neighbors,} \\
@@ -506,24 +509,25 @@ is the average Euclidean distance over all connected pixels. This weighting sche
 	\label{fig:healpix_graph_4}
 \end{figure}
 
-\subsection{Graph Fourier basis and spherical harmonics}
+\subsection{Graph Fourier basis}
 
 Following~\cite{shuman2013emerging}, the normalized graph Laplacian,
 defined as $\L = \I - \D^{-1/2} \W \D^{-1/2}$, is a second order differential operator
 that can be used to define a Fourier basis on the graph. Here $\D$ is the diagonal
-matrix where $\D_{ii} = \b{d}_i$ and $\b{d}_i = \sum_j \W_{ij}$ is the weighted degree of node $v_i$. By construction the Laplacian is symetric positive
-semi-definite and hence can be decomposed as $\L=\U \bLambda \U^*$, where $\U$ is an
-orthonormal matrix of eigenvectors and $\bLambda$, the diagonal matrix of
-eigenvalues. The graph Fourier basis is defined as the Laplacian eigenvectors.
-The graph Fourier transform of $f$ is simply its projection on $\U$ given by
-$\hat{\b{f}}=\U^*\b{f}$. Similarly, the inverse graph Fourier transform reads $\b{f}=\U\hat{\b{f}}$.
-Note that instead of frequencies, the Fourier modes are ordered in the increasing order of the Laplacian eigenvalues $\bLambda$. In a sense, the Laplacian
-eigenvalues correspond to the squared frequencies.
+matrix where $\D_{ii} = \b{d}_i$ and $\b{d}_i = \sum_j \W_{ij}$ is the weighted degree of node $v_i$. By construction, the Laplacian is symmetric positive
+semi-definite and hence can be decomposed as $\L = \U \bLambda \U\trans$, where $\U = [\b u_1, \ldots, \b u_{N_{pix}}]$ is an
+orthonormal matrix of eigenvectors and $\bLambda$ is a diagonal matrix of
+eigenvalues. The graph Fourier basis is defined as the Laplacian eigenvectors, motivated by the fact that a Fourier basis should diagonalize the Laplacian operator.
+The graph Fourier transform of a signal $\f \in \R^{N_{pix}}$ is simply its projection on the eigenvectors given by
+$\hat{\f} = \mathcal{F}_\G \{\f\} = \U\trans \f$. It follows that the inverse graph Fourier transform reads $\mathcal{F}^{-1}_\G \{\hat{\f}\} = \U\hat{\f} = \U \U\trans \f = \f$.
+Note that the Fourier modes are ordered in the increasing order of the Laplacian eigenvalues $\bLambda$, which can be interpreted as squared frequencies.
+Indeed,
+\begin{equation*}
+	\bLambda_{ii} = \b u_i\trans \L \b u_i = \sum_{(v_j, v_k) \in \E} \frac{\W_{jk}}{\sqrt{\b d_j \b d_k}} (\U_{ji} - \U_{ki})^2
+\end{equation*}
+is a measure of how smooth the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$.
 
-As shown in \figref{graph_harmonics}, it turns out that using the graph
-construction described above, the graph Fourier harmonics resemble the
-classical spherical harmonics giving us an indication that the graph is able to
-capture the spherical properties of the Healpix sampling. This topic is further discussed in Appendix~\ref{sec:spherical_harmonics}.
+It turns out that using the graph construction described above, the graph Fourier modes resemble the spherical harmonics (see \figref{graph_harmonics}). That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling. This topic is further discussed in \ref{sec:spherical_harmonics}.
 
 \subsection{Convolutions on graphs}
 
@@ -532,10 +536,10 @@ multiplication in the spectral domain. Given a convolution kernel
 $h: \R_+ \rightarrow \R$, the convolution of a signal $\b{f}$
 is defined as
 \begin{equation} \label{eqn:graph_convolution}
-h(L)\b{f} = \U h(\bLambda) \U^* \b{f},
+h(L)\b{f} = \U h(\bLambda) \U\trans \b{f},
 \end{equation}
 where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii}=h(\bLambda_{ii})$.
-Equation~\eqnref{graph_convolution} contains three parts: a) $\U^* \b{f}$, the
+Equation~\eqnref{graph_convolution} contains three parts: a) $\U\trans \b{f}$, the
 Fourier transform of $\b{f}$; b) $h(\bLambda)$ the multiplication with the Fourier
 kernel $h(\blambda)$; and c) $\U$ the inverse Fourier transform.
 
@@ -558,7 +562,7 @@ Let us consider the heat diffusion problem
 where $\b{f}(t): \mathbb{R}_+ \rightarrow \mathbb{R}^N$. Given the initial condition
 $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation}
-\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U^* \g{f}(0) = K_t(\L) \b{f}(0),
+\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation}
 which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
 t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$. They are a generalization of the squared frequencies in the graph setting. Hence the kernel $K_t$ can also be considered as a generalization of the
@@ -817,7 +821,7 @@ out of the scope of this contribution.
 \begin{figure*}[!htb]
 \centering
 \includegraphics[width=0.95\textwidth]{figures/eigenvectors.pdf}
-\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the Healpix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$, eigenvectors 4--8 with degree $\ell=2$, and eigenvectors 9--15 with degree $\ell=3$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics. \todo{show group of eigenvectors as indication of mode $\ell$. Either show eigenvalues on this plot or add a plot of the eigenvalues themselves.}}
+\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the HEALPix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$ and order $m=(-1,0,1)$, eigenvectors 4--8 with degree $\ell=2$ and order $m=(-2,-1,0,1,2)$, and eigenvectors 9--15 with degree $\ell=3$ and order $m=(-3,\ldots,3)$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics. \todo{show group of eigenvectors as indication of mode $\ell$. Either show eigenvalues on this plot or add a plot of the eigenvalues themselves.}}
 \label{fig:graph_harmonics}
 \end{figure*}
 
