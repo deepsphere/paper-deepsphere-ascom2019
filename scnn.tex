@@ -234,6 +234,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep Healpix CNN \sep Graph CNN
     \item TK check the appendix
     \item TK optional - example of data (CMB (mask) + mass map + radio intensity)
     \item TK read everything
+	\item MD should we keep those small appendices rather than merging them in the main text?
 \end{itemize}
 
 \begin{figure*}[!ht]
@@ -803,19 +804,11 @@ As a future work, we intend to 1) further investigate the link between the graph
 %% appendix sections are then done as normal sections
 \appendix
 
-\section{Spherical harmonics VS graph Fourier eigenvectors}
-\ref{fig:graph_harmonics} displays the first 16 eigenvectors of the
-graph Fourier basis used for the convolution. While there is a clear
-resemblance with the spherical harmonic, the small irregularities in the
-sampling (see \figref{healpix_graph_4}) have an effect on the
-graph Fourier eigenvectors. First, conterintuitively, some graph eigenvectors will be
-localized~\cite{perraudin2018global}, i.e: they will span only a small subpart
-of the sphere.  Second, as Nside increase toward infinity and hence the number
-of pixels $n\rightarrow \infty$, we are still unsure if the graph eigenvectors
-converge toward the spherical harmonics. We believe that it might be the case
-for a different graph construction (fully connected) and that a proof could be
-built on top of the work of~\cite{belkin2007convergence}. This is obviously
-out of the scope of this contribution.
+\section{Graph Fourier eigenvectors and spherical harmonics}
+
+The first 16 eigenvectors of the graph graph Laplacian, forming the graph Fourier basis, are shown in \figref{graph_harmonics}. While there is a clear resemblance with the spherical harmonics, the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an effect on the graph Fourier modes.
+First, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere.
+Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is however out of the scope of this contribution.
 
 \label{sec:spherical_harmonics}
 \begin{figure*}[!htb]
