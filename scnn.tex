@@ -78,11 +78,15 @@
 \newcommand{\1}{\b{1}}              % all-ones vector
 \newcommand{\0}{\b{0}}              % all-zero vector
 \newcommand{\g}[1]{\b{#1}}
+\newcommand{\G}{\mathcal{G}}
+\newcommand{\V}{\mathcal{V}}
+\newcommand{\E}{\mathcal{E}}
 \renewcommand{\L}{\b{L}} % the laplacian matrix
 \newcommand{\W}{\b{W}}
 \newcommand{\I}{\b{I}}
 \newcommand{\D}{\b{D}}
 \newcommand{\U}{\b{U}}
+\newcommand{\x}{\b{x}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\bLambda}{\b{\Lambda}}
 \newcommand{\blambda}{\b{\lambda}}
@@ -159,7 +163,7 @@ We compare the performance of the CNN with that of two baseline classifiers, bas
 We find the performance of HealpixNet to always better or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
 Finally, we visualise filters learned by the HealpixNet from the mass maps.
-Code and examples are available at \todo{\url{github.com/SwissDataScienceCenter/HealpixNet}}.
+Code and examples are available at \todo{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
 
 %As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs.
 % Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
@@ -265,7 +269,7 @@ The flexibility of modeling the data domain with a graph allows, for example, to
 Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales.
 Such hierarchical pixelizations of the sphere have been well studied.
 
-In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/scnn} \todo{change location}}, an algorithm and software package which implements an efficient CNN on Healpix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
+In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}, an algorithm and software package which implements an efficient CNN on Healpix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
 As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling. However, only two elements depend on the sampling: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
 It is also possible to use multiple Healpix maps within our framework and use datasets in form of ``shells''. These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
 
@@ -422,12 +426,12 @@ PointNet and co. Related but we are loosing the structure. Also coarsening.
 
 \todo{Should we give a more general / high-level description of a CNN?}
 
-A CNN is composed of the following main building blocks~\citep{lecun1998cnn}, illustrated in~\figref{architecture}: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, some normalization.\footnote{A batch normalization has been shown to help the training.~\citep{ioffe2015batchnorm} We have verified this experimentally in our setting as well.} As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations however need to be generalized from Euclidean domains to the sphere.
+A CNN is composed of the following main building blocks~\citep{lecun1998cnn}, illustrated in~\figref{architecture}: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, some normalization.\footnote{\citet{ioffe2015batchnorm} have shown that batch normalization helps training. We verified this experimentally in our setting as well.} As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations however need to be generalized from Euclidean domains to the sphere.
 
-On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch 5x5 pixels) in the signal domain. Likewise, down-sampling can be achieved by taking one pixel out of $n$.
+On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of 5x5 pixels) in the signal domain. Likewise, down-sampling can be achieved by taking one pixel out of $n$.
 Because of the irregular sampling, there is no straightforward way to define a convolution on the sphere directly in the pixel domain.
 
-We will hence make a detour by the spectrum to perform the convolution.\footnote{Note that we only use the spectrum to define the convolution. The implementation however does not need a direct access to the spectrum, which is much more computationally efficient. See \secref{sec:efficient_convolution}.}
+We will hence make a detour by the spectrum to perform the convolution.\footnote{Note that we only use the spectrum to define the convolution. The implementation however does not need a direct access to the spectrum, which is computationally much more efficient. See \secref{efficient_convolution}.}
 The gist of our method is to define the convolution on a sphere using a graph, and the down-sampling using a hierarchical pixelization of the sphere.
 This contribution leverages the emerging field of graph signal processing~\citep{shuman2013emerging} which defines fundamental signal processing tools such as the Fourier transform for signals defined on graphs.
 
@@ -452,7 +456,7 @@ The lowest possible resolution is given by the base partitioning of the surface 
 High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_maps} shows two examples.
 \nati{The figure is beautiful, but should we really show it? If we target cosmologists, we can simply list some type of data. If we target a broader audience, maybe it makes sense to provide some illustration.}
 
-\begin{figure}[ht]
+\begin{figure}
 	\centering
 	\begin{subfigure}[b]{0.45\linewidth}
 		\centering
@@ -473,44 +477,33 @@ High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_m
 
 \footnotetext{Figures from \url{https://healpix.jpl.nasa.gov/}.}
 
-\subsection{Graph creation}
+\subsection{Graph construction}
 
-The graph approximates the 2D manifold that is the surface of the sphere. It can accommodate any sampling, regular or irregular.
+Our graph is constructed as an approximation of the continuous 2D manifold that is the surface of the sphere. Indeed, \citet{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity. That construction can accommodate any sampling, regular or not.
 
-In the classical 2-dimensional convolution, each pixel is connected with the
-same weight to its 4 closest neighbors. We use a weighted undirected graph to
-generalize this idea to the ubiquitous HealPix
-sampling~\citep{gorski2005healpix}.  Each pixel is represented by a node
-(vertex) connected to his $8$ or $7$ closest neighbors.\footnote{For some
-pixels, the $8^{th}$ nearest neighbor is not well defined.} Given the set of
-nearest neighbors, we define the weight matrix $W$ using the following scheme
-\begin{equation}
-W[i,j]=\begin{cases}
-e^{-\frac{\|x_i-x_j\|_2^2}{\sigma^2}} & \text{if pixels $i$ and $j$ are connected, and}\\
-0 & \text{otherwise.}\\
-\end{cases}
-\end{equation}
-\todo{why not $1/d$? See Pascal's paper, \nati{ The question is: is $1/d$ also good when we have 7/8 neighboors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.}}
-Here $x_i$ is a 3-dimensional vector encoding the coordinate of the pixels $i$
-on the sphere and $\sigma$ is the mean of $\|x_i-x_j\|_2$ over all connected
-pixels $i$ and $j$. This weighting scheme is important as the distances between
-pixels varies due to the small sampling irregularities. Some of the
-irregularities have been highlighted in the graph displayed in
-\figref{healpix_graph_4}.
+From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix. In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i \in \V$. Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \cdot 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W$ as
+\begin{equation*}
+	\W_{ij} = \begin{cases}
+		\exp \left( -\frac{\|\x_i-\x_j\|_2^2}{\sigma^2} \right) & \text{if pixels $i$ and $j$ are neighbors,} \\
+		0 & \text{otherwise,} \\
+	\end{cases}
+\end{equation*}
+where $\x_i$ is a vector encoding the 3-dimensional coordinates of pixel $i$, and
+\begin{equation*}
+	\sigma = \frac{1}{|\E|} \sum_{(v_i, v_j) \in \E} \|\x_i-\x_j\|_2
+\end{equation*}
+is the average Euclidean distance over all connected pixels. This weighting scheme is important as while pixel areas are equal, distances between pixels are not equal. \figref{healpix_graph_4} shows a graph constructed from the HEALPix sampling of a sphere.
 
-These small irregularities are important and affect slightly the degree of a
-node (or a pixel), defined as $d_i =\sum_j W[i,j]$.
+% mdeff: Why not $1/d$? See Pascal's paper
+% nati: The question is: is $1/d$ also good when we have 7/8 neighboors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.
+% mdeff: I tried and the eigenvectors and eigenvalues are mostly the same. To me, there is no point in trying for trying. We should rather come up with a definition of distance that will make the eigenvectors closer to the real spherical harmonics.
 
-\begin{figure}[!ht]
-\centering
-% \includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
-\vspace{-0.5cm}
-\includegraphics[width=0.35\textwidth]{figures/half_graph_4.pdf}
-\vspace{-0.5cm}
-\caption{
-Top view of a Healpix graph for half the sphere using a HealPix nside parameter of $4$.
-Nodes with 7 neighbors are highlighted. \label{fig:healpix_graph_4}
-}
+\begin{figure}
+	\centering
+	% \includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
+	\includegraphics[width=0.8\linewidth]{figures/half_graph_4.pdf}
+	\caption[]{Graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[6]}
+	\label{fig:healpix_graph_4}
 \end{figure}
 
 \subsection{Graph Fourier basis and spherical harmonics}
@@ -518,7 +511,7 @@ Nodes with 7 neighbors are highlighted. \label{fig:healpix_graph_4}
 Following~\cite{shuman2013emerging}, the normalized graph Laplacian,
 defined as $\L = \I - \D^{-1/2} \W \D^{-1/2}$, is a second order differential operator
 that can be used to define a Fourier basis on the graph. Here $\D$ is the diagonal
-matrix where $\D_{ii}=\b{d}_i$. By construction the Laplacian is symetric positive
+matrix where $\D_{ii} = \b{d}_i$ and $\b{d}_i = \sum_j \W_{ij}$ is the weighted degree of node $v_i$. By construction the Laplacian is symetric positive
 semi-definite and hence can be decomposed as $\L=\U \bLambda \U^*$, where $\U$ is an
 orthonormal matrix of eigenvectors and $\bLambda$, the diagonal matrix of
 eigenvalues. The graph Fourier basis is defined as the Laplacian eigenvectors.
@@ -797,7 +790,7 @@ In this contribution, we presented HealPixNet, a spherical CNN for the HealPix s
 This allows us to leverage the advantages of the graph convolution, i.e it is both efficient (with a complexity of $\mathcal{O}(n)$) and flexible (allow to work only on a subpart of the sphere) while it still captures well the spherical properties of the domain.
 We also show on a range of classification problems that the neural network systematically significantly outperform classical methods.
 
-We provide HealPixNet as a small easy-to-use package available at \todo{\url{https://github.com/xxx}}.
+The main product of this contribution is HealPixNet,\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} a small and easy-to-use python package for cosmologists to classify sky maps.
 As a future work, we intend to 1) further investigate the link between the graph Fourier basis and the spherical harmonic and 2) compare HealPixNet to other spherical CNN using different sampling schemes.
 
 \section*{Thanks}
