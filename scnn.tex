@@ -530,72 +530,52 @@ is a measure of how smooth the eigenvector $\b u_i$ is on the graph defined by t
 
 It turns out that using the graph construction described above, the graph Fourier modes resemble the spherical harmonics (see \figref{graph_harmonics}). That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling. This topic is further discussed in \ref{sec:spherical_harmonics}.
 
-\subsection{Convolutions on graphs}
+\subsection{Convolution on graphs}
 
-A convolution can be defined on graphs by the convolution theorem which states that a convolution in the vertex (or time, or spatial) domain is a
-multiplication in the spectral domain. Given a convolution kernel
-$h: \R_+ \rightarrow \R$, the convolution of a signal $\b{f}$
-is defined as
-\begin{equation} \label{eqn:graph_convolution}
-h(L)\b{f} = \U h(\bLambda) \U\trans \b{f},
-\end{equation}
-where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii}=h(\bLambda_{ii})$.
-Equation~\eqnref{graph_convolution} contains three parts: a) $\U\trans \b{f}$, the
-Fourier transform of $\b{f}$; b) $h(\bLambda)$ the multiplication with the Fourier
-kernel $h(\blambda)$; and c) $\U$ the inverse Fourier transform.
+As there is no notion of translation on a graph, we cannot really convolve two graph signals. We can, however, convolve a signal with a kernel defined in the spectral domain. More precisely, we are filtering a graph signal by a kernel. Given the convolution kernel
+$h: \R_+ \rightarrow \R$, a signal $\f$ is filtered as
+\begin{equation*} \label{eqn:graph_convolution}
+	h(L) \f = \U h(\bLambda) \U\trans \f,
+\end{equation*}
+where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii} = h(\bLambda_{ii})$, and $h(\bLambda) \hat{\f}$ is the spectral representation of $\f$ after filtering.
 
-The major difference with the classical convolution is that the convolution kernel
-$h$ cannot be thought as a $n \times n$ pattern, but is a continuous function
-applied to the graph eigenvalues $\bLambda$. For visualization purposes, one can
-look at the effect of the convolution on a Kronecker delta, i.e., one column of the matrix
-$h(\L)$.
-Due to the non-regularity of the graph (i.e. the fact
-that there is no perfect sampling on the sphere), the convolution effect will slightly
-differ from one node to another. In the specific case of the full sphere, these
-differences are negligible in most of the cases. However, when considering only parts of
-the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
+Contrary to classical signal processing on Euclidean domains, the kernel $h$ has no single representation in the vertex domain and cannot be translated on the graph. It can however be localized on any vertex $v_i$ by the convolution with a Kronecker delta $\b \delta_i \in \R^{N_{pix}}$,\footnote{A Kronecker delta is the signal $\b \delta_i \in \R^{N_{pix}}$ that is zero everywhere except on vertex $v_i$ where it takes the value one.} that is $h(\L) \b \delta_i$, a column of $h(\L)$.
+That is useful to visualize kernels.
+If the graph is not regular, i.e., all nodes don't have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
+Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with all localizations of the kernel:
+\begin{equation*} \label{eqn:graph_convolution}
+	(h(L) \f)_i = \langle h(L) \b \delta_i, \f \rangle.
+\end{equation*}
 
-\paragraph{Example:}
+\paragraph{Example}
 Let us consider the heat diffusion problem
 \begin{equation} \label{eqn:heat_equation}
-\L \b{f}(t) = \tau \partial_t \b{f}(t),
+	\L \b{f}(t) = \tau \partial_t \b{f}(t),
 \end{equation}
-where $\b{f}(t): \mathbb{R}_+ \rightarrow \mathbb{R}^N$. Given the initial condition
+where $\b{f}: \R_+ \rightarrow \R^{N_{pix}}$. Given the initial condition
 $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
-\begin{equation}
-\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
-\end{equation}
-which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(x)=e^{-\tau
-t x}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$. They are a generalization of the squared frequencies in the graph setting. Hence the kernel $K_t$ can also be considered as a generalization of the
-Gaussian kernel on the sphere. In \figref{gaussian_filters_comparizon} top, we show
-the effect of the convolution by diffusing a unit of heat for $\tau=1$ and various
-time $t$. We also compare the graph convolution with the
-spherical symmetric Gaussian smoothing
-(\figref{gaussian_filters_comparizon} bottom) and observe that both
-techniques lead to similar results. While the graph convolution is different
-from a true spherical convolution, it can, providing the correct
-parameterization, well approximate it.
-In~\figref{gaussian_filters_visualization} of Appendix~\ref{sec:filter_visualization}, we provide additional visualizations of the
-convolution kernel $K_t$.
+\begin{equation*}
+	\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
+\end{equation*}
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which are a generalization of squared frequencies. Hence, the kernel $K_t$ can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution is different from a true spherical convolution, it can, providing the correct parameterization, well approximate it. \figref{gaussian_filters_visualization} provides additional visualizations of the convolution kernel $K_t$.
 
-\begin{figure*}[!ht]
-\centering
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
-\caption{Convolution comparison (Nside=16).
-Top: Diffusion of a unit of heat for different times $t$ using the graph.
-Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
-Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\% }
-\label{fig:gaussian_filters_comparizon}
+\begin{figure*}
+	\centering
+	\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
+	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
+	Top: Diffusion of a unit of heat for different times $t$ using the graph.
+	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
+	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\% }
+	\label{fig:gaussian_filters_comparizon}
 \end{figure*}
 
 This result is another sign that the constructed graph is able to capture the spherical
-structure of the HealPix sampling. Furthermore, in some application, where the
-exactitude of the convolution is not a requirement, such as de-noising, it means
-that we could use the graph convolution instead. Depending on the convolution kernel
-this may reveal much more efficient. In the case of a neural network, the fact
-that both convolution are not identical is not very relevant since the network
-will adapt the convolution at use.
-
+structure of the HEALPix sampling. In some applications, where the
+exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
+Depending on the convolution kernel, this may reveal much more efficient.
+\todo{Show the figure comparing speed of low-pass filtering? It's 10x faster.}
+The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
+% not ideal as the graph convolution depends on the localization
 
 \subsection{Efficient convolutions}
 \label{sec:efficient_convolution}
