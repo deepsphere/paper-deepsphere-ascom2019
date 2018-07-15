@@ -371,7 +371,7 @@ approach is based on the traditional 2-dimensional convolution, it is very likel
 most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are not including HEALPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
-spherical properties of the domain, i.e., the "cubed sphere” sampling is by
+spherical properties of the domain, i.e., the ``cubed sphere'' sampling is by
 definition adapted to a cube and not to a sphere.
 \todo{border effects? \nati{@mdeff what are you thinking about here?}}
 % \nati{Michael: Under some very
@@ -501,12 +501,11 @@ where $\x_i$ is a vector encoding the 3-dimensional coordinates of pixel $i$, an
 is the average Euclidean distance over all connected pixels. This weighting scheme is important as while pixel areas are equal, distances between pixels are not equal. \figref{healpix_graph_4} shows a graph constructed from the HEALPix sampling of a sphere.
 
 % mdeff: Why not $1/d$? See Pascal's paper
-% nati: The question is: is $1/d$ also good when we have 7/8 neighboors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.
+% nati: The question is: is $1/d$ also good when we have 7/8 neighbors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.
 % mdeff: I tried and the eigenvectors and eigenvalues are mostly the same. To me, there is no point in trying for trying. We should rather come up with a definition of distance that will make the eigenvectors closer to the real spherical harmonics.
 
 \begin{figure}
 	\centering
-	% \includegraphics[width=0.45\textwidth]{figures/healpix_graph_4.pdf}
 	\includegraphics[width=0.8\linewidth]{figures/half_graph_4.pdf}
 	\caption[]{Graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[6]}
 	\label{fig:healpix_graph_4}
@@ -563,7 +562,7 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 
 \begin{figure*}
 	\centering
-	\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_sphere.pdf}
+	\includegraphics[width=\linewidth]{figures/gaussian_filters_sphere.pdf}
 	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
@@ -613,7 +612,7 @@ Pooling refers to the operation that summarizes the data supported on the merged
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
+	\includegraphics[width=\linewidth]{figures/pooling.pdf}
 	\caption{Two levels of coarsening and pooling: groups of 4 cells are merged into one, then the data on them is summarized in one. The coarsest cell covers $1/12$ of the sphere.}
 	\label{fig:pooling}
 \end{figure}
@@ -658,7 +657,7 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/psd_sigma3.pdf}
+\includegraphics[width=\linewidth]{figures/psd_sigma3.pdf}
 \caption{Power spectrum densities of the noiseless maps. The maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies. The cosmological models could otherwise have been distinguished by looking at the PSDs.}
 \label{fig:psd_sigma3}
 \end{figure}
@@ -674,8 +673,9 @@ Initial conditions for these simulations were the same, so the differences in st
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.48\textwidth]{figures/smooth_map_class_1.pdf}
-\includegraphics[width=0.48\textwidth]{figures/smooth_map_class_2.pdf}
+\includegraphics[width=0.48\linewidth]{figures/smooth_map_class_1.pdf}
+\hfill
+\includegraphics[width=0.48\linewidth]{figures/smooth_map_class_2.pdf}
 \caption{Example maps from two classes to be discriminated. Left: model 1 with $\Omega_m=0.31$ and $\sigma_8=0.82$. Right: model 2 with $\Omega_m=0.26$ and $\sigma_8=0.91$.
 The initial conditions for both simulations were the same, so differences only arise due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
@@ -695,8 +695,8 @@ includes an example using the full sphere.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/part_sphere.pdf}
-\caption{3 subparts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
+\includegraphics[width=\linewidth]{figures/part_sphere.pdf}
+\caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
 \label{fig:subpart_sphere}
 \end{figure}
 
@@ -750,9 +750,11 @@ Note that without this graph structure, a fully connected neural network approac
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.32\textwidth]{figures/result_order1.pdf}
-\includegraphics[width=0.32\textwidth]{figures/result_order2.pdf}
-\includegraphics[width=0.32\textwidth]{figures/result_order4.pdf}
+\includegraphics[width=0.32\linewidth]{figures/result_order1.pdf}
+\hfill
+\includegraphics[width=0.32\linewidth]{figures/result_order2.pdf}
+\hfill
+\includegraphics[width=0.32\linewidth]{figures/result_order4.pdf}
 \caption{Classification errors for the 3 different problems.}
 \label{fig:results}
 \end{figure*}
@@ -772,8 +774,9 @@ of HEALPix. For a detail, on how the convolution kernels are plotted, please ref
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/section_filter_last.pdf}
-\includegraphics[width=0.45\textwidth]{figures/gnonomic_filter_last.pdf}
+\includegraphics[width=0.47\linewidth]{figures/section_filter_last.pdf}
+\hfill
+\includegraphics[width=0.45\linewidth]{figures/gnonomic_filter_last.pdf}
 \caption{24 learned filters selected from the last spherical convolutional layer. Left: section. Right: gnonomic view.}
 \label{fig:learned_filter}
 \end{figure*}
@@ -848,10 +851,10 @@ chosen Kroneker.
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_spectral.pdf}
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_gnomonic.pdf}
-\includegraphics[width=0.95\textwidth]{figures/gaussian_filters_section.pdf}
-\caption{3 different visualizations of the convolution kernel $K_t(x)=e^{-\tau t x}$.
+\includegraphics[width=\linewidth]{figures/gaussian_filters_spectral.pdf}
+\includegraphics[width=\linewidth]{figures/gaussian_filters_gnomonic.pdf}
+\includegraphics[width=\linewidth]{figures/gaussian_filters_section.pdf}
+\caption{Three different visualizations of the convolution kernel $K_t(x)=e^{-\tau t x}$.
 Top: graph spectral domain.
 Middle: gnomonic projection.
 Bottom: section plot.}
@@ -860,7 +863,7 @@ Bottom: section plot.}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.3\textwidth]{figures/index_plotting_order20_nside16.pdf}
+\includegraphics[width=0.6\linewidth]{figures/index_plotting_order20_nside16.pdf}
 \caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
 \label{fig:index_section}
 \end{figure}
@@ -887,7 +890,7 @@ error is shown in \figref{hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/hist_error_order2_noise1_5.pdf}
+\includegraphics[width=\linewidth]{figures/hist_error_order2_noise1_5.pdf}
 \caption{Evolution curve of the error with respect to the number of training samples for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
 \label{fig:hist_error_evolution}
 \end{figure}
@@ -898,7 +901,7 @@ The graph setting used through this contribution assumes reflective border condi
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.45\textwidth]{figures/border_effects.pdf}
+\includegraphics[width=\linewidth]{figures/border_effects.pdf}
 \caption{Graph convolution of a Kroneker placed at two different spots on the graph. The graph build from $1/12$ of the sphere and an Nside of 16. When the Kroneker is placed on the left corner, the resulting convolution is not circular anymore due to border effect. The graph setting assumes reflective border conditions.}
 \label{fig:border_effects}
 \end{figure}
