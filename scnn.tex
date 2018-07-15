@@ -432,9 +432,7 @@ PointNet and co. Related but we are loosing the structure. Also coarsening.
 % 	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
 % \end{itemize}
 
-\todo{Should we give a more general / high-level description of a CNN?}
-
-A CNN is composed of the following main building blocks~\citep{lecun1998cnn}, illustrated in~\figref{architecture}: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, some normalization.\footnote{\citet{ioffe2015batchnorm} have shown that batch normalization helps training. We verified this experimentally in our setting as well.} As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations however need to be generalized from Euclidean domains to the sphere.
+A CNN is composed of the following main building blocks~\citep{lecun1998cnn}: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, some normalization.\footnote{\citet{ioffe2015batchnorm} have shown that batch normalization helps training. We verified this experimentally in our setting as well.} Our architecture is depicted in~\figref{architecture} and discussed in greater details in \secref{architecture}. As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations however need to be generalized from Euclidean domains to the sphere.
 
 On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of 5x5 pixels) in the signal domain. Likewise, down-sampling can be achieved by taking one pixel out of $n$.
 Because of the irregular sampling, there is no straightforward way to define a convolution on the sphere directly in the pixel domain.
@@ -613,17 +611,24 @@ Pooling refers to the operation that summarizes the data supported on the merged
 % The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graph})
 % nope: can also do a regular pooling on the equirectangular. It preserves the sampling, and the convolution is adapted to the sampling thanks to the edge weights.
 
-\begin{figure}[!ht]
+\begin{figure}
 	\centering
 	\includegraphics[width=0.45\textwidth]{figures/pooling.pdf}
 	\caption{Two levels of coarsening and pooling: groups of 4 cells are merged into one, then the data on them is summarized in one. The coarsest cell covers $1/12$ of the sphere.}
 	\label{fig:pooling}
 \end{figure}
 
+\subsection{Architecture}
+\label{sec:architecture}
+
+Now that all the building blocks are defined, let's discuss our proposed spherical CNN architecture, pictured in \figref{architecture}.
+
+\todo{present and discuss the whole CNN architecture.}
+
+Learning the $\theta_k$.
 
 \section{Experiments}
 \label{sec:experiments}
-\assign{Nathanaël, Tomek}
 
 % Structure of the section
 % 1) Present the goal
@@ -671,8 +676,8 @@ Initial conditions for these simulations were the same, so the differences in st
 \centering
 \includegraphics[width=0.48\textwidth]{figures/smooth_map_class_1.pdf}
 \includegraphics[width=0.48\textwidth]{figures/smooth_map_class_2.pdf}
-\caption{Example maps from two classes. Top: model 1 ($\Omega_m=0.31, \sigma_8=0.82$). Bottom: model 2 ($\Omega_m=0.26, \sigma_8=0.91$).
-The initial conditions for these simulations were the same, so differences arise only due to different cosmological parameters. \nati{Tomek: Is this correct?}}
+\caption{Example maps from two classes to be discriminated. Left: model 1 with $\Omega_m=0.31$ and $\sigma_8=0.82$. Right: model 2 with $\Omega_m=0.26$ and $\sigma_8=0.91$.
+The initial conditions for both simulations were the same, so differences only arise due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
 \end{figure*}
 
