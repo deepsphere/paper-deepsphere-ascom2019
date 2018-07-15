@@ -88,6 +88,9 @@
 \newcommand{\D}{\b{D}}
 \newcommand{\U}{\b{U}}
 \newcommand{\x}{\b{x}}
+\newcommand{\X}{\b{X}}
+\newcommand{\y}{\b{y}}
+\newcommand{\Y}{\b{Y}}
 \newcommand{\bu}{\b{u}}
 \newcommand{\f}{\b{f}}
 \newcommand{\trans}{^\intercal}
@@ -272,7 +275,8 @@ A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fou
 Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well, towards the goal of building invariances in the network. As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
 
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
-Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a k-nearest neigboors graph, the convolution operation costs $\mathcal{O}(n)$ operations, where $n$ is the number of pixels. This is the lowest possible complexity for a convolution operation without approximations (e.g. by sketching).
+This contribution leverages the emerging field of graph signal processing which defines fundamental signal processing tools such as the Fourier transform for signals defined on graphs \citep{shuman2013emerging}.
+Our approach uses the graph CNN formulation introduced by \citet{defferrard2016convolutional}, which is efficient and can adapt to any sampling of the sphere. Using a $k$-nearest neighbors graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels. This is the lowest possible complexity for a convolution operation without approximations (e.g. by sketching).
 The flexibility of modeling the data domain with a graph allows, for example, to easily model data which only spans a part of the sphere, or data which is not uniformly sampled.
 Our hierarchical pooling strategy exploits a hierarchical pixelization of the manifold to analyze the data at multiple scales.
 Such hierarchical pixelizations of the sphere have been well studied.
@@ -439,7 +443,6 @@ Because of the irregular sampling, there is no straightforward way to define a c
 
 We will hence make a detour by the spectrum to perform the convolution.\footnote{Note that we only use the spectrum to define the convolution. The implementation however does not need a direct access to the spectrum, which is computationally much more efficient. See \secref{efficient_convolution}.}
 The gist of our method is to define the convolution on a sphere using a graph, and the down-sampling using a hierarchical pixelization of the sphere.
-This contribution leverages the emerging field of graph signal processing~\citep{shuman2013emerging} which defines fundamental signal processing tools such as the Fourier transform for signals defined on graphs.
 
 \subsection{HEALPix sampling}
 \label{sec:healpix}
@@ -617,14 +620,28 @@ Pooling refers to the operation that summarizes the data supported on the merged
 	\label{fig:pooling}
 \end{figure}
 
-\subsection{Architecture}
+\subsection{Graph convolutional neural network}
 \label{sec:architecture}
 
-Now that all the building blocks are defined, let's discuss our proposed spherical CNN architecture, pictured in \figref{architecture}.
+A typical neural network is constructed as a stack of layers, which sequentially transform the input data. Our architecture, pictured in \figref{architecture}, is composed of the following types of layers: graph convolutional (GC) layers, non-linearity, pooling (P), batch normalization (BN), and fully connected (FC) layers. All GC and FC layers are always followed by a non-linearity. As such, we will not mention the non-linearity in the description of our architectures.
 
-\todo{present and discuss the whole CNN architecture.}
+A GC layer takes as input a data matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a data matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
+\begin{equation*}
+	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j.
+\end{equation*}
+As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers. All those parameters are learned during training via back-propagation of the error gradient.
 
-Learning the $\theta_k$.
+A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs $\y \in \R^{F_{out}}$ as
+\begin{equation*}
+	\y = \b W \x,
+\end{equation*}
+where $\W \in \R^{F_{out} \times F_{in}}$ is the parameter matrix that is learned.
+Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC is vectorized as $\x \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \cdot F_{out}$.
+
+GC32 - P256 - FC10
+
+The whole network is then optimized to minimize the loss function over the training data.
+Describe the loss function.
 
 \section{Experiments}
 \label{sec:experiments}
