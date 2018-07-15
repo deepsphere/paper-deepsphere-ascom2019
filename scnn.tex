@@ -338,8 +338,8 @@ Three approaches exist to address this issue.
 The first approach, leveraging the continuous spherical convolution, has been
 proposed by~\cite{cohen2018spherical}. The goal of
 these contributions it to use a rotational equivariant convolution on the
-sphere, i.e. a rotation of the input implies the same rotation of the output.
-The resulting convolution is performed by a spherical Fourier transform (i.e.
+sphere, i.e., a rotation of the input implies the same rotation of the output.
+The resulting convolution is performed by a spherical Fourier transform (i.e.,
 a projection on the spherical harmonics), a  multiplication in the spectral
 domain and an inverse spherical Fourier transform. Hence the main
 computational cost of a convolution comes from the two Fourier transforms.
@@ -371,7 +371,7 @@ approach is based on the traditional 2-dimensional convolution, it is very likel
 most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are not including HEALPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
-spherical properties of the domain, i.e. the "cubed sphere” sampling is by
+spherical properties of the domain, i.e., the "cubed sphere” sampling is by
 definition adapted to a cube and not to a sphere.
 \todo{border effects? \nati{@mdeff what are you thinking about here?}}
 % \nati{Michael: Under some very
@@ -394,7 +394,7 @@ of the convolution kernel.
 
 
 \subsection{Convolutions on graphs}
-\todo{Maybe we just describe convolutions on sphere and graph, i.e: do we really need all these three subsections? Maybe simply merge them?}
+\todo{Maybe we just describe convolutions on sphere and graph, i.e.: do we really need all these three subsections? Maybe simply merge them?}
 
 \nati{I think that citing Bruna is to much... According to me, the goal of this subsection should not be to cite everything that exist. But should focus on
 1) be fair and say that they are other graph convolutions that can be used, 2) show some connections between graph CNNs ang group equivariant CNNs (Done), and 3) suggest that they are possible extensions of what we do.}
@@ -700,9 +700,9 @@ includes an example using the full sphere.
 \label{fig:subpart_sphere}
 \end{figure}
 
-We build a robust classifier, i.e. an automatic way to
+We build a robust classifier, i.e., an automatic way to
 discriminate between the two classes in the presence of noise.
-We check the classification performance as a function of the area used, i.e "the order" $o$ and also as a function of the relative level of the noise added to the map.
+We check the classification performance as a function of the area used, i.e., "the order" $o$ and also as a function of the relative level of the noise added to the map.
 
 For all the
 experiments, we work with centered Gaussian noise. \todo{Tomek: could you put a
@@ -730,10 +730,10 @@ error converge to a value. This process is detailed in Appendix~\ref{sec:dataset
 
 We present in \figref{results} the results for 5 different noise
 levels and $3$ different sample areas. The spherical CNN has a significant lead for all levels of noise and sample areas.
-In particular, the difference seems to increase as the problem becomes more complex, i.e as the order is increased and there is less information in each sample.
+In particular, the difference seems to increase as the problem becomes more complex, i.e., as the order is increased and there is less information in each sample.
 This is likely due to the fact that the SCNN can learn optimal features for the problem and do not rely on our humanly limited feature design.
 
-We observe that the PSD features, i.e.
+We observe that the PSD features, i.e.,
 one of the most used techniques for model discrimination in cosmology, is unable
 to perform the desired task. The main reason is that the two different models
 have very similar PSDs (see \figref{psd_sigma3}). As a result, one
@@ -791,7 +791,7 @@ Further generalizations to non-radial filters may be possible [cite?], but we le
 \label{sec:conclusion}
 
 In this contribution, we presented HealpixNet, a spherical CNN for the HEALPix sampling. The gist of our construction resides in using a graph to model the sphere.
-This allows us to leverage the advantages of the graph convolution, i.e it is both efficient (with a complexity of $\mathcal{O}(n)$) and flexible (allow to work only on a subpart of the sphere) while it still captures well the spherical properties of the domain.
+This allows us to leverage the advantages of the graph convolution, i.e., it is both efficient (with a complexity of $\mathcal{O}(N_{pix})$) and flexible (allow to work only on a part of the sphere) while it still captures well the spherical properties of the domain.
 We also show on a range of classification problems that the neural network systematically significantly outperform classical methods.
 
 The main product of this contribution is HealpixNet,\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} a small and easy-to-use python package for cosmologists to classify sky maps.
@@ -839,7 +839,7 @@ Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N
 
 In \figref{gaussian_filters_visualization}, we present three different
 visualization for a HEALPix graph convolution kernel. The kernel used is defined in the graph spectral domain as $K_t(x)=e^{-\tau t x}$. This is the domain used for our first visualization. In this case, we simply evaluate $K_t$
-at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e. the spectral mode with less variation.
+at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
 As a second visualization, we can observe the kernel directly on the sphere. To do so, we perform the convolution of a
 Kroneker on the sphere plot the result with gnomonic projection. Eventually, as we are
 working on the sphere with theoretically spherical filters (up to the irregularities of the sampling), we could only plot the section of the convoluted Kroneker. To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}. Note that, because of the small irregularities in the HEALPix
