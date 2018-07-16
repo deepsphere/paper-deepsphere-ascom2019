@@ -271,7 +271,7 @@ While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
 A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those very specific grid samplings.
-A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast Fourier transforms for some samplings, this approach is still computationally expensive.
+A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast spherical Fourier transforms for some samplings, this approach is still computationally expensive (see \figref{filtering_speed}).
 Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well, towards the goal of building invariances in the network. As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
 
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
@@ -292,7 +292,8 @@ In a simplified scenario, we classify convergence maps on parts of a sphere into
 These models were designed to have the same power spectrum in range $\ell < 1000$.
 We compare the performance of the spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or Power Spectrum Densities (PSD) of these maps as input.
 The comparison is made as a function of the noise level on convergence maps and the area of the sphere used. Results show that our model is better at discriminating the maps, is more resilient to noise, and \todo{is faster?}.
-\nati{I do not think we should argue for speed gain in this paper. We are probably much more efficient than scnns with the convolution done in the spectral domain. However compared to tradiational methods, we are in most of the cases slower.}
+\nati{I do not think we should argue for speed gain in this paper. We are probably much more efficient than scnns with the convolution done in the spectral domain. However compared to traditional methods, we are in most of the cases slower.}
+\todo{I think we should, as that is our main argument against using the spherical harmonics. We are slower than 2D CNNs sure, but those are not adapted to the sphere. Or what do you mean by traditional methods?}
 
 
 The paper is organized as follows.
@@ -348,22 +349,22 @@ a projection on the spherical harmonics), a  multiplication in the spectral
 domain and an inverse spherical Fourier transform. Hence the main
 computational cost of a convolution comes from the two Fourier transforms.
 Fortunately, the Fourier transform can be accelerated for special samplings
-set (theoretically including HEALPix, \cite{mohlenkamp1999fast,rokhlin2006fast}).
+set (theoretically including HEALPix, \cite{mohlenkamp1999fast,rokhlin2006fast}). \todo{HEALPix was designed to have a fast SHT, by being iso-latitude.}
 The main advantage of this
 approach is that it provides a mathematically well defined rotational
 equivariant network. Nevertheless, even with these Fourier transform
-acceleration, the convolutions remain expensive in comparison to a traditional
-2-dimensional convolution, limiting the practical use of this approach.
-\todo{to have numbers to back up our claim: have the theoretical complexities and measure the time needed for a convolution on graph and the healpix Fourier transform to get the constants
+acceleration, the convolutions remain expensive, limiting the practical use of this approach.
+\todo{to have numbers to back up our claim: have the theoretical complexities and measure the time needed for a convolution on graph and the HEALPix Fourier transform to get the constants.}
 \nati{@mdeff: for the complexity we probably have $\mathcal{O}(n)$ instead of $\mathcal{O}(n^{3/2})$ (let assume that we have $\approx n^{1/2}$ points allong both axis, computation of the SO3 FFT is composed of 1) $n^{1/2}$ FFTs for a total cost of $n \log (n)$ and 2) $n^{1/2}$ matrix multiplications of size $n^{1/2}$ for a total cost of $n^{3/2}$) For the number, it is a bit more complicated… I guess it is for the next paper.}
-}
+\todo{@nath: I found (i) $\bO(\ell_{max}^3)$ in \url{https://arxiv.org/pdf/1202.6522.pdf} and (ii) $O(N^2 \log(N) \log(1/\epsilon))$ for $N^2$ pixels and precision $\epsilon$ in \url{http://tygert.com/sph2.pdf}. From what I understood (ii) is asymptotically fast, but has large constants and as such (i) always wins in practice. Not sure what we should use here. And I don't know either what healpy is using. Maybe we can leave the complexity analysis for a more theoretical paper.}
+\figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the wildly used \pkg{healpy} implementation which uses a fast spherical transform for which the HEALPix sampling was designed for.
 While a comparison is theoretically possible, the experiments
 of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
 do not provide any code for the HEALPix one. Hence, a practical comparison is
 not possible. We also note that this approach cannot be trivially accelerated
 if only one part of the sphere is used. This is impractical in the field of
-cosmology as the data often observed only on a subpart of the sphere.
-One could still pad the unused part of the sphere with 0. However, this would significantly increase the computational cost of the method.
+cosmology as the data often observed only on some part of the sphere.
+One could still pad the unused part of the sphere with zeros. However, this would significantly increase the computational cost of the method.
 \nati{@mdeff: do you think we can say the method would be too slow for our dataset even without trying it? I am not so sure...}
 \todo{slow: full sky maps are composed of millions of points. partial maps are hard to process}
 
@@ -604,6 +605,13 @@ Finally, the coefficients can be computed such as the truncated Chebyshev expans
 Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the dense vector $\f$ with the sparse matrix $\tL$. The cost of one such multiplication is $\bO(|\E|)$. By construction of our graph, $|\E| < 8 N_{pix}$. The overall computational cost of the convolution is thus reduced to $\bO(N_{pix})$ operations.
 That is much more efficient than filtering with spherical harmonics, even tho the HEALPix sampling was designed to leverage a fast spherical transform (by being iso-latitude). That is especially true for smooth kernels which require a low polynomial degree $K$. See \figref{filtering_speed} for a speed comparison of low-pass filtering for Gaussian smoothing using the spherical harmonics and the presented method. It is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively.
 
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{figures/filtering_speed}
+	\caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes. The fast spherical harmonic transform (SHT) is implemented by the healpy Python package (via the \texttt{healpy.sphtfunc.smoothing} function with $\ell_{max} = 3 N_{side} - 1$, the default.). The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the numpy and scipy Python packages. Both are executed on a single core. The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3)$ for the spherical harmonics, where $\ell_{max}$ is the largest degree (i.e., the spectrum is truncated at $\ell_{max}$).}
+	\label{fig:filtering_speed}
+\end{figure}
+
 \subsection{Coarsening and Pooling}
 
 Hierarchical pixelization schemes present a natural coarsening. Indeed, each subdivision divides a cell in an equal number of child sub-cells. Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them. Merging cells lead to a coarser graph, hence the name coarsening.
@@ -704,7 +712,7 @@ The initial conditions for both simulations were the same, so differences only a
 While the number of maps might sound small for deep learning, the information contained in the maps is very recurrent, allowing us to use parts of the map as samples for our simulation.
 Leveraging the properties of the HEALPix sampling, we can split each maps
 into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere.
-As shown in \figref{subpart_sphere}, we used $o=1,2,4$ as the resulting
+As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting
 samples are large enough to suffer from the effects of the spherical geometry. We
 decided to only report simulation results for this specific setting as spherical
 cosmological data usually does not span the full sphere. Nevertheless, our code
@@ -714,7 +722,7 @@ includes an example using the full sphere.
 \centering
 \includegraphics[width=\linewidth]{figures/part_sphere.pdf}
 \caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
-\label{fig:subpart_sphere}
+\label{fig:part_sphere}
 \end{figure}
 
 We build a robust classifier, i.e., an automatic way to
@@ -844,15 +852,6 @@ Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N
 	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, corresponding to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell+1$ modes. See also \figref{graph_harmonics}.}
 	\label{fig:graph_eigenvalues}
 \end{figure}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{figures/filtering_speed}
-	\caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes. The fast spherical harmonic transform (SHT) is implemented by the healpy Python package (via the \texttt{healpy.sphtfunc.smoothing} function). The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the numpy and scipy Python packages. Both are executed on a single core.}
-	\label{fig:filtering_speed}
-\end{figure}
-
-
 
 \section{Filter visualization}
 \label{sec:filter_visualization}
