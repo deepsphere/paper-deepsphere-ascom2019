@@ -623,22 +623,28 @@ Pooling refers to the operation that summarizes the data supported on the merged
 
 A typical neural network is constructed as a stack of layers, which sequentially transform the input data. Our architecture, pictured in \figref{architecture}, is composed of the following types of layers: graph convolutional (GC) layers, non-linearity, pooling (P), batch normalization (BN), and fully connected (FC) layers. All GC and FC layers are always followed by a non-linearity. As such, we will not mention the non-linearity in the description of our architectures.
 
-A GC layer takes as input a data matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a data matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
+A GC layer takes as input a data matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a data matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. In the first GC layer, $F_{in} = 1$ if we have a single map, such as the CMB radiation temperature. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction.
+Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
 \begin{equation*}
-	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j.
+	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + \b b_i, \ \ \forall i \in [F_{out}].
 \end{equation*}
-As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers. All those parameters are learned during training via back-propagation of the error gradient.
+As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers. A bias term $\b b \in \R^{F_{out}}$ is learned jointly.
+
+A non-linear function $\sigma(\cdot)$ is always applied after a linear GC or FC layer. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice. That operation is point-wise, i.e., $\Y_{ij} = \sigma(\X_{ij})$.
 
 A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs $\y \in \R^{F_{out}}$ as
 \begin{equation*}
-	\y = \b W \x,
+	\y = \b W \x + \b b,
 \end{equation*}
-where $\W \in \R^{F_{out} \times F_{in}}$ is the parameter matrix that is learned.
+where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
 Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC is vectorized as $\x \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \cdot F_{out}$.
+
+\figref{architecture} shows a network which operates on the whole sphere. The process is however the same when working on parts of sphere, except that the graph is only built for the part of interest.
 
 GC32 - P256 - FC10
 
-The whole network is then optimized to minimize the loss function over the training data.
+All those parameters are learned during training via back-propagation of the error gradient.
+The whole network is then optimized to minimize the loss function over the training data. The gradient w.r.t.\ all the parameters is computed by back-propagation, and the values are updated by stochastic gradient descent (SGD).
 Describe the loss function.
 
 \section{Experiments}
