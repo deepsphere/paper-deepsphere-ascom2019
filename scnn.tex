@@ -48,7 +48,7 @@
 \usepackage{color}
 \usepackage{url}
 \usepackage{hyperref}
-\usepackage{graphicx,array}
+\usepackage{graphicx,array} \graphicspath{{figures/}}
 \usepackage{subcaption}
 \usepackage{amsmath}
 \usepackage{siunitx}
@@ -243,10 +243,10 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
 	\item MD add eigenvalues, filtering speed, irregular (random) sampling) to comparison with spherical harmonics
 \end{itemize}
 
-\begin{figure*}[!ht]
+\begin{figure*}
 	\centering
-    % \includegraphics[width=\linewidth]{figures/architecture}
-	\includegraphics[width=\linewidth]{figures/figure_architecture.pdf}
+    % \includegraphics[width=\linewidth]{architecture}
+	\includegraphics[width=\linewidth]{figure_architecture}
 	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
     \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot notebook, they will be.}
     }
@@ -460,14 +460,14 @@ High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_m
 	\centering
 	\begin{subfigure}[b]{0.45\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{figures/exampleEarthTopo}
+		\includegraphics[width=\linewidth]{exampleEarthTopo}
 		\caption{}
 		\label{fig:example_earth}
 	\end{subfigure}
 	\hfill
 	\begin{subfigure}[b]{0.45\linewidth}
 		\centering
-		\includegraphics[width=\linewidth]{figures/exampleCMB}
+		\includegraphics[width=\linewidth]{exampleCMB}
 		\caption{}
 		\label{fig:example_cmb}
 	\end{subfigure}
@@ -500,7 +500,7 @@ is the average Euclidean distance over all connected pixels. This weighting sche
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{figures/half_graph_4.pdf}
+	\includegraphics[width=0.8\linewidth]{half_graph_4}
 	\caption[]{Graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[6]}
 	\label{fig:healpix_graph_4}
 \end{figure}
@@ -556,7 +556,7 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 
 \begin{figure*}
 	\centering
-	\includegraphics[width=\linewidth]{figures/gaussian_filters_sphere.pdf}
+	\includegraphics[width=\linewidth]{gaussian_filters_sphere}
 	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
@@ -597,7 +597,7 @@ That is much more efficient than filtering with spherical harmonics, even tho th
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/filtering_speed}
+	\includegraphics[width=\linewidth]{filtering_speed}
 	\caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes. The fast spherical harmonic transform (SHT) is implemented by the healpy Python package (via the \texttt{healpy.sphtfunc.smoothing} function with $\ell_{max} = 3 N_{side} - 1$, the default.). The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the numpy and scipy Python packages. Both are executed on a single core. The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3)$ for the spherical harmonics, where $\ell_{max}$ is the largest degree (i.e., the spectrum is truncated at $\ell_{max}$).}
 	\label{fig:filtering_speed}
 \end{figure}
@@ -613,7 +613,7 @@ Pooling refers to the operation that summarizes the data supported on the merged
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/pooling.pdf}
+	\includegraphics[width=\linewidth]{pooling}
 	\caption{Two levels of coarsening and pooling: groups of 4 cells are merged into one, then the data on them is summarized in one. The coarsest cell covers $1/12$ of the sphere.}
 	\label{fig:pooling}
 \end{figure}
@@ -672,7 +672,7 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\linewidth]{figures/psd_sigma3.pdf}
+\includegraphics[width=\linewidth]{psd_sigma3}
 \caption{Power spectrum densities of the noiseless maps. The maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies. The cosmological models could otherwise have been distinguished by looking at the PSDs.}
 \label{fig:psd_sigma3}
 \end{figure}
@@ -688,9 +688,9 @@ Initial conditions for these simulations were the same, so the differences in st
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.48\linewidth]{figures/smooth_map_class_1.pdf}
+\includegraphics[width=0.48\linewidth]{smooth_map_class_1}
 \hfill
-\includegraphics[width=0.48\linewidth]{figures/smooth_map_class_2.pdf}
+\includegraphics[width=0.48\linewidth]{smooth_map_class_2}
 \caption{Example maps from two classes to be discriminated. Left: model 1 with $\Omega_m=0.31$ and $\sigma_8=0.82$. Right: model 2 with $\Omega_m=0.26$ and $\sigma_8=0.91$.
 The initial conditions for both simulations were the same, so differences only arise due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
@@ -710,7 +710,7 @@ includes an example using the full sphere.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\linewidth]{figures/part_sphere.pdf}
+\includegraphics[width=\linewidth]{part_sphere}
 \caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
 \label{fig:part_sphere}
 \end{figure}
@@ -765,11 +765,11 @@ Note that without this graph structure, a fully connected neural network approac
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.32\linewidth]{figures/result_order1.pdf}
+\includegraphics[width=0.32\linewidth]{result_order1}
 \hfill
-\includegraphics[width=0.32\linewidth]{figures/result_order2.pdf}
+\includegraphics[width=0.32\linewidth]{result_order2}
 \hfill
-\includegraphics[width=0.32\linewidth]{figures/result_order4.pdf}
+\includegraphics[width=0.32\linewidth]{result_order4}
 \caption{Classification errors for the 3 different problems.}
 \label{fig:results}
 \end{figure*}
@@ -789,9 +789,9 @@ of HEALPix. For a detail, on how the convolution kernels are plotted, please ref
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=0.47\linewidth]{figures/section_filter_last.pdf}
+\includegraphics[width=0.47\linewidth]{section_filter_last}
 \hfill
-\includegraphics[width=0.45\linewidth]{figures/gnonomic_filter_last.pdf}
+\includegraphics[width=0.45\linewidth]{gnonomic_filter_last}
 \caption{24 learned filters selected from the last spherical convolutional layer. Left: section. Right: gnonomic view.}
 \label{fig:learned_filter}
 \end{figure*}
@@ -857,9 +857,9 @@ chosen Kroneker.
 
 \begin{figure*}[!ht]
 \centering
-\includegraphics[width=\linewidth]{figures/gaussian_filters_spectral.pdf}
-\includegraphics[width=\linewidth]{figures/gaussian_filters_gnomonic.pdf}
-\includegraphics[width=\linewidth]{figures/gaussian_filters_section.pdf}
+\includegraphics[width=\linewidth]{gaussian_filters_spectral}
+\includegraphics[width=\linewidth]{gaussian_filters_gnomonic}
+\includegraphics[width=\linewidth]{gaussian_filters_section}
 \caption{Three different visualizations of the convolution kernel $K_t(x)=e^{-\tau t x}$.
 Top: graph spectral domain.
 Middle: gnomonic projection.
@@ -869,7 +869,7 @@ Bottom: section plot.}
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.6\linewidth]{figures/index_plotting_order20_nside16.pdf}
+\includegraphics[width=0.6\linewidth]{index_plotting_order20_nside16}
 \caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
 \label{fig:index_section}
 \end{figure}
@@ -896,7 +896,7 @@ error is shown in \figref{hist_error_evolution}.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=\linewidth]{figures/hist_error_order2_noise1_5.pdf}
+\includegraphics[width=\linewidth]{hist_error_order2_noise1_5}
 \caption{Evolution curve of the error with respect to the number of training samples for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
 \label{fig:hist_error_evolution}
 \end{figure}
