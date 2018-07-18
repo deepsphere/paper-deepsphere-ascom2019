@@ -239,17 +239,15 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
     \item TK check the appendix
     \item TK optional - example of data (CMB (mask) + mass map + radio intensity)
     \item TK read everything
-	\item MD should we keep those small appendices rather than merging them in the main text?
-	\item MD add eigenvalues, filtering speed, irregular (random) sampling) to comparison with spherical harmonics
+	\item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings.
+	\item uniformize text size in figures
 \end{itemize}
 
 \begin{figure*}
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
 	\includegraphics[width=\linewidth]{figure_architecture}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
-    \nati{Great plot! Could you make the sphere round? If you use the current code in paper plot notebook, they will be.}
-    }
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.}
 	\label{fig:architecture}
 \end{figure*}
 
@@ -290,11 +288,8 @@ It is also possible to use multiple HEALPix maps within our framework and use da
 We give a practical demonstration of the application of our package to cosmological model discrimination using convergence maps, similar to \citep{schmelze2017cosmologicalmodel}.
 In a simplified scenario, we classify convergence maps on parts of a sphere into two cosmological models.
 These models were designed to have the same power spectrum in range $\ell < 1000$.
-We compare the performance of the spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or Power Spectrum Densities (PSD) of these maps as input.
-The comparison is made as a function of the noise level on convergence maps and the area of the sphere used. Results show that our model is better at discriminating the maps, is more resilient to noise, and \todo{is faster?}.
-\nati{I do not think we should argue for speed gain in this paper. We are probably much more efficient than scnns with the convolution done in the spectral domain. However compared to traditional methods, we are in most of the cases slower.}
-\todo{I think we should, as that is our main argument against using the spherical harmonics. We are slower than 2D CNNs sure, but those are not adapted to the sphere. Or what do you mean by traditional methods?}
-
+We compare the performance of our spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or power spectrum densities (PSDs) of these maps as input.
+The comparison is made as a function of the additive noise level and the used area of the sphere. Results show that our model is better at discriminating the maps and is more resilient to noise.
 
 The paper is organized as follows.
 In \secref{related}, we describe existing approaches to convolutions on spheres, graphs, and manifolds.
@@ -345,33 +340,27 @@ The resulting convolution is performed by (i) a spherical harmonic transform (SH
 The main advantage of this approach is that it provides a mathematically well defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
 For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest order (angular frequency) \citep{gorski2005healpix}.\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO(\sqrt{N_{pix}})$ rings of constant latitude. Each ring has $\bO(\sqrt{N_{pix}})$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO(N_{pix} \log(\sqrt{N_{pix}}))$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO(N_{pix}^{3/2})$.}
 In comparison, filtering with our method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}). Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented in HEALPix.
-While a comparison is theoretically possible, the experiments
-of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and
-do not provide any code for the HEALPix one. Hence, a practical comparison is
-not possible. We also note that this approach cannot be trivially accelerated
-if only one part of the sphere is used. This is impractical in the field of
-cosmology as the data often observed only on some part of the sphere.
-One could still pad the unused part of the sphere with zeros. However, this would significantly increase the computational cost of the method.
-\nati{@mdeff: do you think we can say the method would be too slow for our dataset even without trying it? I am not so sure...}
-\todo{slow: full sky maps are composed of millions of points. partial maps are hard to process}
+While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
+We also note that this approach cannot be easily accelerated when data lies on a part of the sphere only. That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare. One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals (on the latitude or longitude). It is however not straightforward to identify those empty directions, and computations would still be wasted (consider for example a ring which mostly contains zeros but a few measurements). With graphs however, one only pays for the used pixels. The cost is some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}). Those can however be mitigated by padding with zeros a small area around the measurements.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{sphere_grids}
+	\caption{Two realizations of a grid on the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Right: An equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Figure from \citet{boomsma2017spherical}.}
+	\label{fig:sphere_grids}
+\end{figure}
 
 A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
 to use the traditional 2-dimensional convolution on an irregular grid defined on the
-sphere. In the paper, two grids are used: the equirectangular grid and the ``cubed
-sphere'' grid defined by~\citet{ronchi1996cubed}. \nati{Do we need a plot of the equirectangular and cubed sphere sampling?} Because this
-approach is based on the traditional 2-dimensional convolution, it is very likely to be the
-most computationally efficient one. However, it suffers that it can only be used using very
+sphere. In the paper, two grids are used: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}. See \figref{sphere_grids}. Because this
+approach is based on the classic 2-dimensional convolution, it benefits from all the optimizations developed for images and is very likely to be 
+the most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are not including HEALPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
-spherical properties of the domain, i.e., the ``cubed sphere'' sampling is by
+spherical properties of the domain, i.e., the cubed-sphere sampling is by
 definition adapted to a cube and not to a sphere.
-\todo{border effects? \nati{@mdeff what are you thinking about here?} I was thinking about irregularities in the sampling, i.e., the corners of the cube are much more sampled.}
-% \nati{Michael: Under some very
-% specific hypothesis, this second approach is a particular case of our method,
-% i.e. 1) our method with a stupid sampling, 2) assumption that graph convolution
-% on a grid == 2d convolution. Do you think we should mention that? I think we
-% should not.}
-% I think we should!
+Those samplings are not ideal as their resolution is not constant across the sphere. Indeed, the singularities --- the poles for the equirectangular grid, the corners of the cube for the cubed-sphere --- are over-sampled. Equal areas of discrete elements is advantageous for physical measurements as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence.
+% \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 
 In an attempt to get the best of the first two approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
@@ -384,8 +373,8 @@ differences. First the sampling is different as~\cite{khasanova2017graph} uses a
 grid. Second, it uses a different graph CNN based on a different parameterization
 of the convolution kernel.
 As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
-Finally, while we do want our network to be rotation invariant, their statistical layer --- an operation which computes a set of spatially invariant statistics of the last feature map --- destroys a lot of information \todo{and hinders performance (should be empirically verified)}. While being completely invariant is a nice goal, CNNs for image recognition (arguably the most researched and developed architectures), are not built to be invariant to translation. As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features. While that may not be ideal, it was shown to work well in practice.
-
+Finally, while we do want our network to be rotation invariant, their statistical layer --- an operation which computes a set of spatially invariant statistics of the last feature map --- destroys a lot of information \todo{and hinders performance (should be empirically verified)}. Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest. While developing completely invariant transforms is a  goal worth investigating, CNNs for image recognition (arguably the most researched and developed architectures), are not built to be fully invariant to translation. As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features. While that may not be ideal, it was shown to work well in practice.
+\todo{The statistical layer, an idea that we reused in this work. See xxx.}
 
 
 \subsection{Convolutions on graphs}
@@ -454,7 +443,6 @@ A hierarchy is desired for data locality in computer memory. Equal area is advan
 
 The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal sized pixels (right-most sphere in \figref{pooling}). As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels. \figref{example_maps} shows two examples.
-\nati{The figure is beautiful, but should we really show it? If we target cosmologists, we can simply list some type of data. If we target a broader audience, maybe it makes sense to provide some illustration.}
 
 \begin{figure}
 	\centering
@@ -523,9 +511,17 @@ Indeed,
 \end{equation*}
 is a measure of how smooth the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$.
 
-It turns out that using the graph construction described above, the graph Fourier modes resemble the spherical harmonics (see \figref{graph_harmonics}). That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling. This topic is further discussed in \ref{sec:spherical_harmonics}.
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{eigenvectors}
+	\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the HEALPix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$ and order $m=(-1,0,1)$, eigenvectors 4--8 with degree $\ell=2$ and order $m=(-2,-1,0,1,2)$, and eigenvectors 9--15 with degree $\ell=3$ and order $m=(-3,\ldots,3)$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics.}
+	\label{fig:graph_harmonics}
+\end{figure}
+
+It turns out that using the graph construction described above, the graph Fourier modes resemble the spherical harmonics (see \figref{graph_harmonics}). That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling. This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
 
 \subsection{Convolution on graphs}
+\label{sec:graph_convolution}
 
 As there is no notion of translation on a graph, we cannot really convolve two graph signals. We can, however, convolve a signal with a kernel defined in the spectral domain. More precisely, we are filtering a graph signal by a kernel. Given the convolution kernel
 $h: \R_+ \rightarrow \R$, a signal $\f \in \R^{N_{pix}}$ on the graph is filtered as
@@ -535,12 +531,12 @@ $h: \R_+ \rightarrow \R$, a signal $\f \in \R^{N_{pix}}$ on the graph is filtere
 where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii} = h(\bLambda_{ii})$, and $h(\bLambda) \hat{\f}$ is the spectral representation of $\f$ after filtering.
 
 Contrary to classical signal processing on Euclidean domains, the kernel $h$ has no single representation in the vertex domain and cannot be translated on the graph. It can however be localized on any vertex $v_i$ by the convolution with a Kronecker delta $\b \delta_i \in \R^{N_{pix}}$,\footnote{A Kronecker delta is the signal $\b \delta_i \in \R^{N_{pix}}$ that is zero everywhere except on vertex $v_i$ where it takes the value one.} that is $h(\L) \b \delta_i$, a column of $h(\L)$.
-That is useful to visualize kernels.
+That is useful to visualize kernels. \todo{nath: link with appendix}
 If the graph is not regular, i.e., all nodes don't have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
 Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with all localizations of the kernel:
-\begin{equation*}
+\begin{equation} \label{eqn:graph_convolution_spatial}
 	(h(L) \f)_i = \langle h(L) \b \delta_i, \f \rangle.
-\end{equation*}
+\end{equation}
 
 \paragraph{Example}
 Let us consider the heat diffusion problem
@@ -554,15 +550,17 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \end{equation*}
 which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which are a generalization of squared frequencies. Hence, the kernel $K_t$ can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution is different from a true spherical convolution, it can, provided the correct parameterization, well approximate it. \figref{gaussian_filters_visualization} provides additional visualizations of the convolution kernel $K_t$.
 
-\begin{figure*}
+\begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{gaussian_filters_sphere}
 	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
-	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\% }
+	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\%.
+	\todo{(i) Only three diffusion steps to have a bigger figure?}
+\todo{(ii) The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}}
 	\label{fig:gaussian_filters_comparizon}
-\end{figure*}
+\end{figure}
 
 This result is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. In some applications, where the
@@ -591,6 +589,9 @@ Following \citet{defferrard2016convolutional}, we define our filters as Chebyshe
 \end{equation}
 where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}$ is the rescaled Laplacian with eigenvalues in $[-1, 1]$ and $T_k(\cdot)$ is the Chebyshev polynomial of degree $k$, defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$. While definitions \eqnref{graph_convolution_polynomial} and \eqnref{graph_convolution_cheby} both allow the representation of the same set of filters, Chebyshev polynomials are preferred as they form an orthogonal basis on the interval $[-1, 1]$. Moreover, they factor out $\tL^{k-2}$ from $T_k(\tL)$, e.g., the 3-neighborhood is not mixed with the 5-neighborhood. That results in easier learning when optimizing the parameters $\theta$.
 Finally, the coefficients can be computed such as the truncated Chebyshev expansions gives an approximate minimax polynomial of a given filter \citep{hammond2011wavelets}. While that is irrelevant when learning filters, it is useful when smoothing a signal on the sphere by filtering it with an approximated low-pass filter.
+\todo{(i) scale of $\theta_k$: they are mostly constant for Chebyshev polynomials. How are they for monomials?}
+\todo{(ii) numerical stability of $\L^k \f$ v.s. $T_k(\L) \f$}
+\todo{(iii) in the code, initialize $\theta_k$ with stdev adapted to $F_{in}$ and $K$}
 
 Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the dense vector $\f$ with the sparse matrix $\tL$. The cost of one such multiplication is $\bO(|\E|)$. By construction of our graph, $|\E| < 8 N_{pix}$. The overall computational cost of the convolution is thus reduced to $\bO(N_{pix})$ operations.
 That is much more efficient than filtering with spherical harmonics, even tho the HEALPix sampling was designed to leverage a fast spherical transform (by being iso-latitude). That is especially true for smooth kernels which require a low polynomial degree $K$. See \figref{filtering_speed} for a speed comparison of low-pass filtering for Gaussian smoothing using the spherical harmonics and the presented method. It is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively.
@@ -818,8 +819,10 @@ In this contribution, we presented HealpixNet, a spherical CNN for the HEALPix s
 This allows us to leverage the advantages of the graph convolution, i.e., it is both efficient (with a complexity of $\mathcal{O}(N_{pix})$) and flexible (allow to work only on a part of the sphere) while it still captures well the spherical properties of the domain.
 We also show on a range of classification problems that the neural network systematically significantly outperform classical methods.
 
+As shown in this contribution, modeling the discretized sphere, a 2D manifold in $\R^3$, by a graph enables an efficient convolution operation on any pixelization. Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions. For applications which can tolerate small imprecisions in rotation invariance --- the fact that the action of a graph filter slightly depends on the location --- this relaxation might enable researchers to consider sampling sets with different properties.
+
 The main product of this contribution is HealpixNet,\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} a small and easy-to-use python package for cosmologists to classify sky maps.
-As a future work, we intend to 1) further investigate the link between the graph Fourier basis and the spherical harmonic and 2) compare HealpixNet to other spherical CNN using different sampling schemes.
+As a future work, we intend to (i) further investigate the link between the graph Fourier basis and the spherical harmonic and (ii) compare HealpixNet to other spherical CNN using different sampling schemes.
 
 \section*{Thanks}
 
@@ -827,26 +830,36 @@ As a future work, we intend to 1) further investigate the link between the graph
 %% appendix sections are then done as normal sections
 \appendix
 
-\section{Graph Fourier eigenvectors and spherical harmonics}
-\label{sec:spherical_harmonics}
+\section{Graph Fourier modes and spherical harmonics}
+\label{sec:comparison_spherical_harmonics}
+\label{sec:border_effects}
 
 The eigenvalues of the graph Laplacian $\L$, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
-The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}. While there is again a clear resemblance with the spherical harmonics, the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an effect on the graph Fourier modes.
+The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}. \figref{subspace_harmonics_eigenvectors} shows the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. While there is again a clear resemblance with the spherical harmonics, the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an effect on the graph Fourier modes.
 First, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere.
 Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is however out of the scope of this contribution.
 
-\begin{figure*}[!htb]
-\centering
-\includegraphics[width=\linewidth]{figures/eigenvectors}
-\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the HEALPix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$ and order $m=(-1,0,1)$, eigenvectors 4--8 with degree $\ell=2$ and order $m=(-2,-1,0,1,2)$, and eigenvectors 9--15 with degree $\ell=3$ and order $m=(-3,\ldots,3)$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics.}
-\label{fig:graph_harmonics}
-\end{figure*}
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{graph_eigenvalues}
+	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. See also \figref{graph_harmonics}.}
+	\label{fig:graph_eigenvalues}
+\end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{figures/graph_eigenvalues}
-	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, corresponding to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell+1$ modes. See also \figref{graph_harmonics}.}
-	\label{fig:graph_eigenvalues}
+	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors}
+	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics which correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics which correspond to the same degree $\ell$ are linearly dependent. There is $2 \ell + 1$ orders per degree $\ell$.}
+	\label{fig:subspace_harmonics_eigenvectors}
+\end{figure}
+
+The graph setting used through this contribution assumes reflective border conditions. That is irrelevant when working on the complete sphere as this surface has no border. When working with a part of the sphere however, its border slightly affects the convolution. As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile. These border effects can however be mitigated by padding with zeros a small area around the part of interest.
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=\linewidth]{border_effects}
+	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on pixel $i$ as $h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
+	\label{fig:border_effects}
 \end{figure}
 
 \section{Filter visualization}
@@ -905,17 +918,6 @@ error is shown in \figref{hist_error_evolution}.
 \includegraphics[width=\linewidth]{hist_error_order2_noise1_5}
 \caption{Evolution curve of the error with respect to the number of training samples for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
 \label{fig:hist_error_evolution}
-\end{figure}
-
-\section{Border effects when only a part of the sphere is considered.}
-\label{sec:border_effects}
-The graph setting used through this contribution assumes reflective border conditions on a grid. While the complete sphere is not affected by this because it has no border, these border effects change slightly the effect of the convolution when working with only a part of the graph.  As depicted in \figref{border_effects}, the convolution of a Krnoneker near the border filters may no longer have a spherical profile.
-
-\begin{figure}[!ht]
-\centering
-\includegraphics[width=\linewidth]{figures/border_effects.pdf}
-\caption{Graph convolution of a Kroneker placed at two different spots on the graph. The graph build from $1/12$ of the sphere and an Nside of 16. When the Kroneker is placed on the left corner, the resulting convolution is not circular anymore due to border effect. The graph setting assumes reflective border conditions.}
-\label{fig:border_effects}
 \end{figure}
 
 %% If you have bibdatabase file and want bibtex to generate the
