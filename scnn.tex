@@ -98,6 +98,8 @@
 \newcommand{\bLambda}{\b{\Lambda}}
 \newcommand{\blambda}{\b{\lambda}}
 \newcommand{\bO}{\mathcal{O}}
+\DeclareMathOperator*{\esp}{E}
+\DeclareMathOperator*{\var}{Var}
 \newcommand{\pkg}[1]{\texttt{#1}}
 
 
@@ -214,6 +216,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
 
 
     \item (TK) make the bibliography display only a few name
+	\item check if papers which appear as arxiv were not published in a conference or journal
     % \item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
     % \item Emphasize the novelty of using it on Healpix in abstract, into and rest of the paper
     \item (TK) add info on comparison with histograms, so that it's just a demonstration
@@ -270,7 +273,7 @@ While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
 A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those very specific grid samplings which are highly irregular on the sphere.
 A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast spherical Fourier transforms for some samplings, this approach is still computationally expensive (see \figref{filtering_speed}).
-Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well, towards the goal of building invariances in the network. While their architecture is fully invariant to translation and rotation on the sphere, they did not take advantage of a hierarchical pixelization of the sphere, and the statistical layer used to be invariant needs to be hand-crafted to capture statistics of interest.
+Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of building invariances in the network. While their architecture is fully invariant to translation and rotation on the sphere, they did not take advantage of a hierarchical pixelization of the sphere, and the statistical layer used to be invariant needs to be hand-crafted to capture statistics of interest.
 
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
 This contribution leverages the emerging field of graph signal processing which defines fundamental signal processing tools such as the Fourier transform for signals defined on graphs \citep{shuman2013emerging}.
@@ -367,15 +370,14 @@ direction. We use a graph to adapt to the particular structure of the sphere.
 While the convolution remains efficient, it still captures well the spherical
 structure and is particularly adapted to the HEALPix sampling.
 
-The use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graph} as well. The authors map omnidirectional images to the sphere, with the goal of correcting for distortions induced by the lens used for the acquisition.
+The use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graphomni} as well. The authors map omnidirectional images to the sphere, with the goal of correcting for distortions induced by the lens used for the acquisition.
 Besides the different application covered by the paper, there are two important
-differences. First the sampling is different as~\cite{khasanova2017graph} uses a
+differences. First the sampling is different as~\cite{khasanova2017graphomni} uses a
 grid. Second, it uses a different graph CNN based on a different parameterization
 of the convolution kernel.
 As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
 Finally, while we do want our network to be rotation invariant, their statistical layer --- an operation which computes a set of spatially invariant statistics of the last feature map --- destroys a lot of information \todo{and hinders performance (should be empirically verified)}. Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest. While developing completely invariant transforms is a  goal worth investigating, CNNs for image recognition (arguably the most researched and developed architectures), are not built to be fully invariant to translation. As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features. While that may not be ideal, it was shown to work well in practice.
-\todo{The statistical layer, an idea that we reused in this work. See xxx.}
-
+\todo{In this work we reused the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere. While \citet{khasanova2017graphomni} uses the mean and variance of diffused versions of the last feature maps, we experimentally tested multiple variants and got good results by keeping all the statistical moments via a learned histogram. That is similar to the learnable histogram introduced by \citet{wang2016learnhist}, although for the orthogonal purpose of integrating global context in object detection and segmentation tasks.}
 
 \subsection{Convolutions on graphs}
 \todo{Maybe we just describe convolutions on sphere and graph, i.e.: do we really need all these three subsections? Maybe simply merge them?}
@@ -609,7 +611,7 @@ Hierarchical pixelization schemes present a natural coarsening. Indeed, each sub
 
 Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one parent cell. That operation is often taken to be the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
 
-% The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graph})
+% The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graphomni})
 % nope: can also do a regular pooling on the equirectangular. It preserves the sampling, and the convolution is adapted to the sampling thanks to the edge weights.
 
 \begin{figure}
@@ -619,10 +621,28 @@ Pooling refers to the operation that summarizes the data supported on the merged
 	\label{fig:pooling}
 \end{figure}
 
+\subsection{Statistical layer}
+\label{sec:stat_layer}
+% Or Global pooling?
+
+Following \citet{khasanova2017tigranet}, we use a statistical layer between the last graph convolutional layer and the first fully connected layer for the neural network to be invariant to isometric transformations such as rotation and translation of maps on the sphere. The role of the layer is to compute global and location independent statistics from feature maps. Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map, $N_{pix}$. That compression results in much smaller fully connected layers, the most parameter-hungry layers of a neural network. The invariance and reduced representation should help the network to learn from less samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
+
+Given a feature map $\x \in \R^{N_{pix}}$, the statistical layer is defined as
+\begin{equation} \label{eqn:stat_layer}
+	\y = f(\x) \in \R^{N_{stat}},
+\end{equation}
+where $f$ computes $N_{stat}$ statistics which are independent from the size of the map, $N_{pix}$. An example is the global average pooling $f(\x) = \esp(\x)$, introduced by \citet{lin2013globalavgpooling}, where $\esp(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} x_i$ is the empirical mean. Another example is $f(\x) = [\esp(\x), \var(\x)]\trans$, where $\var(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} (x_i - \esp(\x))^2$ is the empirical variance.
+
+\todo{learned histogram \citep{wang2016learnhist} if it shows good results}
+
+\todo{stats of diffused maps \citep{khasanova2017tigranet}. Provides stats at multiple scales?}
+
+\todo{perf w.r.t. different functions $f$. Here or in the experiment section?}
+
 \subsection{Graph convolutional neural network}
 \label{sec:architecture}
 
-A typical neural network is constructed as a stack of layers, which sequentially transform the input data. Our architecture, pictured in \figref{architecture}, is composed of the following types of layers: graph convolutional (GC) layers, non-linearity, pooling (P), batch normalization (BN), and fully connected (FC) layers. All GC and FC layers are always followed by a non-linearity. As such, we will not mention the non-linearity in the description of our architectures.
+Neural networks are constructed as stacks of layers which sequentially transform the input data. Our architecture, pictured in \figref{architecture}, is composed of the following types of layers: graph convolutional (GC) layers, non-linearity, pooling (P), batch normalization (BN), statistical layer (ST), and fully connected (FC) layers. All GC and FC layers are always followed by a non-linearity. As such, we will not mention the non-linearity in the description of our architectures.
 
 A GC layer takes as input a data matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a data matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. In the first GC layer, $F_{in} = 1$ if we have a single map, such as the CMB radiation temperature. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction.
 Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
@@ -632,6 +652,8 @@ Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
 As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers. A bias term $\b b \in \R^{F_{out}}$ is learned jointly.
 
 A non-linear function $\sigma(\cdot)$ is always applied after a linear GC or FC layer. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice. That operation is point-wise, i.e., $\Y_{ij} = \sigma(\X_{ij})$.
+
+The ST layer, described by \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citet{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F$ should be equal to the number of classes to discriminate, i.e., the last GC layer outputs as many feature maps as there is classes.
 
 A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs $\y \in \R^{F_{out}}$ as
 \begin{equation*}
