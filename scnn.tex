@@ -81,6 +81,8 @@
 \newcommand{\G}{\mathcal{G}}
 \newcommand{\V}{\mathcal{V}}
 \newcommand{\E}{\mathcal{E}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\B}{\mathcal{B}}
 \renewcommand{\L}{\b{L}}
 \newcommand{\tL}{\tilde{\L}}
 \newcommand{\W}{\b{W}}
@@ -100,6 +102,7 @@
 \newcommand{\bO}{\mathcal{O}}
 \DeclareMathOperator*{\esp}{E}
 \DeclareMathOperator*{\var}{Var}
+\DeclareMathOperator*{\vect}{vec}
 \newcommand{\pkg}[1]{\texttt{#1}}
 
 
@@ -250,7 +253,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
 	\includegraphics[width=\linewidth]{figure_architecture}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.}
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
 	\label{fig:architecture}
 \end{figure*}
 
@@ -607,9 +610,13 @@ That is much more efficient than filtering with spherical harmonics, even tho th
 
 \subsection{Coarsening and Pooling}
 
-Hierarchical pixelization schemes present a natural coarsening. Indeed, each subdivision divides a cell in an equal number of child sub-cells. Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them. Merging cells lead to a coarser graph, hence the name coarsening.
+Hierarchical pixelization schemes present a natural coarsening. Indeed, each subdivision divides a cell in an equal number of child sub-cells. Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them. Merging cells lead to a coarser graph, hence the name coarsening. Coarsening defines $\C(i)$, the set of children of node $v_i$. For the HEALPix subdivision scheme, the number of children is constant, i.e., $| \C(i) | = 4^k \ \forall i$, for some $k$.
 
-Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one parent cell. That operation is often taken to be the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
+Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one parent cell. Given a map $\x \in \R^{N_{pix}}$, pooling defines $\y \in \R^{N'_{pix}}$ such as
+\begin{equation} \label{eqn:pooling}
+	y_i = f \left( \left\{ x_j : j \in \C(i) \right\} \right), \ \forall i \in [N'_{pix}],
+\end{equation}
+where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N_{pix}}'$ is the down-sampling factor\footnote{$| \C(i) | = N_{pix} / {N_{pix}}' = (N_{side} / N'_{side})^2 = 4^k$ for HEALPix.}. That operation is often taken to be the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
 
 % The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graphomni})
 % nope: can also do a regular pooling on the equirectangular. It preserves the sampling, and the convolution is adapted to the sampling thanks to the edge weights.
@@ -642,34 +649,40 @@ where $f$ computes $N_{stat}$ statistics which are independent from the size of 
 \subsection{Graph convolutional neural network}
 \label{sec:architecture}
 
-Neural networks are constructed as stacks of layers which sequentially transform the input data. Our architecture, pictured in \figref{architecture}, is composed of the following types of layers: graph convolutional (GC) layers, non-linearity, pooling (P), batch normalization (BN), statistical layer (ST), and fully connected (FC) layers.
-
-A GC layer takes as input a data matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a data matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. In the first GC layer, $F_{in} = 1$ if we have a single map, such as the CMB radiation temperature. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction.
-Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
-\begin{equation*}
-	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + \b b_i, \ \ \forall i \in [F_{out}].
-\end{equation*}
-As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers. A bias term $\b b \in \R^{F_{out}}$ is learned jointly.
+Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to a decision on the class label. Our architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers, and batch normalization layers. The tail is composed of multiple fully connected layers (FC) followed by a softmax layer. A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
 
 % As such, we will not mention the non-linearity in the description of our architectures.
-A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer. That operation is point-wise, i.e., $\Y_{ij} = \sigma(\X_{ij})$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
+A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
 
-The ST layer, described by \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citet{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F$ should be equal to the number of classes to discriminate, i.e., the last GC layer outputs as many feature maps as there is classes.
+A GC layer takes as input a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. In the first GC layer, $F_{in} = 1$ if we have a single map, such as the CMB radiation temperature. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction.
+Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
+\begin{equation*}
+	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + b_i, \ \ \forall i \in [F_{out}].
+\end{equation*}
+As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers (see \secref{efficient_convolution}). A bias term $\b b \in \R^{F_{out}}$ is jointly optimized.
+
+The pooling layer takes a matrix $\X \in \R^{N_{pix} \times F}$ and transforms it to $\Y \in \R^{N'_{pix} \times F}$ by reducing its spatial resolution ($N'_{pix} < N_{pix}$) according to \eqnref{pooling}.
+
+Given a matrix $\X \in \R^{N_{pix} \times F}$, a batch normalization layer \citep{ioffe2015batchnorm} computes
+\begin{equation*}
+	y_{ij} = \gamma_{ij} \frac{x_{ij} - \esp_\B(x_{ij})}{\sqrt{\var_\B(x_{ij}) + \epsilon}} + \beta_{ij}, \ \forall i,j \in [N_{pix}] \times [F],
+\end{equation*}
+where $\gamma_{ij}$ and $\beta_{ij}$ are parameters to be learned, $\epsilon$ is a constant added for numerical stability, and the empirical expectation and variance are taken over the training mini-batches $\B$.
+
+The ST layer, defined in \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citet{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F$ should be equal to the number of classes to discriminate, i.e., the last GC layer outputs as many feature maps as there is classes.
 
 A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs $\y \in \R^{F_{out}}$ as
 \begin{equation*}
 	\y = \b W \x + \b b,
 \end{equation*}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
-Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC is vectorized as $\x \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \cdot F_{out}$.
+Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the ST), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \cdot F_{out}$ (or $N_{stat} \cdot F_{out}$).
 
-The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the next to last layer, called the logits in the deep learning literature, the softmax layer outputs
+The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last FC, called the logits in the deep learning literature, the softmax layer outputs
 \begin{equation*}
 	y_i = \frac{\exp(x_i)}{\sum_{j=1}^{N_{classes}} \exp(x_j)} \in [0, 1], \ \forall i \in [N_{classes}],
 \end{equation*}
 where $N_{classes}$ is the number of classes to discriminate. Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the probability that the input sample belongs to class $i$. That last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
-
-\figref{architecture} shows a network which operates on the whole sphere. The process is however the same when working on parts of sphere, except that the graph is only built for the part of interest.
 
 GC32 - P256 - FC10
 
