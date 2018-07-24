@@ -246,7 +246,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
 %\subsection{Motivation}
 
 Cosmological and astrophysical data often comes in the form of spherical sky maps.
-Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning has recently gained popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}, thanks to its ability to capture complicated, non-linear patterns which are often present in the data. Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation equivariance built into their architecture. Indeed, sky maps are translation equivariant, which means that rotating maps on the sphere doesn't change their interpretation. Only the statistics of the maps is relevant. The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle). As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
+Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning has recently gained popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}, thanks to its ability to capture complicated, non-linear patterns which are often present in the data. Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture. Indeed, sky maps are translation invariant, which means that translating and rotating maps on the sphere doesn't change their interpretation. Only the statistics of the maps is relevant. The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle). As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
 
 \todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
 \todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the HEALPix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
@@ -255,9 +255,10 @@ Observables that cover large parts of the sky, such as the Cosmic Microwave Back
 So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
 As such, perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
 While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek, do you have a citation for that? Otherwise, we need to reformulate this.} \nati{Cite the paper of Janis?} it is more natural and accurate to work directly on the sphere.
+The main challenge in designing a CNN on the sphere is to define a convolution which is suitable to this irregularly sampled domain.
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
-A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those very specific grid samplings which are highly irregular on the sphere.
+A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those specific grid samplings which are highly irregular on the sphere.
 A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast spherical Fourier transforms for some samplings, this approach is still computationally expensive (see \figref{filtering_speed}).
 Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of building invariances in the network. While their architecture is fully invariant to translation and rotation on the sphere, they did not take advantage of a hierarchical pixelization of the sphere, and the statistical layer used to be invariant needs to be hand-crafted to capture statistics of interest.
 
@@ -316,15 +317,16 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 \section{Related work}
 \label{sec:related}
 
-\subsection{Spherical convolutions and spherical CNNs}
-\label{sec:spherical_conv}
-The major challenge to define Convolution Neural Network (CNN) onto a
-spherical domain is to handle a convolution that is suitable for this irregular sampling domain.
-Three approaches exist to address this issue.
+\citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids (illustrated in \figref{sphere_grids}) are used in their paper: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
+As this formulation leverages standard 2D convolutions, all the optimizations developed for images make it computationally very efficient. It is however restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids can be independently fed to a 2D CNN, boundary conditions should be properly handled as those grids are not independent. \todo{How do thy handle boundaries?}
+% Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere.
+Moreover, those samplings are not ideal as their resolution is not constant across the sphere. Indeed, the singularities --- the poles for the equirectangular grid, the corners of the cube for the cubed-sphere --- are over-sampled. Equal areas of discrete elements is advantageous for physical measurements as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
+% \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
+Finally, a 2D CNN learns directional filters which orientation is arbitrary. Indeed, directions, which make much sense for images (up, down, left, and right), are arbitrarily defined when setting the origin of the grids on the sphere. Any convolution using directions on the sphere is not equivariant to translation and rotation.
 
 % As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
 
-The first approach, leveraging the continuous spherical convolution, has been proposed by~\citet{cohen2018spherical}. The goal of this contribution was to define a rotation-equivariant convolution on the sphere, i.e., a rotation of the input implies the same rotation in the output.
+\citet{cohen2018spherical} leverages the continuous spherical convolution. The goal of this contribution was to define a rotation-equivariant convolution on the sphere, i.e., a rotation of the input implies the same rotation in the output.
 The resulting convolution is performed by (i) a spherical harmonic transform (SHT), i.e., a projection on the spherical harmonics, (ii) a  multiplication in the spectral domain, and (iii) an inverse SHT. Hence the computational cost of a convolution is essentially due to the two SHTs. A naive implementation of the SHT costs $\bO(N_{pix}^2)$ operations, where $N_{pix}$ is the number of pixels. There fortunately exists accelerated schemes for some sampling sets, see for example \citet{mohlenkamp1999fast, rokhlin2006fast, reinecke2013libsharp}.
 The main advantage of this approach is that it provides a mathematically well defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
 For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest order (angular frequency) \citep{gorski2005healpix, reinecke2013libsharp}.\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO(\sqrt{N_{pix}})$ rings of constant latitude. Each ring has $\bO(\sqrt{N_{pix}})$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO(N_{pix} \log(\sqrt{N_{pix}}))$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO(N_{pix}^{3/2})$.}
@@ -338,18 +340,6 @@ We also note that this approach cannot be easily accelerated when data lies on a
 	\caption{Two realizations of a grid on the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Right: An equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Figure from \citet{boomsma2017spherical}.}
 	\label{fig:sphere_grids}
 \end{figure}
-
-A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
-to use the traditional 2-dimensional convolution on an irregular grid defined on the
-sphere. In the paper, two grids are used: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}. See \figref{sphere_grids}. Because this
-approach is based on the classic 2-dimensional convolution, it benefits from all the optimizations developed for images and is very likely to be 
-the most computationally efficient one. However, it suffers that it can only be used using very
-specific grid sampling sets which are not including HEALPix. Furthermore, the
-grid requirement makes it impossible for the convolution to capture the
-spherical properties of the domain, i.e., the cubed-sphere sampling is by
-definition adapted to a cube and not to a sphere.
-Those samplings are not ideal as their resolution is not constant across the sphere. Indeed, the singularities --- the poles for the equirectangular grid, the corners of the cube for the cubed-sphere --- are over-sampled. Equal areas of discrete elements is advantageous for physical measurements as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence.
-% \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 
 In an attempt to get the best of the first two approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
@@ -365,35 +355,20 @@ As~\citep{boomsma2017spherical}, they use an equirectangular grid sampling. More
 Finally, while we do want our network to be rotation invariant, their statistical layer --- an operation which computes a set of spatially invariant statistics of the last feature map --- destroys a lot of information \todo{and hinders performance (should be empirically verified)}. Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest. While developing completely invariant transforms is a  goal worth investigating, CNNs for image recognition (arguably the most researched and developed architectures), are not built to be fully invariant to translation. As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features. While that may not be ideal, it was shown to work well in practice.
 \todo{In this work we reused the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere. While \citet{khasanova2017graphomni} uses the mean and variance of diffused versions of the last feature maps, we experimentally tested multiple variants and got good results by keeping all the statistical moments via a learned histogram. That is similar to the learnable histogram introduced by \citet{wang2016learnhist}, although for the orthogonal purpose of integrating global context in object detection and segmentation tasks.}
 
-\subsection{Convolutions on graphs}
-\todo{Maybe we just describe convolutions on sphere and graph, i.e.: do we really need all these three subsections? Maybe simply merge them?}
+There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to translation. \todo{better wording}
+\todo{three main interpretations: gsp, Bronstein manifold tangent plane, message passing, permutation invariant aggregation, spatial formulations}
+Bronstein is a spatial formulation where the registration is done by projection on the tangent plane.
+% Not Bronstein's manifold approach as we want a Fourier basis to compare to the spherical harmonics.
+% Be as close as possible to spherical harmonics.
+Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
 
-\nati{I think that citing Bruna is to much... According to me, the goal of this subsection should not be to cite everything that exist. But should focus on
-1) be fair and say that they are other graph convolutions that can be used, 2) show some connections between graph CNNs ang group equivariant CNNs (Done), and 3) suggest that they are possible extensions of what we do.}
-
-\assign{Michaël}
-
-\todo{other approaches? GNNs, Kipf first order approx, message passing}
+% Anisotropic cannot be invariant
 
 The connection has recently been made between graph CNNs and group equivariant CNNs \cite{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere.
-
-Previous work: [Bruna] which needed the full eigendecomposition of the Laplacian, costing $O(n^3)$ operations.
 
 In this work, we are using the graph CNN formulation introduced in~\cite{defferrard2016convolutional}.
 
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
-
-
-
-\subsection{Convolutions on manifolds}
-
-
-Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
-
-\subsection{Convolutions on point clouds?}
-
-
-PointNet and co. Related but we are loosing the structure. Also coarsening.
 
 \section{Method}
 \label{sec:method}
