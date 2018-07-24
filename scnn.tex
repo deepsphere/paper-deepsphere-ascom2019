@@ -702,9 +702,9 @@ The parameters $\theta$ of the neural network are optimized to minimize the loss
 \end{equation*}
 The optimization is performed by computing an error gradient w.r.t.\ all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
 \begin{equation*}
-	\theta^{(k+1)} = \theta^{(k)} - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial \ell(NN_\theta(\X_i))}{\partial \theta} ,
+	\theta \leftarrow \theta - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial \ell(NN_\theta(\X_i))}{\partial \theta} ,
 \end{equation*}
-where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples for faster training.
+where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples to gain speed by exploiting the parallelism afforded by modern computing platforms.
 
 \section{Experiments}
 \label{sec:experiments}
