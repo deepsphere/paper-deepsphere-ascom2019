@@ -253,7 +253,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
 \begin{figure*}
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
-	\includegraphics[width=\linewidth]{figure_architecture}
+	\includegraphics[width=\linewidth]{figure_architecture_v2}
 	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. \nati{add the stat layer?} A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
 	\label{fig:architecture}
 \end{figure*}
@@ -360,7 +360,7 @@ We also note that this approach cannot be easily accelerated when data lies on a
 A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
 to use the traditional 2-dimensional convolution on an irregular grid defined on the
 sphere. In the paper, two grids are used: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}. See \figref{sphere_grids}. Because this
-approach is based on the classic 2-dimensional convolution, it benefits from all the optimizations developed for images and is very likely to be 
+approach is based on the classic 2-dimensional convolution, it benefits from all the optimizations developed for images and is very likely to be
 the most computationally efficient one. However, it suffers that it can only be used using very
 specific grid sampling sets which are not including HEALPix. Furthermore, the
 grid requirement makes it impossible for the convolution to capture the
