@@ -161,22 +161,21 @@
 % Michaël: not relevant for the abstract in my opinion
 
 Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence.
-These networks have so far been developed mostly for regular Euclidean domains such as those supporting images, audio, or video.
-CNN-based methods are becoming increasingly popular in Cosmology.
-Cosmological data often comes in a form of spherical maps, which makes the use of CNNs more complicated.
-A popular format for spherical maps is HEALPix, which uses an equal-area, isolatitude sampling.
-We present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
+So far, these networks have mostly been developed for regular Euclidean domains such as those supporting images, audio, or video.
+Because of their success, CNN-based methods are becoming increasingly popular in Cosmology.
+Nevertheless, cosmological data often comes in a form of spherical maps, which makes the use of traditional CNNs impractical and complicated.
+Typically, the spherical format for spherical maps is HEALPix, which uses an equal-area, isolatitude sampling.
+As a response to this gap, we present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
 We construct a spherical CNNs by representing the sphere as a graph.
 Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
-For that graph, we define many of the standard CNN operations, such as convolution and pooling, with the filters restricted to being radial.
+Leveraging the graph, we define many of the standard CNN operations, such as convolution and pooling, with the filters restricted to being radial.
 HealpixNet is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
 % TBD if we include it
 % This approach is computationally more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
-We demonstrate the method on a classification problem of mass maps from two cosmological models.
-We compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
-We find the performance of HealpixNet to always better or equal to both of these baselines.
+We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
+Our experimental result show that the performance of HealpixNet to always better or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
-Finally, we visualise filters learned by the HealpixNet from the mass maps.
+Finally, we propose a visualization of filters learned by the HealpixNet from the mass maps as some analysis tool for the neural network.
 Code and examples are available at \todo{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
 
 %As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs.
@@ -199,7 +198,7 @@ Code and examples are available at \todo{\url{https://github.com/SwissDataScienc
 \end{abstract}
 
 \begin{keyword}
-Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
+Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN \sep \nati{@Tomek: could you put some cosmo keywords?}
 \end{keyword}
 
 \end{frontmatter}
@@ -208,11 +207,12 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+    \item (TK) check all the colored stuff left for you
 
     \item (TK) update the README for data zip - file from NP
     \item (NP) Finalise readme on Github code
-    \item (NP) Finalize the data on zenodo
-    \item (NP) Do the download script
+    \item (Waiting for Zenodo) (NP) Finalize the data on zenodo
+    % \item (Done) Do the download script
     \item TK check part sphere notebook and whole sphere
     \item branch with notebooks with plots (results) NP
     \item Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
@@ -254,7 +254,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
 	\includegraphics[width=\linewidth]{figure_architecture}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. \nati{add the stat layer?} A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
 	\label{fig:architecture}
 \end{figure*}
 
@@ -272,7 +272,7 @@ Observables that cover large parts of the sky, such as the Cosmic Microwave Back
 
 So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
 As such, perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
-While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek, do you have a citation for that? Otherwise, we need to reformulate this.} it is more natural and accurate to work directly on the sphere.
+While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek, do you have a citation for that? Otherwise, we need to reformulate this.} \nati{Cite the paper of Janis?} it is more natural and accurate to work directly on the sphere.
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
 A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those very specific grid samplings which are highly irregular on the sphere.
