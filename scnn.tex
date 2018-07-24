@@ -208,39 +208,21 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
     \item (TK) check all the colored stuff left for you
-
+    \item (TK) add small description of maps\_downsampled_64.npz in the whole\_sphere notebook.
     \item (TK) update the README for data zip - file from NP
     \item (NP) Finalise readme on Github code
     \item (Waiting for Zenodo) (NP) Finalize the data on zenodo
-    % \item (Done) Do the download script
     \item TK check part sphere notebook and whole sphere
     \item branch with notebooks with plots (results) NP
     \item Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
     \item NP move the repo to HealpixNet
-
-
     \item (TK) make the bibliography display only a few name
 	\item check if papers which appear as arxiv were not published in a conference or journal
-    % \item (yes) Michael, do you agree with the title HealpixNet? I (Michaël) extensively modified the abstract to reflect that it is a special case of graph CNNs tailored to Healpix. Hence I now agree with the title. Feel free to edit. Ideally I'd like to have "graph" in the title (graph CNNs are quite hot these days), but I couldn't find how.
-    % \item Emphasize the novelty of using it on Healpix in abstract, into and rest of the paper
     \item (TK) add info on comparison with histograms, so that it's just a demonstration
-    % \item Finish section on Convolutions on graphs (Michael - Nathanael)
-    % \item finish section on Efficient convolutions (Michael)
-    % \item (done) Plot of the new filters from Mass maps
-    % \item (done!, plot to be added) check the power spectrum after smoothing
-    % \item (done!) upgrade the plot of pooling (Nathanael)
     \item (TK) possibly improve plot of pooling
-	% \item (done!) new plot for network structure (teaser plot) (Michael) What do you think? Todo: link the points on the sphere to the fully connected \nati{I like the plot, but I am thinking about putting multiple spheres with different maps for the convolutiion instead…}
     \item (TK NP) if we have time make a new candidate for network plot (optional)
-    % \item (done!) Figure 1 to be round
     \item (first version done) conclusions
-    % \item (done!) new simulations with 3 arcmin smoothing
-    % \item (done!) simulation with cross-validation for the histogram
-    % \item (done!) Update result section according to the new simulations...
-    % \item (done!) simulation PSD
-    % \item (done!) Results figure, add sigma8
-    % \item (more or less done!) possibly move the eigen decomposition and heat into appendix + add discussion (Nathanael I am not sure about the heat diffusion example...)
-    \item Should the heat example go to appendix
+    \item Should the heat example go to appendix?
     \item TK read the heat section again
     \item TK read the result section
     \item TK check the appendix
@@ -288,7 +270,7 @@ Such hierarchical pixelizations of the sphere have been well studied.
 
 In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}, an algorithm and software package which implements an efficient CNN on HEALPix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
 As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling. However, only two elements depend on the sampling: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
-It is also possible to use multiple HEALPix maps within our framework and use datasets in form of ``shells''. These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
+It is also possible to use multiple HEALPix maps within our framework and use datasets in form of ``shells''. These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies. \nati{I do not know about that last point. Yes we can do it. But a) we did not do it and b) the filter will be spherical in all directions includeding the radial one... I am not sure this is a disirable features.}
 
 %\nati{I am not sure this goes there...} Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
 
