@@ -595,7 +595,7 @@ Following \citet{defferrard2016convolutional}, we define our filters as Chebyshe
 \end{equation}
 where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}$ is the rescaled Laplacian with eigenvalues in $[-1, 1]$ and $T_k(\cdot)$ is the Chebyshev polynomial of degree $k$, defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$. While definitions \eqnref{graph_convolution_polynomial} and \eqnref{graph_convolution_cheby} both allow the representation of the same set of filters, Chebyshev polynomials are preferred as they form an orthogonal basis on the interval $[-1, 1]$. Moreover, they factor out $\tL^{k-2}$ from $T_k(\tL)$, e.g., the 3-neighborhood is not mixed with the 5-neighborhood. That results in easier learning when optimizing the parameters $\theta$.
 Finally, the coefficients can be computed such as the truncated Chebyshev expansions gives an approximate minimax polynomial of a given filter \citep{hammond2011wavelets}. While that is irrelevant when learning filters, it is useful when smoothing a signal on the sphere by filtering it with an approximated low-pass filter.
-\todo{(i) scale of $\theta_k$: they are mostly constant for Chebyshev polynomials. How are they for monomials?}
+\todo{(i) scale of $\theta_k$: they are mostly uniform for Chebyshev polynomials, end exploding for monomials. Though SGD implicitly imposes a uniform prior on the learned parameters.}
 \todo{(ii) numerical stability of $\L^k \f$ v.s. $T_k(\L) \f$}
 \todo{(iii) in the code, initialize $\theta_k$ with stdev adapted to $F_{in}$ and $K$}
 
@@ -714,11 +714,8 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 % 2) Explain briefly the dataset
 % 3) Present the setting
 % 4) Describe the result
-In this section, we demonstrate the performance of the spherical neural network on a discrimination problem. Nevertheless, by simply changing the loss, one could use the network for regression.
-Our implementation is available as a small python package \url{https://our.code.link.com}.
-Furthermore, all the data to reproduce our experiments are available online.\footnote{\url{https://doi.org/10.5281/zenodo.1303272} \todo{Check DOI}}.
-
-In our experiments we classify convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
+In this section, we demonstrate the performance of the spherical neural network on a discrimination problem: the classification of convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}. Nevertheless, by simply changing the loss, one could use the network for regression.
+Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments is available online.
 
 \subsection{Data}
 \label{sec:data}
