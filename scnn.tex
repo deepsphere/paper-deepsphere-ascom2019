@@ -103,6 +103,7 @@
 \DeclareMathOperator*{\esp}{E}
 \DeclareMathOperator*{\var}{Var}
 \DeclareMathOperator*{\vect}{vec}
+\DeclareMathOperator*{\argmin}{arg \, min}
 \newcommand{\pkg}[1]{\texttt{#1}}
 
 
@@ -649,46 +650,61 @@ where $f$ computes $N_{stat}$ statistics which are independent from the size of 
 \subsection{Graph convolutional neural network}
 \label{sec:architecture}
 
-Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to a decision on the class label. Our architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers, and batch normalization layers. The tail is composed of multiple fully connected layers (FC) followed by a softmax layer. A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
+Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to a decision on the class label. Our architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by a softmax layer (SM). A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
 
 % As such, we will not mention the non-linearity in the description of our architectures.
-A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
+A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer where it is set to the identity. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
 
-A GC layer takes as input a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$ and outputs a matrix $\Y = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels and nodes, $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features. In the first GC layer, $F_{in} = 1$ if we have a single map, such as the CMB radiation temperature. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction.
-Each output feature map $\y_i \in \R^{N_{pix}}$ is computed by
+Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a GC layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and nodes), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
+Using the efficient graph convolution from \eqnref{graph_convolution_cheby}, each output feature map is computed as
 \begin{equation*}
-	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + b_i, \ \ \forall i \in [F_{out}].
+	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + b_i \in \R^{N_{pix}}, \ \ \forall i \in [F_{out}].
 \end{equation*}
 As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers (see \secref{efficient_convolution}). A bias term $\b b \in \R^{F_{out}}$ is jointly optimized.
+% only if batch normalization is not used
 
-The pooling layer takes a matrix $\X \in \R^{N_{pix} \times F}$ and transforms it to $\Y \in \R^{N'_{pix} \times F}$ by reducing its spatial resolution ($N'_{pix} < N_{pix}$) according to \eqnref{pooling}.
+Given a matrix $\X \in \R^{N_{pix} \times F}$, a pooling layer computes $\Y = P(\X) \in \R^{N'_{pix} \times F}$ by reducing its spatial resolution ($N'_{pix} < N_{pix}$) according to \eqnref{pooling}.
 
-Given a matrix $\X \in \R^{N_{pix} \times F}$, a batch normalization layer \citep{ioffe2015batchnorm} computes
+Given a matrix $\X \in \R^{N_{pix} \times F}$, a batch normalization layer \citep{ioffe2015batchnorm} computes $\Y = BN(\X)$ such as
 \begin{equation*}
-	y_{ij} = \gamma_{ij} \frac{x_{ij} - \esp_\B(x_{ij})}{\sqrt{\var_\B(x_{ij}) + \epsilon}} + \beta_{ij}, \ \forall i,j \in [N_{pix}] \times [F],
+	\y_i = \gamma_i \frac{\x_i - \esp(\x_i)}{\sqrt{\var(\x_i) + \epsilon}} + \beta_i, \ \forall i \in [F],
 \end{equation*}
-where $\gamma_{ij}$ and $\beta_{ij}$ are parameters to be learned, $\epsilon$ is a constant added for numerical stability, and the empirical expectation and variance are taken over the training mini-batches $\B$.
+where $\gamma_{j}$ and $\beta_{j}$ are parameters to be learned and $\epsilon$ is a constant added for numerical stability. The empirical expectation $\esp(\x_i) \in \R$ and variance $\var(\x_i) \in \R$ are taken across training examples and pixels.
+% the action of gamma can be done by the filters of the next layer
 
-The ST layer, defined in \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citet{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F$ should be equal to the number of classes to discriminate, i.e., the last GC layer outputs as many feature maps as there is classes.
+The statistical layer, defined in \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y = ST(\X) \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citet{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F = N_{classes}$ is the number of classes to discriminate (i.e., the last GC layer outputs as many feature maps as there is classes).
 
-A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs $\y \in \R^{F_{out}}$ as
+A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs
 \begin{equation*}
-	\y = \b W \x + \b b,
+	\y = FC(\x) = \b W \x + \b b \in \R^{F_{out}} ,
 \end{equation*}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
 Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the ST), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \cdot F_{out}$ (or $N_{stat} \cdot F_{out}$).
 
-The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last FC, called the logits in the deep learning literature, the softmax layer outputs
+The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last FC (or ST), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
 \begin{equation*}
 	y_i = \frac{\exp(x_i)}{\sum_{j=1}^{N_{classes}} \exp(x_j)} \in [0, 1], \ \forall i \in [N_{classes}],
 \end{equation*}
 where $N_{classes}$ is the number of classes to discriminate. Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the probability that the input sample belongs to class $i$. That last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
 
-GC32 - P256 - FC10
+\todo{Notation GC32 - P256 - FC10 to describe an architecture? Maybe more useful in Experiments where we describe the architecture used for each experiment.}
 
-All those parameters are learned during training via back-propagation of the error gradient.
-The whole network is then optimized to minimize the loss function over the training data. The gradient w.r.t.\ all the parameters is computed by back-propagation, and the values are updated by stochastic gradient descent (SGD).
-Describe the loss function. It's a measure of how far the predictions $\y$ from the softmax are from the true labels $\b \delta_i$. KL-divergence.
+Given a map $\X \in \R^{N_{pix} \times F}$, the neural network is computing $\y = NN_\theta(\X) \in R^{N_{classes}}$, where $NN$ is a composition of the above layers (an example is $NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC$) and $\theta$ is the set of all trainable parameters.
+The number of features $F$ depends on the data at hand. For the CMB radiation temperature, $F = 1$. For observations in radio frequencies, $F$ would be equal to the number of surveyed frequencies. $F$ might also be the number of slices in the radial direction.
+The loss function $\ell(\y) = \ell(NN_\theta(\X))$ is a measure of how good the prediction $\y$ is for the sample $\X$. For a classification task, the loss is usually taken to be the cross-entropy
+\begin{equation*}
+	\ell(\y) = -\log(y_i),
+\end{equation*}
+where $i$ is the correct class label.
+The parameters $\theta$ of the neural network are optimized to minimize the loss over the training dataset $\left\{ \X_i \right\}_{i=1}^{N_{samples}}$:
+\begin{equation*}
+	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} \ell(NN_\theta(\X_i)).
+\end{equation*}
+The optimization is performed by computing an error gradient w.r.t.\ all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
+\begin{equation*}
+	\theta^{(k+1)} = \theta^{(k)} - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial \ell(NN_\theta(\X_i))}{\partial \theta} ,
+\end{equation*}
+where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples for faster training.
 
 \section{Experiments}
 \label{sec:experiments}
