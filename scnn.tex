@@ -325,6 +325,18 @@ Moreover, those samplings are not ideal as their resolution is not constant acro
 % \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 Finally, a 2D CNN learns directional filters which orientation is arbitrary. Indeed, directions, which make much sense for images (up, down, left, and right), are arbitrarily defined when setting the origin of the grids on the sphere. Any convolution using directions on the sphere is not equivariant to translation and rotation.
 
+\begin{figure}
+	\centering
+	\includegraphics[height=7em]{sphere_grid_equirectangular}
+	\hfill
+	\includegraphics[height=7em]{sphere_grid_cubedsphere}
+	\hfill
+	\includegraphics[height=7em]{half_graph_4}
+	\caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citet{boomsma2017spherical}.}
+	\label{fig:sphere_grids}
+	\label{fig:healpix_graph_4}
+\end{figure}
+
 % As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
 
 \citet{cohen2018spherical} leverages the continuous spherical convolution. The goal of this contribution was to define a rotation-equivariant convolution on the sphere, i.e., a rotation of the input implies the same rotation in the output.
@@ -334,13 +346,6 @@ For example with the HEALPix sampling, which was designed to have a fast SHT by 
 In comparison, filtering with our method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}). Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented by the highly optimized \pkg{libsharp} library used by HEALPix \citep{reinecke2013libsharp}.
 While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
 We also note that this approach cannot be easily accelerated when data lies on a part of the sphere only. That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare. One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals (on the latitude or longitude). It is however not straightforward to identify those empty directions, and computations would still be wasted (consider for example a ring which mostly contains zeros but a few measurements). With graphs however, one only pays for the used pixels. The cost is some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}). Those can however be mitigated by padding with zeros a small area around the measurements.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{sphere_grids}
-	\caption{Two realizations of a grid on the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Right: An equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Figure from \citet{boomsma2017spherical}.}
-	\label{fig:sphere_grids}
-\end{figure}
 
 
 A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
@@ -465,13 +470,6 @@ Other weighting schemes are possible. For example,~\cite{khasanova2017graphomni}
 % nati: The question is: is $1/d$ also good when we have 7/8 neighbors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.
 % mdeff: I tried and the eigenvectors and eigenvalues are mostly the same. To me, there is no point in trying for trying. We should rather come up with a definition of distance that will make the eigenvectors closer to the real spherical harmonics.
 % Agreed: I added a reference to Pascal paper.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\linewidth]{half_graph_4}
-	\caption[]{Graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[6]}
-	\label{fig:healpix_graph_4}
-\end{figure}
 
 \subsection{Graph Fourier basis}
 
