@@ -559,8 +559,9 @@ Forunately, both of these computational issues can be overcome by defining the c
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
 an operation requiring $k$ multiplication of the graph Laplacian matrix $\L$. In our case, the Laplacian is extremly sparse ($8-9$ entries per line), making the filtering operation for a fixed $k$ linear in the number of pixel $N_{pix}$.
-Here happens the transition from filtering in the spectral domain to filtering in the vertex domain. Note that $\L^k$ captures $k$-neighborhoods, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$. As such, filtering with a polynomial convolution kernel can be interpreted in the vertex domain as a local weighted linear combination of the signal's value. The weights are determined by the filter coefficients $\theta$ and the path weight, defined as the multiplication of all edge weights along the path.
-\todo{Better vertex domain explanation.}
+Moreover, here happens the transition from filtering in the spectral domain to filtering in the vertex domain. The matrix $\L^k$ captures $k$-neighborhoods of each pixel, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$. 
+As such, filtering with a polynomial convolution kernel can be interpreted in the pixel (vertex) domain as a weighted linear combination of the pixels neighboors values. The weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$.
+\todo{Better vertex domain explanation. \nati{I gave it a try}}
 
 To make the parallel with classical Euclidean signal-domain convolution, i.e., filtering by multiplying the signal with translated versions of a patch, we here match our filter at the level of neighborhoods\footnote{The 1-neighborhood of a node is the set of nodes which are directly connected to it. The 2-neighborhood is the set of nodes which are connected through paths of length 2.} rather than individual nodes. That is required as there is no notion of ordering in a general graph. For example, in a classical convolution on the grid, the relative ordering of vertices is up, down, left, and right. There is no such ordering on the sphere either, especially if irregularly sampled.
 
