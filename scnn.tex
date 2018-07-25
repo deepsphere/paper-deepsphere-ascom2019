@@ -207,6 +207,7 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
+    \item (NP) Figures  A.15, 6, 5
     \item (TK) check all the colored stuff left for you
     \item (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook.
     \item (TK) update the README for data zip - file from NP
@@ -456,11 +457,14 @@ where $\x_i$ is a vector encoding the 3-dimensional coordinates of pixel $i$, an
 \begin{equation*}
 	\sigma = \frac{1}{|\E|} \sum_{(v_i, v_j) \in \E} \|\x_i-\x_j\|_2
 \end{equation*}
-is the average Euclidean distance over all connected pixels. This weighting scheme is important as while pixel areas are equal, distances between pixels are not equal. \figref{healpix_graph_4} shows a graph constructed from the HEALPix sampling of a sphere.
+is the average Euclidean distance over all connected pixels. This weighting scheme is important as while pixel areas are equal, distances between pixels are not.
+Other weighting schemes are possible. For example,~\cite{khasanova2017graphomni} uses the inverse of the distance instead. We found out that the one proposed above works fine for our purpose.
+\figref{healpix_graph_4} shows a graph constructed from the HEALPix sampling of a sphere.
 
 % mdeff: Why not $1/d$? See Pascal's paper
 % nati: The question is: is $1/d$ also good when we have 7/8 neighbors instead of 4? Practically, we can also use $1/d$, but that means changing the code and re-runing the experiment. We probably do not have to change any parameter though... @mdeff: do you think we should try this for this paper? Or we keep that for the next one.
 % mdeff: I tried and the eigenvectors and eigenvalues are mostly the same. To me, there is no point in trying for trying. We should rather come up with a definition of distance that will make the eigenvectors closer to the real spherical harmonics.
+% Agreed: I added a reference to Pascal paper.
 
 \begin{figure}
 	\centering
@@ -485,12 +489,12 @@ Indeed,
 \begin{equation*}
 	\bLambda_{ii} = \b u_i\trans \L \b u_i = \sum_{(v_j, v_k) \in \E} \frac{\W_{jk}}{\sqrt{\b d_j \b d_k}} (\U_{ji} - \U_{ki})^2
 \end{equation*}
-is a measure of how smooth the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$.
+is a measure of the variation of the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$. 
 
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{eigenvectors}
-	\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the HEALPix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$ and order $m=(-1,0,1)$, eigenvectors 4--8 with degree $\ell=2$ and order $m=(-2,-1,0,1,2)$, and eigenvectors 9--15 with degree $\ell=3$ and order $m=(-3,\ldots,3)$. Nevertheless, the graph eigenvectors are only approximating the real spherical harmonics.}
+	\caption{The first 16 Fourier modes (eigenvectors of the graph Laplacian) of a graph constructed from the HEALPix sampling of the sphere. Eigenvectors 1--3 could be associated with spherical harmonics of degree $\ell=1$ and order $|m|=(0,1)$, eigenvectors 4--8 with degree $\ell=2$ and order $|m|=(0,1,2)$, and eigenvectors 9--15 with degree $\ell=3$ and order $|m|=(0,1,2,3)$. Nevertheless, the graph eigenvectors are \emph{only approximating} the real spherical harmonics.}
 	\label{fig:graph_harmonics}
 \end{figure}
 
@@ -502,19 +506,18 @@ It turns out that using the graph construction described above, the graph Fourie
 As there is no notion of translation on a graph, we cannot really convolve two graph signals. We can, however, convolve a signal with a kernel defined in the spectral domain. More precisely, we are filtering a graph signal by a kernel. Given the convolution kernel
 $h: \R_+ \rightarrow \R$, a signal $\f \in \R^{N_{pix}}$ on the graph is filtered as
 \begin{equation} \label{eqn:graph_convolution}
-	h(L) \f = \U h(\bLambda) \U\trans \f,
+	h(\L) \f = \U h(\bLambda) \U\trans \f,
 \end{equation}
 where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii} = h(\bLambda_{ii})$, and $h(\bLambda) \hat{\f}$ is the spectral representation of $\f$ after filtering.
 
 Contrary to classical signal processing on Euclidean domains, the kernel $h$ has no single representation in the vertex domain and cannot be translated on the graph. It can however be localized on any vertex $v_i$ by the convolution with a Kronecker delta $\b \delta_i \in \R^{N_{pix}}$,\footnote{A Kronecker delta is the signal $\b \delta_i \in \R^{N_{pix}}$ that is zero everywhere except on vertex $v_i$ where it takes the value one.} that is $h(\L) \b \delta_i$, a column of $h(\L)$.
-That is useful to visualize kernels. \todo{nath: link with appendix}
+This localization can be useful to visualize kernels as explained in~\ref{sec:filter_visualization}.
 If the graph is not regular, i.e., all nodes don't have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
 Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with all localizations of the kernel:
 \begin{equation} \label{eqn:graph_convolution_spatial}
-	(h(L) \f)_i = \langle h(L) \b \delta_i, \f \rangle.
+	(h(\L) \f)_i = \langle h(\L) \b \delta_i, \f \rangle.
 \end{equation}
-
-\paragraph{Example}
+\textbf{Example.}
 Let us consider the heat diffusion problem
 \begin{equation} \label{eqn:heat_equation}
 	\L \b{f}(t) = \tau \partial_t \b{f}(t),
@@ -524,7 +527,7 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation*}
 	\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation*}
-which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Here the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which are a generalization of squared frequencies. Hence, the kernel $K_t$ can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution is different from a true spherical convolution, it can, provided the correct parameterization, well approximate it. \figref{gaussian_filters_visualization} provides additional visualizations of the convolution kernel $K_t$.
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization} and~\ref{sec:filter_visualization}.
 
 \begin{figure}
 	\centering
@@ -533,12 +536,13 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
 	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $5.7$\%, $4.8$\%, $3.8$\%.
-	\todo{(i) Only three diffusion steps to have a bigger figure?}
-\todo{(ii) The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}}
+	\todo{(i) Only three diffusion steps to have a bigger figure? \nati{Agreed! Will do soon!}}
+\todo{(ii) The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
+\nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
 	\label{fig:gaussian_filters_comparizon}
 \end{figure}
 
-This result is another sign that the constructed graph is able to capture the spherical
+Furthermore, this result is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. In some applications, where the
 exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
 The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
@@ -550,10 +554,11 @@ The fact that both convolutions are not identical is not relevant in a neural ne
 While \eqnref{graph_convolution} is a theoretically well justified definition of the convolution of a graph signal $\f$ by a kernel $h$, it is computationally cumbersome. As there exists no general fast Fourier transform (FFT) for graphs,\footnote{See \citep{le2018fgft} for a comparison between the polynomial definition of filters presented here and a class of fast graph Fourier transforms based on the approximation of the Fourier basis $\U$ by a product of sparse matrices.} the Fourier transform, i.e., the multiplication of the signal $\f$ by the dense matrix $\U$, costs $\bO(N_{pix}^2)$ operations. In a CNN, this operation has to be performed for each training step (forward and backward). As current training procedures are not data efficient and require a lot of samples, a quadratic computational cost in the sample size is a show stopper.
 Moreover, the eigendecomposition of the Laplacian $\L$ is needed to obtain the Fourier basis $\U$ in the first place. That has a unique cost of $\bO(N_{pix}^3)$ operations.
 
-To overcome those computational issues, the convolution kernel $h$ can be defined as a polynomial $h_\theta(\lambda) = \sum_{k=0}^K \theta_k \lambda^k$ of degree $K$ parameterized by $K+1$ coefficients $\theta$. The filtering operation \eqnref{graph_convolution} then becomes
+Forunately, both of these computational issues can be overcome by defining the convolution kernel $h$ as a polynomial $h_\theta(\lambda) = \sum_{k=0}^K \theta_k \lambda^k$ of degree $K$ parameterized by $K+1$ coefficients $\theta$. In that specific case, the filtering operation \eqnref{graph_convolution} becomes
 \begin{equation} \label{eqn:graph_convolution_polynomial}
-	h_\theta(\L) \f = \sum_{k=0}^K \theta_k \L^k \f.
+	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
+an operation requiring $k$ multiplication of the graph Laplacian matrix $\L$. In our case, the Laplacian is extremly sparse ($8-9$ entries per line), making the filtering operation for a fixed $k$ linear in the number of pixel $N_{pix}$.
 Here happens the transition from filtering in the spectral domain to filtering in the vertex domain. Note that $\L^k$ captures $k$-neighborhoods, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$. As such, filtering with a polynomial convolution kernel can be interpreted in the vertex domain as a local weighted linear combination of the signal's value. The weights are determined by the filter coefficients $\theta$ and the path weight, defined as the multiplication of all edge weights along the path.
 \todo{Better vertex domain explanation.}
 
