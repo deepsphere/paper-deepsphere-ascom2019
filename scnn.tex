@@ -198,7 +198,11 @@ Code and examples are available at \todo{\url{https://github.com/SwissDataScienc
 \end{abstract}
 
 \begin{keyword}
-Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN \sep \nati{@Tomek: could you put some cosmo keywords?}
+Spherical Convolutional Neural Network \sep
+HealpixNet \sep
+Graph CNN \sep
+Cosmological data analysis \sep
+Mass mapping
 \end{keyword}
 
 \end{frontmatter}
@@ -208,7 +212,6 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
     \item (NP) Figures  A.15, 6, 5
-    \item (TK) check all the colored stuff left for you
     \item (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook.
     \item (TK) update the README for data zip - file from NP
     \item (NP) Finalise readme on Github code
@@ -217,10 +220,8 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
     \item branch with notebooks with plots (results) NP
     \item Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
     \item NP move the repo to HealpixNet
-    \item (TK) make the bibliography display only a few name
 	\item check if papers which appear as arxiv were not published in a conference or journal
     \item (TK) add info on comparison with histograms, so that it's just a demonstration
-    \item (TK) possibly improve plot of pooling
     \item (TK NP) if we have time make a new candidate for network plot (optional)
     \item (first version done) conclusions
     \item Should the heat example go to appendix?
@@ -249,13 +250,17 @@ Spherical Convolutional Neural Network \sep SCNN \sep HealpixNet \sep Graph CNN 
 Cosmological and astrophysical data often comes in the form of spherical sky maps.
 Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning has recently gained popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}, thanks to its ability to capture complicated, non-linear patterns which are often present in the data. Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture. Indeed, sky maps are translation invariant, which means that translating and rotating maps on the sphere doesn't change their interpretation. Only the statistics of the maps is relevant. The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle). As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
 
-\todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
-\todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the HEALPix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
-\nati{@Tomek: I think what Michael has in mind is that the graph approach is very versatile and extendable. It can be used with other samplings (even irregular ones) or only part of the sphere. This flexibility might be an advantage to mention. In particular, compared to~\citet{cohen2018spherical} it allows us to do only do the required computation when only a part of the sphere is considered.}
+For cosmological observations it is often the case that the data covers only a part of the sphere.
+For ground-based observations this can be due to limited visibility of the sky from a particular telescope location and survey strategy, and for space-based imagers due to masking of the galactic plane area.
+
+
+% \todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
+% \todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the HEALPix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
+% \nati{@Tomek: I think what Michael has in mind is that the graph approach is very versatile and extendable. It can be used with other samplings (even irregular ones) or only part of the sphere. This flexibility might be an advantage to mention. In particular, compared to~\citet{cohen2018spherical} it allows us to do only do the required computation when only a part of the sphere is considered.}
 
 So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
 As such, perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
-While this mostly works, as demonstrated \todo{in ??? for example}, \nati{@Tomek, do you have a citation for that? Otherwise, we need to reformulate this.} \nati{Cite the paper of Janis?} it is more natural and accurate to work directly on the sphere.
+While this mostly works, as demonstrated by \citep{fluri2018deep,gupta2018nongaussianinformation,schmelze2017cosmologicalmodel,gillet2018deeplearning}, it may be more natural for some applications and accurate to work directly on the sphere.
 The main challenge in designing a CNN on the sphere is to define a convolution which is suitable to this irregularly sampled domain.
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
@@ -489,7 +494,7 @@ Indeed,
 \begin{equation*}
 	\bLambda_{ii} = \b u_i\trans \L \b u_i = \sum_{(v_j, v_k) \in \E} \frac{\W_{jk}}{\sqrt{\b d_j \b d_k}} (\U_{ji} - \U_{ki})^2
 \end{equation*}
-is a measure of the variation of the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$. 
+is a measure of the variation of the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$.
 
 \begin{figure}
 	\centering
@@ -558,10 +563,10 @@ Forunately, both of these computational issues can be overcome by defining the c
 \begin{equation} \label{eqn:graph_convolution_polynomial}
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
-an operation requiring $k$ multiplication of the graph Laplacian matrix $\L$. 
+an operation requiring $k$ multiplication of the graph Laplacian matrix $\L$.
 In our case, the Laplacian is extremly sparse ($8-9$ entries per line), making the filtering operation for a fixed $K$ linear in the number of pixel $N_{pix}$.
-Moreover, here happens the transition from filtering in the spectral domain to filtering in the vertex domain. The matrix $\L^k$ captures $k$-neighborhoods of each pixel, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$. 
-As such, filtering with a polynomial convolution kernel can be interpreted in the pixel (vertex) domain as a weighted linear combination of the pixels neighbors values. The weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$. 
+Moreover, here happens the transition from filtering in the spectral domain to filtering in the vertex domain. The matrix $\L^k$ captures $k$-neighborhoods of each pixel, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$.
+As such, filtering with a polynomial convolution kernel can be interpreted in the pixel (vertex) domain as a weighted linear combination of the pixels neighbors values. The weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$.
 We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical Euclidean signal-domain convolution to a patch. In the classical setting, the convolution with a patch is simply a weighted sum of the neighbors with the weights defined by the patch. Similarly, each lines of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an "irregular patch of radius $K$" for our irregular domain.
 \todo{Better vertex domain explanation. \nati{I gave it a try. Should we take a single vertex and explain what heppens to it? Note that I suppressed the following paragraph. }}
 
@@ -763,10 +768,9 @@ We build a robust classifier, i.e., an automatic way to
 discriminate between the two classes in the presence of noise.
 We check the classification performance as a function of the area used, i.e., "the order" $o$ and also as a function of the relative level of the noise added to the map.
 
-For all the
-experiments, we work with centered Gaussian noise. \todo{Tomek: could you put a
-justification.} To improve the
-stability of the spherical CNN, we slowly increase the amount of noise added to
+For all the experiments, we work with centered Gaussian noise.
+While the noise model is real mass maps often has a slightly different distribution, Gaussian should be a sufficient model to demonstrate the performance of our method.
+To improve the stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
 overfitting, the noise is randomly produced during the training process. We trained our
 model between $50$ and $290$ epochs depending on the complexity and the size of
@@ -828,8 +832,12 @@ filters. The filters are selected from the last layer of the network
 corresponding the experiment with order $o=2$ for a relative noise level of
 $2$. Nevertheless, all networks presented similar gnomonic and section pattern, at least from a
 human perspective. The gnomonic projection clearly exibits the sampling issue
-of HEALPix. For a detail, on how the convolution kernels are plotted, please refer to Appendix~\ref{sec:filter_visualization}.
-\todo{Tomek: can you say something about the filters.}
+of HEALPix.
+For a detail, on how the convolution kernels are plotted, please refer to Appendix~\ref{sec:filter_visualization}.
+While it is usually difficult to interpret the shape of the filters in the context of the type of data, we can notice that they often have a ``peak'' like structures.
+An example of filter interpretation was demonstrated in \citep{Ribli2018learningfrom}.
+% \todo{Tomek: can you say something about the filters.}
+% \TK{Done }
 
 \begin{figure*}[!ht]
 \centering
@@ -856,7 +864,7 @@ In this contribution, we presented HealpixNet, a spherical CNN for the HEALPix s
 This allows us to leverage the advantages of the graph convolution, i.e., it is both efficient (with a complexity of $\mathcal{O}(N_{pix})$) and flexible (allow to work only on a part of the sphere) while it still captures well the spherical properties of the domain.
 We also show on a range of classification problems that the neural network systematically significantly outperform classical methods.
 
-As shown in this contribution, modeling the discretized sphere, a 2D manifold in $\R^3$, by a graph enables an efficient convolution operation on any pixelization. Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions. For applications which can tolerate small imprecisions in rotation invariance --- the fact that the action of a graph filter slightly depends on the location --- this relaxation might enable researchers to consider sampling sets with different properties.
+As shown in this contribution, modelling the discretized sphere, a 2D manifold in $\R^3$, by a graph enables an efficient convolution operation on any pixelization. Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions. For applications which can tolerate small imprecisions in rotation invariance --- the fact that the action of a graph filter slightly depends on the location --- this relaxation might enable researchers to consider sampling sets with different properties.
 
 The main product of this contribution is HealpixNet,\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} a small and easy-to-use python package for cosmologists to classify sky maps.
 As a future work, we intend to (i) further investigate the link between the graph Fourier basis and the spherical harmonic and (ii) compare HealpixNet to other spherical CNN using different sampling schemes.
