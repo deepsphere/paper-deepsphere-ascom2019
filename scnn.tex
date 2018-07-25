@@ -325,7 +325,7 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 
 \citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids (illustrated in \figref{sphere_grids}) are used in their paper: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
 As this formulation leverages standard 2D convolutions, all the optimizations developed for images make it computationally very efficient. It is however restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids can be independently fed to a 2D CNN, boundary conditions should be properly handled as those grids are not independent. \todo{How do thy handle boundaries?}
-% Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere.
+% Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
 Moreover, those samplings are not ideal as their resolution is not constant across the sphere. Indeed, the singularities --- the poles for the equirectangular grid, the corners of the cube for the cubed-sphere --- are over-sampled. Equal areas of discrete elements is advantageous for physical measurements as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
 % \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 Finally, a 2D CNN learns directional filters which orientation is arbitrary. Indeed, directions, which make much sense for images (up, down, left, and right), are arbitrarily defined when setting the origin of the grids on the sphere. Any convolution using directions on the sphere is not equivariant to translation and rotation.
@@ -351,19 +351,6 @@ For example with the HEALPix sampling, which was designed to have a fast SHT by 
 In comparison, filtering with our method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}). Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented by the highly optimized \pkg{libsharp} library used by HEALPix \citep{reinecke2013libsharp}.
 While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
 We also note that this approach cannot be easily accelerated when data lies on a part of the sphere only. That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare. One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals (on the latitude or longitude). It is however not straightforward to identify those empty directions, and computations would still be wasted (consider for example a ring which mostly contains zeros but a few measurements). With graphs however, one only pays for the used pixels. The cost is some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}). Those can however be mitigated by padding with zeros a small area around the measurements.
-
-
-A second direction has been followed in~\citet{boomsma2017spherical}. The idea is
-to use the traditional 2-dimensional convolution on an irregular grid defined on the
-sphere. In the paper, two grids are used: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}. See \figref{sphere_grids}. Because this
-approach is based on the classic 2-dimensional convolution, it benefits from all the optimizations developed for images and is very likely to be
-the most computationally efficient one. However, it suffers that it can only be used using very
-specific grid sampling sets which are not including HEALPix. Furthermore, the
-grid requirement makes it impossible for the convolution to capture the
-spherical properties of the domain, i.e., the cubed-sphere sampling is by
-definition adapted to a cube and not to a sphere.
-Those samplings are not ideal as their resolution is not constant across the sphere. Indeed, the singularities --- the poles for the equirectangular grid, the corners of the cube for the cubed-sphere --- are over-sampled. Equal areas of discrete elements is advantageous for physical measurements as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence.
-% \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 
 In an attempt to get the best of the first two approaches, we follow a third
 direction. We use a graph to adapt to the particular structure of the sphere.
