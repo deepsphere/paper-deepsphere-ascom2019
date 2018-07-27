@@ -277,6 +277,7 @@ Such hierarchical pixelizations of the sphere have been well studied.
 In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}, an algorithm and software package which implements an efficient CNN on HEALPix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the box for cosmological applications.
 As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling. However, only two elements depend on the sampling: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
 It is also possible to use multiple HEALPix maps within our framework and use datasets in form of ``shells''. These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies. \nati{I do not know about that last point. Yes we can do it. But a) we did not do it and b) the filter will be spherical in all directions includeding the radial one... I am not sure this is a disirable features.}
+\todo{I think you got it wrong there. I guess the idea is that each shell would be a feature map, i.e., the graph signal would be multi-dimensional.}
 
 %\nati{I am not sure this goes there...} Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
 
@@ -525,8 +526,7 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
 	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $4.8$\%, $3.8$\%.
-	\todo{(i) Only three diffusion steps to have a bigger figure? \nati{Agreed! Will do soon!}}
-\todo{(ii) The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
+\todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
 \nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
 	\label{fig:gaussian_filters_comparizon}
 \end{figure}
