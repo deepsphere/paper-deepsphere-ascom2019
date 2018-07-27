@@ -697,7 +697,7 @@ Other parameter parameters were set to $h=0.7$ \todo{(MORE PARAMS HERE - CHECK W
 These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
 That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
-To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}. In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $Nside=1024$.
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}. In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $N_{side}=1024$.
 
 \begin{figure}[!ht]
 \centering
@@ -767,7 +767,7 @@ while having significanly worse scaling properties. All classifiers are trained 
 of the baseline algorithm in a similar way as for the network, i.e, with
 created an "unlimited" number of samples by adding new random realizations of
 the noise. We stop adding new samples in the classifier once the validation
-error converge to a value. This process is detailed in Appendix~\ref{sec:dataset_augmentation}. We tuned the regularization parameter by cross-validating with the validation set.
+error converge to a value. This process is detailed in \ref{sec:dataset_augmentation}. We tuned the regularization parameter by cross-validating with the validation set.
 
 \subsection{Results}
 
@@ -817,7 +817,7 @@ corresponding the experiment with order $o=2$ for a relative noise level of
 $2$. Nevertheless, all networks presented similar gnomonic and section pattern, at least from a
 human perspective. The gnomonic projection clearly exibits the sampling issue
 of HEALPix.
-For a detail, on how the convolution kernels are plotted, please refer to Appendix~\ref{sec:filter_visualization}.
+For a detail, on how the convolution kernels are plotted, please refer to \ref{sec:filter_visualization}.
 While it is usually difficult to interpret the shape of the filters in the context of the type of data, we can notice that they often have a ``peak'' like structures.
 An example of filter interpretation was demonstrated in \citep{Ribli2018learningfrom}.
 % \todo{Tomek: can you say something about the filters.}
@@ -924,19 +924,19 @@ Bottom: section plot.}
 
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation} The original number of samples $480$, $1920$,
-$7680$ respectively for order $o=1,2,4$ is considered rather low for usual
-deep learning technique, especially when one desire to build a noise robust
+$7680$ respectively for order $o=1,2,4$ is considered small to train deep a architecture, 
+especially when one desire to build a noise robust
 classifier. As a result, we use a classical dataset augmentation technique.
 Before entering the network for training each sample is added a random
 realization of Gaussian noise. The effect is twofold. First, the network never
 ends up seing the same sample and is less likely to overfit the training set.
 Second the trained network will be robust to Gaussian noise.
 
-When comparing the network, we want to ensure that the SVM classifier has
+When comparing the network to the baselines, we want to ensure that the SVM classifier has
 access to the same amount of data that the network, i.e, potentially an
-infinite number of samples. Hence, we fit different linear SVM classifier using
+infinite number of samples. Hence, we fit different linear SVM classifiers using
 various training set size until we observe experimentally that
-increasing the amount of data does not improve the classifier. The validation
+increasing the amount of data does not improve the accuracy. The validation
 set remain the same and is used for cross-validation to tune the L2
 penalization parameter of SVM. Eventually, we evaluate the final classifier on
 the testing set. An example of the evolution of the training and valdication
