@@ -610,11 +610,7 @@ Given a feature map $\x \in \R^{N_{pix}}$, the statistical layer is defined as
 \end{equation}
 where $f$ computes $N_{stat}$ statistics which are independent from the size of the map, $N_{pix}$. An example is the global average pooling $f(\x) = \esp(\x)$, introduced by \citet{lin2013globalavgpooling}, where $\esp(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} x_i$ is the empirical mean. Another example is $f(\x) = [\esp(\x), \var(\x)]\trans$, where $\var(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} (x_i - \esp(\x))^2$ is the empirical variance.
 
-\todo{learned histogram \citep{wang2016learnhist} if it shows good results}
-
-\todo{stats of diffused maps \citep{khasanova2017tigranet}. Provides stats at multiple scales?}
-
-\todo{perf w.r.t. different functions $f$. Here or in the experiment section?}
+Other statistical layers are possible. In particular, we also implemented a learned histogram from \citep{wang2016learnhist}. Additionaly \citep{khasanova2017tigranet} propose to apply differen diffusion on the final maps to obtain statistics at different sclaes.
 
 \subsection{Graph convolutional neural network}
 \label{sec:architecture}
@@ -701,7 +697,7 @@ Other parameter parameters were set to $h=0.7$ \todo{(MORE PARAMS HERE - CHECK W
 These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
 That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
-To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}. In the pre-processing step, we also remove the mean of each map.
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}. In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $Nside=1024$.
 
 \begin{figure}[!ht]
 \centering
@@ -753,7 +749,7 @@ discriminate between the two classes in the presence of noise.
 We check the classification performance as a function of the area used, i.e., "the order" $o$ and also as a function of the relative level of the noise added to the map.
 
 For all the experiments, we work with centered Gaussian noise.
-While the noise model is real mass maps often has a slightly different distribution, Gaussian should be a sufficient model to demonstrate the performance of our method.
+While the noise model of real mass maps often has a slightly different distribution, Gaussian should be a sufficient model to demonstrate the performance of our method.
 To improve the stability of the spherical CNN, we slowly increase the amount of noise added to
 the training data over the iterations. Furthermore in order to avoid
 overfitting, the noise is randomly produced during the training process. We trained our
@@ -765,17 +761,17 @@ Training took less than a day for each model using an NVIDIA Tesla K20.
 We compare the performance of the spherical CNN against two simple benchmark
 algorithms. The two baselines are based on building features with a) the Power
 Spectral Densities (PSD) and b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
-After a normalization, those features are then classified use a Support Vector
+After a normalization, those features are then classified using a Support Vector
 Machine (SVM) with a linear kernel. Other kernels did not provide better results
-while having worse scaling properties. All classifiers are trained with noisy samples. For fairness, we augmented the dataset
+while having significanly worse scaling properties. All classifiers are trained with noisy samples. For fairness, we augmented the dataset
 of the baseline algorithm in a similar way as for the network, i.e, with
 created an "unlimited" number of samples by adding new random realizations of
 the noise. We stop adding new samples in the classifier once the validation
-error converge to a value. This process is detailed in Appendix~\ref{sec:dataset_augmentation}. We tuned the parameter using cross-validation with the validation set.
+error converge to a value. This process is detailed in Appendix~\ref{sec:dataset_augmentation}. We tuned the regularization parameter by cross-validating with the validation set.
 
 \subsection{Results}
 
-We present in \figref{results} the results for 5 different noise
+We present in \figref{results} the results for $5$ different noise
 levels and $3$ different sample areas. The spherical CNN has a significant lead for all levels of noise and sample areas.
 In particular, the difference seems to increase as the problem becomes more complex, i.e., as the order is increased and there is less information in each sample.
 This is likely due to the fact that the SCNN can learn optimal features for the problem and do not rely on our humanly limited feature design.
@@ -785,14 +781,18 @@ one of the most used techniques for model discrimination in cosmology, is unable
 to perform the desired task. The main reason is that the two different models
 have very similar PSDs (see \figref{psd_sigma3}). As a result, one
 needs to use other statistics to solve the problem. In this case, the
-histogram features that have been built for the problem allow for a significant improvement over the PSD ones.
+histogram features allow for a significant improvement over the PSD ones.
 Unfortunately, while the histogram features contain information about the
 distribution of pixels, they do not include any spatial information. In
 contrast, both the PSD features and the SCNN can exploit the spatial
 information.
 Note that without this graph structure, a fully connected neural network approach would have to be used. Problematically, fully connected neural networks do not scale well with the number of pixels.
 
-
+We have many different spherical neural network architectures and made a few empirical observations. 
+First Chebyshef polynomial seems more stable than monomials. Nevertheless once the network is trained, we could not observe a significant accuracy difference.
+Second, using a statistical layer improved slightly the result for our specific problem. We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'. All but the `variance' were providing the same range of accurancy, the variance being slightly worse.
+Third, dropout did not help in the precence of noise. This is probably du to the fact that the dataset was augmented indefinitely
+Fourth, especially for difficult problem (order 2 or 4, and the presence of large noise) having a large architecture (many filters) and doing many iterations were necessary to achieve the result presented.
 
 
 \begin{figure*}[!ht]
