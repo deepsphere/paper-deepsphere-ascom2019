@@ -714,7 +714,9 @@ Given a map $\x \in \R^{N_{pix}}$, pooling defines $\y \in \R^{N'_{pix}}$ such a
 \begin{equation} \label{eqn:pooling}
 	y_i = f \left( \left\{ x_j : j \in \C(i) \right\} \right), \ \forall i \in [N'_{pix}],
 \end{equation}
-where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N_{pix}}'$ is the down-sampling factor\footnote{$| \C(i) | = N_{pix} / {N_{pix}}' = (N_{side} / N'_{side})^2 = 4^p$ for HEALPix.}. That operation is often taken to be the maximum value, but it might be any permutation invariant operation such as the sum or the average. \figref{pooling} illustrates the process.
+where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N'_{pix}}$ is the down-sampling factor, which for HEALPix is $| \C(i) | = N_{pix} / {N_{pix}}' = (N_{side} / N'_{side})^2 = 4^p$.
+That operation is often taken to be the maximum value, but it can be any permutation invariant operation, such as a sum or an average.
+\figref{pooling} illustrates the process.
 
 % The advantage of schemes based on a base polyhedron is that cells are equal-area. While that is not required for the convolution operation when modeling with graphs (it can be corrected by setting edge weights appropriately, see \citet{khasanova2017graphomni})
 % nope: can also do a regular pooling on the equirectangular. It preserves the sampling, and the convolution is adapted to the sampling thanks to the edge weights.
@@ -730,15 +732,20 @@ where $f$ is a function which operates on sets (possibly of varying sizes) and $
 \label{sec:stat_layer}
 % Or Global pooling?
 
-Following \citet{khasanova2017tigranet}, we use a statistical layer between the last graph convolutional layer and the first fully connected layer for the neural network to be invariant to isometric transformations such as rotation and translation of maps on the sphere. The role of the layer is to compute global and location independent statistics from feature maps. Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map, $N_{pix}$. That compression results in much smaller fully connected layers, the most parameter-hungry layers of a neural network. The invariance and reduced representation should help the network to learn from less samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
+Following \citet{khasanova2017tigranet}, we implement an optional statistical layer between the last graph convolutional layer and the first fully connected layer for the neural network.
+This introduces the invariance of the output to isometric transformations, such as rotation and translation of maps on the sphere.
+The role of the layer is to compute global and location independent statistics from feature maps.
+Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map $N_{pix}$. That compression results in much smaller fully connected layers, which usually contain a significant fraction of trainable parameters of a neural network.
+The invariance and reduced representation should help the network to learn from less samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
 
 Given a feature map $\x \in \R^{N_{pix}}$, the statistical layer is defined as
 \begin{equation} \label{eqn:stat_layer}
 	\y = f(\x) \in \R^{N_{stat}},
 \end{equation}
 where $f$ computes $N_{stat}$ statistics which are independent from the size of the map, $N_{pix}$. An example is the global average pooling $f(\x) = \esp(\x)$, introduced by \citet{lin2013globalavgpooling}, where $\esp(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} x_i$ is the empirical mean. Another example is $f(\x) = [\esp(\x), \var(\x)]\trans$, where $\var(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} (x_i - \esp(\x))^2$ is the empirical variance.
-
-Other statistical layers are possible. In particular, we also implemented a learned histogram from \citep{wang2016learnhist}. Additionaly \citep{khasanova2017tigranet} propose to apply differen diffusion on the final maps to obtain statistics at different sclaes.
+Other statistical layers are also possible.
+In particular, we also implement a \emph{learned histogram} statistic \citep{wang2016learnhist}.
+Other approaches, which we did not implement, may include applying different diffusion on the final maps to obtain statistics at different scales, as proposed by \citep{khasanova2017tigranet}.
 
 \subsection{Graph convolutional neural network}
 \label{sec:architecture}
@@ -757,8 +764,8 @@ As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each paramete
 % only if batch normalization is not used
 
 Given a matrix $\X \in \R^{N_{pix} \times F}$, a pooling layer computes $\Y = P(\X) \in \R^{N'_{pix} \times F}$ by reducing its spatial resolution ($N'_{pix} < N_{pix}$) according to \eqnref{pooling}.
-
-Given a matrix $\X \in \R^{N_{pix} \times F}$, a batch normalization layer \citep{ioffe2015batchnorm} computes $\Y = BN(\X)$ such as
+% Given a matrix $\X \in \R^{N_{pix} \times F}$,
+The batch normalization layer \citep{ioffe2015batchnorm} computes $\Y = BN(\X)$ such as
 \begin{equation*}
 	\y_i = \gamma_i \frac{\x_i - \esp(\x_i)}{\sqrt{\var(\x_i) + \epsilon}} + \beta_i, \ \forall i \in [F],
 \end{equation*}
@@ -781,7 +788,12 @@ The softmax layer is the last layer in a neural network engineered for classific
 where $N_{classes}$ is the number of classes to discriminate. Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the probability that the input sample belongs to class $i$. This last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
 
 
-Given a map $\X \in \R^{N_{pix} \times F}$, the neural network is computing $\y = NN_\theta(\X) \in R^{N_{classes}}$, where $NN$ is a composition of the above layers (an example is $NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC$) and $\theta$ is the set of all trainable parameters.
+Given a map $\X \in \R^{N_{pix} \times F}$, the neural network is computing $\y = NN_\theta(\X) \in R^{N_{classes}}$, where $NN$ is a composition of the above layers and $\theta$ is the set of all trainable parameters.
+An example network can be defined as
+\begin{equation}
+NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC
+\end{equation}
+\TK{what is the meaning of $\circ$ here?}
 The number of features $F$ depends on the data at hand. For the CMB radiation temperature, $F = 1$. For observations in radio frequencies, $F$ would be equal to the number of surveyed frequencies. $F$ might also be the number of slices in the radial direction.
 The loss function $\ell(\y) = \ell(NN_\theta(\X))$ is a measure of how good the prediction $\y$ is for the sample $\X$. For a classification task, the loss is usually taken to be the cross-entropy
 \begin{equation*}
@@ -792,6 +804,7 @@ The parameters $\theta$ of the neural network are optimized to minimize the loss
 \begin{equation*}
 	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} \ell(NN_\theta(\X_i)).
 \end{equation*}
+The same architecture with different loss function can also be used for parameter regression \citep{fluri2018deep,gupta2018nongaussianinformation}.
 The optimization is performed by computing an error gradient w.r.t.\ all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
 \begin{equation*}
 	\theta \leftarrow \theta - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial \ell(NN_\theta(\X_i))}{\partial \theta} ,
@@ -809,149 +822,160 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 % 2) Explain briefly the dataset
 % 3) Present the setting
 % 4) Describe the result
-In this section, we demonstrate the performance of the spherical neural network on a discrimination problem: the classification of convergence maps, similar to those created with gravitational lensing technique \citep{chang2017curvedsky}. Nevertheless, by simply changing the loss, one could use the network for regression.
+In this section we demonstrate the performance of the spherical neural network on a discrimination problem: the classification of convergence maps into two cosmological model classes.
+These maps are similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
+Nevertheless, by simply changing the loss, one could use the network for regression.
 Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments is available online.
 
 \subsection{Data}
 \label{sec:data}
 
-Convergence maps represent the dimensionless distribution of over- and underdensities of mass in the universe, projected on the sky plane.
-The 3D structures are projected using a geometric kernel, value of which depends on the radial distance.
-In gravitational lensing, this kernel is dependent on the radial distances between the observer, the mass plane and the plane of source galaxies \citep[see][for review of gravitational lensing]{bartelman2010gravitationallensing}.
-The redshifts of the sources was set to $z=1$.
-
-We make full sky N-body simulations for two parameter sets for $\Lambda \rm{CDM} $ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
-Other parameter parameters were set to $h=0.7$ \todo{(MORE PARAMS HERE - CHECK WITH RAPHAEL)}.
-These parameters were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
-That means that it is not possible to distinguish between these cosmological models using these maps if the this range of scales is used.
-We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
-To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmins. The resulting PSD are displayed in \figref{psd_sigma3}. In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $N_{side}=1024$.
-
-\begin{figure}[!ht]
+\begin{figure}
 \centering
 \includegraphics[width=\linewidth]{psd_sigma3}
-\caption{Power spectrum densities of the noiseless maps. The maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies. The cosmological models could otherwise have been distinguished by looking at the PSDs.}
+\caption{Power spectrum densities of the noiseless maps.
+The maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies.
+The cosmological models could otherwise have been distinguished by the power spectra alone.}
 \label{fig:psd_sigma3}
 \end{figure}
 
-The simulations are created using the fast lightcone method described in~\citep{sgier2018fastgeneration}.
-However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
-As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
-For each class, we generate $30$ simulations (both class have the same initial parameters).
 
-Out of the $60$ simulations, $20$ are kept for the test set.
-\figref{map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
-Initial conditions for these simulations were the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
-
-\begin{figure*}[!ht]
+\begin{figure*}
 \centering
-\includegraphics[width=0.48\linewidth]{smooth_map_class_1}
-\hfill
-\includegraphics[width=0.48\linewidth]{smooth_map_class_2}
+\includegraphics[width=0.75\linewidth]{smooth_map_class_1}
+% \hfill
+\includegraphics[width=0.75\linewidth]{smooth_map_class_2}
 \caption{Example maps from two classes to be discriminated. Left: model 1 with $\Omega_m=0.31$ and $\sigma_8=0.82$. Right: model 2 with $\Omega_m=0.26$ and $\sigma_8=0.91$.
 The initial conditions for both simulations were the same, so differences only arise due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
 \end{figure*}
 
 
+Convergence maps represent the dimensionless distribution of over- and underdensities of mass in the universe, projected on the sky plane.
+The 3D structures are projected using a geometric kernel, value of which depends on the radial distance.
+In gravitational lensing, this kernel is dependent on the radial distances between the observer, the mass plane and the plane of source galaxies \citep[see][for review of gravitational lensing]{bartelman2010gravitationallensing}.
+The redshifts of the sources was set to $z=1$.
+
+We make full sky N-body simulations for two parameter sets for $\Lambda\rm{CDM} $ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
+Other parameter parameters were set to: Hubble constant $H_0=70 km/s/Mpc$, spectral index $n_s=0.96$, and Baryon density today $\Omega_b=0.05$.
+The parameters $\Omega_m$ and $\sigma_8$ were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
+That means that it is very difficult to distinguish between these cosmological models using these maps if this range of scales is used.
+We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
+To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
+The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function in the HEALpix package, are displayed in \figref{psd_sigma3}.
+In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $N_{side}=1024$.
+
+
+The simulations are created using the fast lightcone method described in~\citep{sgier2018fastgeneration}.
+However, we use only a single simulation box, as opposed to two used in that work, as we use source galaxies at lower redshift of $z=1$, instead of $z=1.5$.
+As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
+For each class, we generate $30$ simulations, with both classes having the same initial parameters.
+
+Out of the $60$ simulations, $20$ are kept as the test set.
+\figref{map_sample} shows the full sky simulations and a zoom region for model 1 (top) and model 2 (bottom).
+Initial conditions for these simulations were the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
+
+
 
 \subsection{Problem formulation}
 While the number of maps might sound small for deep learning, the information contained in the maps is very recurrent, allowing us to use parts of the map as samples for our simulation.
-Leveraging the properties of the HEALPix sampling, we can split each maps
-into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere.
-As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting
-samples are large enough to suffer from the effects of the spherical geometry. We
-decided to only report simulation results for this specific setting as spherical
-cosmological data usually does not span the full sphere. Nevertheless, our code
-includes an example using the full sphere.
+Using the properties of the HEALPix sampling, we can split each maps into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere.
+As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting samples are large enough to suffer from the effects of the spherical geometry.
+We decided to only report simulation results for this specific setting as spherical cosmological data usually does not span the full sphere.
+Nevertheless, our code includes an example using the full sphere.
 
-\begin{figure}[!ht]
+\begin{figure}
 \centering
 \includegraphics[width=\linewidth]{part_sphere}
 \caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
 \label{fig:part_sphere}
 \end{figure}
-
-We build a robust classifier, i.e., an automatic way to
-discriminate between the two classes in the presence of noise.
-We check the classification performance as a function of the area used, i.e., "the order" $o$ and also as a function of the relative level of the noise added to the map.
-
-For all the experiments, we work with centered Gaussian noise.
+For all the experiments, we work with centred Gaussian noise.
 While the noise model of real mass maps often has a slightly different distribution, Gaussian should be a sufficient model to demonstrate the performance of our method.
-To improve the stability of the spherical CNN, we slowly increase the amount of noise added to
-the training data over the iterations. Furthermore in order to avoid
-overfitting, the noise is randomly produced during the training process. We trained our
-model between $50$ and $290$ epochs depending on the complexity and the size of
-the problem. $20\%$ of the training set that we call "validation set" was left out of the training process and simply used to assess the global performance and overfitting of
-the network.
-Training took less than a day for each model using an NVIDIA Tesla K20.
+The noise added to our maps had levels spanning the range between 0 and 2  $\times$ the standard deviation of the mass maps.
 
-We compare the performance of the spherical CNN against two simple benchmark
-algorithms. The two baselines are based on building features with a) the Power
-Spectral Densities (PSD) and b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
-After a normalization, those features are then classified using a Support Vector
-Machine (SVM) with a linear kernel. Other kernels did not provide better results
-while having significanly worse scaling properties. All classifiers are trained with noisy samples. For fairness, we augmented the dataset
-of the baseline algorithm in a similar way as for the network, i.e, with
-created an "unlimited" number of samples by adding new random realizations of
-the noise. We stop adding new samples in the classifier once the validation
-error converge to a value. This process is detailed in \ref{sec:dataset_augmentation}. We tuned the regularization parameter by cross-validating with the validation set.
+We build a robust classifier, which automatically discriminates between the two classes in the presence of noise.
+We check the classification performance as a function of the area used, the order $o$, and the relative level of the noise added to the map.
+
+To improve the stability of the spherical CNN, we slowly increase the amount of noise added to the training data over the iterations.
+Furthermore in order to avoid overfitting, the noise is randomly produced during the training process.
+We trained our model between $50$ and $290$ epochs depending on the complexity and the size of the problem.
+The $20\%$ of the training set that we call \emph{validation set} was left out of the training process and simply used to assess the global performance of the network.
+Training took less than a day for each model using a single NVIDIA Tesla K20.
+
+We compare the performance of the spherical CNN against two simple benchmark algorithms.
+The two baselines are based on building features with
+(a) the Power Spectral Densities (PSD) and
+(b) the histogram of pixels in the maps~\cite{patton2017cosmologicalconstraints}.
+After a normalization, those features are then classified using a Support Vector Machine (SVM) with a linear kernel.
+Other kernels did not provide better results, while having significantly worse scaling properties.
+All classifiers are trained with noisy samples.
+For fairness, we augmented the dataset of the baseline algorithm in a similar way as for the network; we created samples by adding new random realizations of the noise.
+We stop adding new samples in the classifier once the validation error converges.
+This process is detailed in \ref{sec:dataset_augmentation}.
+We tune the regularization parameter by cross-validating with the validation set.
 
 \subsection{Results}
 
-We present in \figref{results} the results for $5$ different noise
-levels and $3$ different sample areas. The spherical CNN has a significant lead for all levels of noise and sample areas.
-In particular, the difference seems to increase as the problem becomes more complex, i.e., as the order is increased and there is less information in each sample.
-This is likely due to the fact that the SCNN can learn optimal features for the problem and do not rely on our humanly limited feature design.
-
-We observe that the PSD features, i.e.,
-one of the most used techniques for model discrimination in cosmology, is unable
-to perform the desired task. The main reason is that the two different models
-have very similar PSDs (see \figref{psd_sigma3}). As a result, one
-needs to use other statistics to solve the problem. In this case, the
-histogram features allow for a significant improvement over the PSD ones.
-Unfortunately, while the histogram features contain information about the
-distribution of pixels, they do not include any spatial information. In
-contrast, both the PSD features and the SCNN can exploit the spatial
-information.
-Note that without this graph structure, a fully connected neural network approach would have to be used. Problematically, fully connected neural networks do not scale well with the number of pixels.
-
-We have many different spherical neural network architectures and made a few empirical observations.
-First Chebyshef polynomial seems more stable than monomials. Nevertheless once the network is trained, we could not observe a significant accuracy difference.
-Second, using a statistical layer improved slightly the result for our specific problem. We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'. All but the `variance' were providing the same range of accurancy, the variance being slightly worse.
-Third, dropout did not help in the precence of noise. This is probably du to the fact that the dataset was augmented indefinitely
-Fourth, especially for difficult problem (order 2 or 4, and the presence of large noise) having a large architecture (many filters) and doing many iterations were necessary to achieve the result presented.
-
-
-\begin{figure*}[!ht]
+\begin{figure*}
 \centering
 \includegraphics[width=0.32\linewidth]{result_order1}
 \hfill
 \includegraphics[width=0.32\linewidth]{result_order2}
 \hfill
 \includegraphics[width=0.32\linewidth]{result_order4}
-\caption{Classification errors for the 3 different problems.}
+\caption{
+Classification errors for the 3 different areas of the sphere.
+Green lines show the performance of the CNN, blue of the PDF+SVM, and red of the histogram+SVM.
+Green dashed line corresponds to the performance of CNN without the statistical layer.
+The noise level was increased from zero to $2\times$ the standard deviation of the mass map.
+}
 \label{fig:results}
 \end{figure*}
+
+\figref{results} presents the results for $5$ different noise levels and $3$ different sample areas.
+The spherical CNN has a significant lead for all levels of noise and sample areas.
+In particular, the difference seems to increase as the problem becomes more complex; as the order is increased, there is less information in each sample.
+This is likely due to the fact that the HealpixNet can learn optimal features for the problem and does not rely on hand-designed features.
+
+We observe that the PSD is unable to perform the desired task.
+The main reason is that the two different models were designed to have very similar PSDs (see \figref{psd_sigma3}).
+As a result, one needs to use other statistics to solve the problem.
+In this case, the histogram features allow for a significant improvement over the PSD ones.
+Unfortunately, while the histogram features contain information about the distribution of pixels, they do not include any spatial information.
+In contrast, both the PSD features and the HealpixNet can exploit the spatial information.
+Note that without this graph structure, a fully connected neural network approach would have to be used.
+Problematically, fully connected neural networks do not scale well with the number of pixels.
+\TK{I don't understand this comment.}
+
+We tried several different spherical neural network architectures and observed the following results.
+First, Chebyshev polynomial seems more stable than monomials \TK{what are monomials? stable in what sense?}.
+Nevertheless once the network is trained, we could not observe a significant accuracy difference.
+Second, using a statistical layer improved the result unlimited for our problem.
+We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
+The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse.
+Third, the use of the dropout\TK{was dropout mentioned before?} layer did not help in the presence of noise.
+This is probably due to the fact that the dataset was augmented indefinitely through the addition of noise.
+Fourth, especially for the more difficult cases, orders 2 or 4 and large noise levels, a large architecture with many filters and many training iterations were necessary to achieve high accuracy levels.
+
+
+
 
 
 \subsection{Filter visualization}
 One common visualization for CNN is to observe the shape of the learned filters.
-Since our construction leads to almost (up to the sampling irregularities)
-spherical filters, we plot in \figref{learned_filter} both the section (on the
-sphere) and a gnomonic projection on a plane of a random selection of learned
-filters. The filters are selected from the last layer of the network
-corresponding the experiment with order $o=2$ for a relative noise level of
-$2$. Nevertheless, all networks presented similar gnomonic and section pattern, at least from a
-human perspective. The gnomonic projection clearly exibits the sampling issue
-of HEALPix.
-For a detail, on how the convolution kernels are plotted, please refer to \ref{sec:filter_visualization}.
+Since our construction leads to almost (up to the sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the radial profile and a gnomonic projection on a plane of a random selection of learned filters.
+The filters are selected from the last layer of the network corresponding the experiment with order $o=2$ for a relative noise level of $2$.
+Nevertheless, all networks presented visually similar gnomonic and profile pattern.
+% The gnomonic projection clearly exibits the sampling issue of HEALPix.
+% \TK{what issue? Commenting out for now}
+Detail of how the convolution kernels are plotted are described in \ref{sec:filter_visualization}.
 While it is usually difficult to interpret the shape of the filters in the context of the type of data, we can notice that they often have a ``peak'' like structures.
 An example of filter interpretation was demonstrated in \citep{Ribli2018learningfrom}.
 % \todo{Tomek: can you say something about the filters.}
-% \TK{Done }
+% \TK{Done}
 
-\begin{figure*}[!ht]
+\begin{figure*}
 \centering
 \includegraphics[width=0.47\linewidth]{section_filter_last}
 \hfill
@@ -960,28 +984,51 @@ An example of filter interpretation was demonstrated in \citep{Ribli2018learning
 \label{fig:learned_filter}
 \end{figure*}
 
-\section{Discussion}
+% \section{Discussion}
 
-Because of the spherical domain, the method presented here restricts the shape of the filters learned by the network to be radial.
-While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
-The layered structure of the network can partially compensate for that.
-Further generalizations to non-radial filters may be possible [cite?], but we leave it to future work.
+% Because of the spherical domain, the method presented here restricts the shape of the filters learned by the network to be radial.
+% While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
+% The layered structure of the network can partially compensate for that.
+% Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
 
-\nati{Should the discussion be merged with the result section?}
+% \nati{Should the discussion be merged with the result section?}
+% \TK{I think yes!}
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this contribution, we presented HealpixNet, a spherical CNN for the HEALPix sampling. The gist of our construction resides in using a graph to model the sphere.
-This allows us to leverage the advantages of the graph convolution, i.e., it is both efficient (with a complexity of $\mathcal{O}(N_{pix})$) and flexible (allow to work only on a part of the sphere) while it still captures well the spherical properties of the domain.
-We also show on a range of classification problems that the neural network systematically significantly outperform classical methods.
+In this contribution we presented HealpixNet: a spherical convolutional neural network for the HEALPix sampling.
+The core of our method is the use of a graph to represent the pixel grid on the sphere.
+This allows us to leverage the advantages of the graph convolution; it is both efficient, with a complexity of $\mathcal{O}(N_{pix})$, and flexible, which allows to work only on a part of the sphere.
+Spherical properties of the domain are still captured well.
+The method presented here restricts the shape of the filters learned by the network to be radial.
+While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
+The layered structure of the network can partially compensate for that.
+Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
 
-As shown in this contribution, modelling the discretized sphere, a 2D manifold in $\R^3$, by a graph enables an efficient convolution operation on any pixelization. Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions. For applications which can tolerate small imprecisions in rotation invariance --- the fact that the action of a graph filter slightly depends on the location --- this relaxation might enable researchers to consider sampling sets with different properties.
 
-The main product of this contribution is HealpixNet,\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} a small and easy-to-use python package for cosmologists to classify sky maps.
-As a future work, we intend to (i) further investigate the link between the graph Fourier basis and the spherical harmonic and (ii) compare HealpixNet to other spherical CNN using different sampling schemes.
+We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps.
+Notably, HEALPix maintains good classification accuracy even for high noise levels and part-sky areas.
 
-\section*{Thanks}
+We show that the modelling the discretised sphere by a graph enables an efficient convolution operation on HEALPix sampling.
+% Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
+% \TK{I would move the info about possible relaxation of the iso-latitude thing to a separate paragraph at the end on conclusions - future prospects?}
+Graph-based representation of the sphere can display small imprecisions in rotation invariance, which results in the property that the action of a graph filter slightly depends on the location.
+For applications that can tolerate this property, an graph-based representation may be a worthwhile alternative.
+% this relaxation might enable researchers to consider sampling sets with different properties.
+% \TK{this I don't understand}
+For example, a machine learning based cosmological inference algorithm can in principle tolerate this property, as it requires the simulations to be represented the same way as observations anyway.
+This way, imperfections in representation will affect the simulations and real data in the same way, and will not cause biases in the analysis result.
+
+The main product of this contribution is HealpixNet a small and easy-to-use python package for cosmologists to classify sky maps.
+The code and data used in this work are publicly available\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
+
+As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
+Further comparison of HealpixNet to other spherical CNN algorithms, with different sampling schemes, would also be worthwhile.
+
+
+
+\section*{Acknowledgements}
 
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
@@ -1012,7 +1059,7 @@ Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N
 
 The graph setting used through this contribution assumes reflective border conditions. That is irrelevant when working on the complete sphere as this surface has no border. When working with a part of the sphere however, its border slightly affects the convolution. As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile. These border effects can however be mitigated by padding with zeros a small area around the part of interest.
 
-\begin{figure}[!ht]
+\begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{border_effects}
 	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on pixel $i$ as $h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
@@ -1031,7 +1078,7 @@ working on the sphere with theoretically spherical filters (up to the irregulari
 sampling, the second and the third methods are subject to small variations depending on the
 chosen Kroneker.
 
-\begin{figure}[!ht]
+\begin{figure}
 \centering
 \includegraphics[width=\linewidth]{gaussian_filters_spectral}
 \includegraphics[width=\linewidth]{gaussian_filters_gnomonic}
@@ -1043,7 +1090,7 @@ Bottom: section plot.}
 \label{fig:gaussian_filters_visualization}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}
 \centering
 \includegraphics[width=0.6\linewidth]{index_plotting_order20_nside16}
 \caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
@@ -1070,7 +1117,7 @@ penalization parameter of SVM. Eventually, we evaluate the final classifier on
 the testing set. An example of the evolution of the training and valdication
 error is shown in \figref{hist_error_evolution}.
 
-\begin{figure}[!ht]
+\begin{figure}
 \centering
 \includegraphics[width=\linewidth]{hist_error_order2_noise1_5}
 \caption{Evolution curve of the error with respect to the number of training samples for histogram features and a linear classifier (setting: order 2, relative noise level: 1.5). The validation error might be slightly below the training error because we use it for cross-validation.}
