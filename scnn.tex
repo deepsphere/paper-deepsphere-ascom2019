@@ -163,15 +163,16 @@
 Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence.
 So far, these networks have mostly been developed for regular Euclidean domains such as those supporting images, audio, or video.
 Because of their success, CNN-based methods are becoming increasingly popular in Cosmology.
-Nevertheless, cosmological data often comes in a form of spherical maps, which makes the use of traditional CNNs impractical and complicated.
-Typically, the spherical format for spherical maps is HEALPix, which uses an equal-area, isolatitude sampling.
-As a response to this gap, we present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
+Cosmological data often comes in a form of spherical maps, which makes the use of traditional CNNs more complicated.
+The commonly used pixelzation scheme for spherical maps is HEALPix, which uses an equal-area, isolatitude sampling.
+We present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
 We construct a spherical CNNs by representing the sphere as a graph.
 Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
-Leveraging the graph, we define many of the standard CNN operations, such as convolution and pooling, with the filters restricted to being radial.
-HealpixNet is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
+Using the graph-based representation, we define many of the standard CNN operations, such as convolution and pooling, with filters restricted to being radial.
+This way, HealpixNet is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
 % TBD if we include it
-% This approach is computationally more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
+% This approach is very efficient computationally than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
+An advantage of this representation is that the convolution operations with this approach are very efficient, which enables the algorithm to run very fast.
 We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
 Our experimental result show that the performance of HealpixNet to always better or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
@@ -237,7 +238,10 @@ Mass mapping
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
 	\includegraphics[width=\linewidth]{figure_architecture_v2}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier. \nati{add the stat layer?} A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
+	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier.
+    %\nati{add the stat layer?}
+    %\TK{added stats layer to figure text, hope that's OK}
+    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
 	\label{fig:architecture}
 \end{figure*}
 
@@ -246,12 +250,19 @@ Mass mapping
 
 %\subsection{Motivation}
 
-Cosmological and astrophysical data often comes in the form of spherical sky maps.
-Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models. Deep Learning has recently gained popularity as an analysis tool in cosmology \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring}, thanks to its ability to capture complicated, non-linear patterns which are often present in the data. Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture. Indeed, sky maps are translation invariant, which means that translating and rotating maps on the sphere doesn't change their interpretation. Only the statistics of the maps is relevant. The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle). As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
+Cosmological and astrophysical data often come in the form of spherical sky maps.
+Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models.
+Cosmological information contained in these maps is usually extracted using summary statistics, such as the power spectra or higher order correlation functions.
+Convolutional Neural Networks (CNN) have been proposed as an alternative analysis tool in cosmology thanks to its ability to automatically design relevant statistics to maximise the precision of the parameter estimation
+\citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring,ravanbakhsh2017estimating}.
+This is possible as CNNs have the capacity to build very rich models and capture complicated, non-linear patterns, which are often present in the data.
 
-For cosmological observations it is often the case that the data covers only a part of the sphere.
-For ground-based observations this can be due to limited visibility of the sky from a particular telescope location and survey strategy, and for space-based imagers due to masking of the galactic plane area.
-
+% \TK{I would move the discussion about this to a later place in the paper}
+% Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture.
+% Indeed, sky maps are translation invariant, which means that translating and rotating maps on the sphere doesn't change their interpretation.
+% Only the statistics of the maps is relevant.
+% The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle).
+% As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
 
 % \todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
 % \todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the HEALPix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
@@ -261,10 +272,14 @@ So far these algorithms have mostly been demonstrated on Euclidean domains, such
 As such, perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
 While this mostly works, as demonstrated by \citep{fluri2018deep,gupta2018nongaussianinformation,schmelze2017cosmologicalmodel,gillet2018deeplearning}, it may be more natural for some applications and accurate to work directly on the sphere.
 The main challenge in designing a CNN on the sphere is to define a convolution which is suitable to this irregularly sampled domain.
+To be able to train the network efficiently, the convolution must also be efficient and fast to perform.
+Another important feature is for a CNN to be able to work on part-spheres, as for many cosmological observations cover only a part of the sky.
+For ground-based observations this can be due to limited visibility of the sky from a particular telescope location and survey strategy, and for space-based imagers due to masking of the galactic plane area.
+
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
 A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretization of the sphere~\citep{boomsma2017spherical}. While this approach leverages the well-developed 2D convolution and hierarchical pooling, it is restricted to those specific grid samplings which are highly irregular on the sphere.
-A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast spherical Fourier transforms for some samplings, this approach is still computationally expensive (see \figref{filtering_speed}).
+A second attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem. While there exists fast spherical Fourier transforms for some samplings, this approach can still be computationally expensive.
 Finally, the use of a graph to model the discretized sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of building invariances in the network. While their architecture is fully invariant to translation and rotation on the sphere, they did not take advantage of a hierarchical pixelization of the sphere, and the statistical layer used to be invariant needs to be hand-crafted to capture statistics of interest.
 
 To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling. The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels. The length (or weight) of the shortest path between two pixels is an approximation of the geodesic distance between them on the manifold.
@@ -788,7 +803,7 @@ contrast, both the PSD features and the SCNN can exploit the spatial
 information.
 Note that without this graph structure, a fully connected neural network approach would have to be used. Problematically, fully connected neural networks do not scale well with the number of pixels.
 
-We have many different spherical neural network architectures and made a few empirical observations. 
+We have many different spherical neural network architectures and made a few empirical observations.
 First Chebyshef polynomial seems more stable than monomials. Nevertheless once the network is trained, we could not observe a significant accuracy difference.
 Second, using a statistical layer improved slightly the result for our specific problem. We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'. All but the `variance' were providing the same range of accurancy, the variance being slightly worse.
 Third, dropout did not help in the precence of noise. This is probably du to the fact that the dataset was augmented indefinitely
@@ -924,7 +939,7 @@ Bottom: section plot.}
 
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation} The original number of samples $480$, $1920$,
-$7680$ respectively for order $o=1,2,4$ is considered small to train deep a architecture, 
+$7680$ respectively for order $o=1,2,4$ is considered small to train deep a architecture,
 especially when one desire to build a noise robust
 classifier. As a result, we use a classical dataset augmentation technique.
 Before entering the network for training each sample is added a random
