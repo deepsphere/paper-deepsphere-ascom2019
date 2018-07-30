@@ -219,20 +219,20 @@ Mass mapping
     \item (Waiting for Zenodo) (NP) Finalize the data on zenodo
     \item TK check part sphere notebook and whole sphere
     \item branch with notebooks with plots (results) NP
-    \item Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
     \item NP move the repo to HealpixNet
-	\item check if papers which appear as arxiv were not published in a conference or journal
+    \item check if papers which appear as arxiv were not published in a conference or journal
     \item (TK) add info on comparison with histograms, so that it's just a demonstration
-    \item (TK NP) if we have time make a new candidate for network plot (optional)
-    \item (first version done) conclusions
-    \item Should the heat example go to appendix?
-    \item TK read the heat section again
     \item TK read the result section
     \item TK check the appendix
     \item TK optional - example of data (CMB (mask) + mass map + radio intensity)
     \item TK read everything
-	\item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings.
-	\item uniformize text size in figures
+    \item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings.
+    \item uniformize text size in figures
+    \item (done! first version done) conclusions
+    \item (done!) Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
+    \item (done!) (TK NP) if we have time make a new candidate for network plot (optional)
+    \item (done!) TK read the heat section again
+    \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
 \end{itemize}
 
 \begin{figure*}
@@ -351,6 +351,20 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 \section{Related work}
 \label{sec:related}
 
+
+\begin{figure}
+    \centering
+    \includegraphics[height=7em]{sphere_grid_equirectangular}
+    \hfill
+    \includegraphics[height=7em]{sphere_grid_cubedsphere}
+    \hfill
+    \includegraphics[height=7em]{half_graph_4}
+    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citet{boomsma2017spherical}.}
+    \label{fig:sphere_grids}
+    \label{fig:healpix_graph_4}
+\end{figure}
+
+
 \citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
 As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
 It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
@@ -365,18 +379,6 @@ Equal areas of discrete elements is advantageous for many physical measurements,
 Finally, a 2D CNN learns directional filters, which are well defined with respect of the image coordinates.
 Directions that make much sense for images (up, down, left, and right) are arbitrarily defined when setting the origin of the grids on the sphere.
 Any convolution using directions on the sphere is not equivariant to translation and rotation.
-
-\begin{figure}
-	\centering
-	\includegraphics[height=7em]{sphere_grid_equirectangular}
-	\hfill
-	\includegraphics[height=7em]{sphere_grid_cubedsphere}
-	\hfill
-	\includegraphics[height=7em]{half_graph_4}
-	\caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citet{boomsma2017spherical}.}
-	\label{fig:sphere_grids}
-	\label{fig:healpix_graph_4}
-\end{figure}
 
 % As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
 
@@ -482,6 +484,25 @@ The gist of our method is to define the convolution operation on a sphere using 
 \subsection{HEALPix sampling}
 \label{sec:healpix}
 
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{exampleEarthTopo}
+        \caption{}
+        \label{fig:example_earth}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.45\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{exampleCMB}
+        \caption{}
+        \label{fig:example_cmb}
+    \end{subfigure}
+    \caption[]{Example of (a) an Earth topography map composed of \textasciitilde 3 million pixels (\textasciitilde 7 arcmin resolution) and (b) a model of the Cosmic Microwave Background (CMB) radiation temperature anisotropy, composed of \textasciitilde 13 million pixels (\textasciitilde 3.4 arcmin resolution).\footnotemark}
+    \label{fig:example_maps}
+\end{figure}
+
 Before doing any numerical analysis on the sphere, one first has to choose a tessellation, i.e., an exhaustive partition of the sphere into finite area elements, where the data under study is quantized.
 The simplicity of the spherical form belies the intricacy of global analysis on the sphere.
 There is no known point set which achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions.
@@ -507,25 +528,6 @@ The lowest possible resolution is given by the base partitioning of the surface 
 As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels.
 \figref{example_maps} shows two examples of HEALPix maps: the Cosmic Microwave Background \citep{planck2015overview} and \TK{update}.
-
-\begin{figure}
-	\centering
-	\begin{subfigure}[b]{0.45\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{exampleEarthTopo}
-		\caption{}
-		\label{fig:example_earth}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.45\linewidth}
-		\centering
-		\includegraphics[width=\linewidth]{exampleCMB}
-		\caption{}
-		\label{fig:example_cmb}
-	\end{subfigure}
-	\caption[]{Example of (a) an Earth topography map composed of \textasciitilde 3 million pixels (\textasciitilde 7 arcmin resolution) and (b) a model of the Cosmic Microwave Background (CMB) radiation temperature anisotropy, composed of \textasciitilde 13 million pixels (\textasciitilde 3.4 arcmin resolution).\footnotemark}
-	\label{fig:example_maps}
-\end{figure}
 
 \footnotetext{Figures from \url{https://healpix.jpl.nasa.gov/}.}
 
@@ -609,34 +611,35 @@ Finally, the graph convolution can be interpreted in the vertex domain as a scal
 \begin{equation} \label{eqn:graph_convolution_spatial}
 	(h(\L) \f)_i = \langle h(\L) \b \delta_i, \f \rangle.
 \end{equation}
-\textbf{Example.}
-Let us consider the heat diffusion problem
-\begin{equation} \label{eqn:heat_equation}
-	\L \b{f}(t) = \tau \partial_t \b{f}(t),
-\end{equation}
-where $\b{f}: \R_+ \rightarrow \R^{N_{pix}}$. Given the initial condition
-$\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
-\begin{equation*}
-	\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
-\end{equation*}
-which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization} and~\ref{sec:filter_visualization}.
+In \ref{sec:heat_diffusion} we present an example application of graph-based convolution to a simple heat-diffusion problem.
+% \textbf{Example.}
+% Let us consider the heat diffusion problem
+% \begin{equation} \label{eqn:heat_equation}
+% 	\L \b{f}(t) = \tau \partial_t \b{f}(t),
+% \end{equation}
+% where $\b{f}: \R_+ \rightarrow \R^{N_{pix}}$. Given the initial condition
+% $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
+% \begin{equation*}
+% 	\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
+% \end{equation*}
+% which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization} and~\ref{sec:filter_visualization}.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{gaussian_filters_sphere}
-	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
-	Top: Diffusion of a unit of heat for different times $t$ using the graph.
-	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
-	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $4.8$\%, $3.8$\%.
-\todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
-\nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
-	\label{fig:gaussian_filters_comparizon}
-\end{figure}
+% \begin{figure}
+% 	\centering
+% 	\includegraphics[width=\linewidth]{gaussian_filters_sphere}
+% 	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
+% 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
+% 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
+% 	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $4.8$\%, $3.8$\%.
+% \todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
+% \nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
+% 	\label{fig:gaussian_filters_comparizon}
+% \end{figure}
 
-Furthermore, this result is another sign that the constructed graph is able to capture the spherical
-structure of the HEALPix sampling. In some applications, where the
-exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
-The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
+% Furthermore, this result is another sign that the constructed graph is able to capture the spherical
+% structure of the HEALPix sampling. In some applications, where the
+% exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
+% The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
 % not ideal tho as the graph convolution depends on the localization
 
 \subsection{Efficient convolutions}
@@ -1065,6 +1068,37 @@ The graph setting used through this contribution assumes reflective border condi
 	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on pixel $i$ as $h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
 	\label{fig:border_effects}
 \end{figure}
+
+\section{Example: heat diffusion}
+\label{sec:heat_diffusion}
+Let us consider the heat diffusion problem
+\begin{equation} \label{eqn:heat_equation}
+  \L \b{f}(t) = \tau \partial_t \b{f}(t),
+\end{equation}
+where $\b{f}: \R_+ \rightarrow \R^{N_{pix}}$. Given the initial condition
+$\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
+\begin{equation*}
+  \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
+\end{equation*}
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization} and~\ref{sec:filter_visualization}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{gaussian_filters_sphere}
+  \caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
+  Top: Diffusion of a unit of heat for different times $t$ using the graph.
+  Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
+  Relative difference between graph convolution and spherical smoothing: $10.4$\%, $4.8$\%, $3.8$\%.
+\todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
+\nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
+  \label{fig:gaussian_filters_comparizon}
+\end{figure}
+
+Furthermore, this result is another sign that the constructed graph is able to capture the spherical
+structure of the HEALPix sampling. In some applications, where the
+exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
+The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
+not ideal tho as the graph convolution depends on the localization
 
 \section{Filter visualization}
 \label{sec:filter_visualization}
