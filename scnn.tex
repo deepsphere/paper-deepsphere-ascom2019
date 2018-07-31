@@ -369,8 +369,13 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 \citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
 As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
 It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
-\todo{How do thy handle boundaries?}
+\todo{How do they handle boundaries?}
 \TK{+1,good question}
+\nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was: 
+\emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."} 
+Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
+I do not think we should mention any of that in the paper.
+}
 % Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
 % Moreover, those samplings are not ideal as their resolution is not constant across the sphere.
 Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
@@ -423,7 +428,7 @@ Finally, while the rotation invariance is desirable, the statistical layer used
 % \{TK} this should be explained earlier
 may not capture the information in an optimal way
 \todo{and hinders performance (should be empirically verified)}.
-\TK{This is a strong claim, can we support this?}
+\TK{This is a strong claim, can we support this?} \nati{It is not that strong as we use "may" right? We should probably soften it a bit. However the main idea is correct. If you compute some statistics on some features, you lose some information and may get worse results. }
 Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest.
 % While developing completely invariant transforms is a goal worth investigating, CNNs for image recognition, which are arguably the most researched and developed architectures, are not built to be fully invariant to translation.
 % As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features.
@@ -431,12 +436,12 @@ Moreover, the chosen statistics have to be hand-crafted to capture statistics of
 % \TK{The two sentences above look like a tangent to me.. can we skip it an go to the main point, which is I think the fact that we use the stat layer?}
 
 \todo{In HealpixNet we use the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere.
-\TK{We would need to describe the idea of the statistical layer for the cosmology audience. They don't have a clue what it is.}
+\TK{We would need to describe the idea of the statistical layer for the cosmology audience. They don't have a clue what it is.}\nati{Can't they just wait for \secref{stat_layer}? }
 The use of the statistical layer is optional.
 In our approach, we are keeping all the statistical moments by retaining a full, learned learned feature histogram, an approach that performed the best in our tests.
 That is similar to the learnable histogram introduced by \citet{wang2016learnhist}, although for a purpose of integrating global context in object detection and segmentation tasks.
 \citet{khasanova2017graphomni} uses the mean and variance of diffused versions of the last feature maps in their statistical layer.}
-\TK{why is this section in TODO?}
+\TK{why is this section in TODO?\nati{Probably because, we have not decided if we use the histogram yet. This paragraph needs to be rewritten once we are clear with the code.}}
 
 
 There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to translation. \todo{better wording}
@@ -612,7 +617,7 @@ Finally, the graph convolution can be interpreted in the vertex domain as a scal
 \begin{equation} \label{eqn:graph_convolution_spatial}
 	(h(\L) \f)_i = \langle h(\L) \b \delta_i, \f \rangle.
 \end{equation}
-In \ref{sec:heat_diffusion} we present an example application of graph-based convolution to a simple heat-diffusion problem.
+In \ref{sec:heat_diffusion}, we present an example application of graph-based convolution to a simple heat-diffusion problem in order to shed some light on what is the convolution on a graph.
 % \textbf{Example.}
 % Let us consider the heat diffusion problem
 % \begin{equation} \label{eqn:heat_equation}
@@ -680,7 +685,7 @@ Following \citet{defferrard2016convolutional}, we define our filters as Chebyshe
 \end{equation}
 where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}$ is the rescaled Laplacian with eigenvalues $\tilde{\b \Lambda}$ in $[-1, 1]$ and $T_k(\cdot)$ is the Chebyshev polynomial of degree $k$, defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$. While definitions \eqnref{graph_convolution_polynomial} and \eqnref{graph_convolution_cheby} both allow the representation of the same set of filters, Chebyshev polynomials are preferred as they form an orthogonal basis on the interval $[-1, 1]$. Moreover, they factor out $\tL^{k-2}$ from $T_k(\tL)$, e.g., the 3-neighborhood is not mixed with the 5-neighborhood. That results in easier learning when optimizing the parameters $\theta$.
 Finally, the coefficients can be computed such as the truncated Chebyshev expansions gives an approximate minimax polynomial of a given filter \citep{hammond2011wavelets}. While that is irrelevant when learning filters, it is useful when smoothing a signal on the sphere by filtering it with an approximated low-pass filter.
-In practice, we found out that Chebyshev polynomials are slightly more stable in our experiment \TK{slightly more stable than what?}.
+In practice, we found out in our experiment that Chebyshev polynomials are slightly more stable than the monomials used in~\cite{khasanova2017graphomni}(i.e. optimizing directly the $\theta_k$ in \eqnref{graph_convolution_polynomial}).
 We believe that this is due to their orthogonality (as explained above) and uniformity\footnote{The amplitude of Chebyshev polynomials is more or less constant over the domain $[-1, 1]$ independently of the order $k$. On the contrary the amplitude of $x^k$ is very different for $|x|\approx 0$ and $|x| \approx 1$.}.
 \nati{I added a sentence and I think we should not give much more details here. If we do an experiment, we can comment in the experiment section.}
 \todo{(i) scale of $\theta_k$: they are mostly uniform for Chebyshev polynomials, end exploding for monomials. Though SGD implicitly imposes a uniform prior on the learned parameters.}
@@ -795,9 +800,9 @@ where $N_{classes}$ is the number of classes to discriminate. Thanks to the soft
 Given a map $\X \in \R^{N_{pix} \times F}$, the neural network is computing $\y = NN_\theta(\X) \in R^{N_{classes}}$, where $NN$ is a composition of the above layers and $\theta$ is the set of all trainable parameters.
 An example network can be defined as
 \begin{equation}
-NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC
+NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC,
 \end{equation}
-\TK{what is the meaning of $\circ$ here?}
+\TK{what is the meaning of $\circ$ here?}\nati{where $\circ$ is the composition operator between two layers.}
 The number of features $F$ depends on the data at hand. For the CMB radiation temperature, $F = 1$. For observations in radio frequencies, $F$ would be equal to the number of surveyed frequencies. $F$ might also be the number of slices in the radial direction.
 The loss function $\ell(\y) = \ell(NN_\theta(\X))$ is a measure of how good the prediction $\y$ is for the sample $\X$. For a classification task, the loss is usually taken to be the cross-entropy
 \begin{equation*}
@@ -949,16 +954,17 @@ In this case, the histogram features allow for a significant improvement over th
 Unfortunately, while the histogram features contain information about the distribution of pixels, they do not include any spatial information.
 In contrast, both the PSD features and the HealpixNet can exploit the spatial information.
 Note that without this graph structure, a fully connected neural network approach would have to be used.
-Problematically, fully connected neural networks do not scale well with the number of pixels.
-\TK{I don't understand this comment.}
+Problematically, fully connected neural networks generally scales squarely with their number of inputs.
+\TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
 
 We tried several different spherical neural network architectures and observed the following results.
-First, Chebyshev polynomial seems more stable than monomials \TK{what are monomials? stable in what sense?}.
+First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more steadily decrease.
+%\TK{what are monomials? stable in what sense?}
 Nevertheless once the network is trained, we could not observe a significant accuracy difference.
 Second, using a statistical layer improved the result unlimited for our problem.
 We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
 The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse.
-Third, the use of the dropout\TK{was dropout mentioned before?} layer did not help in the presence of noise.
+Third, the use of the dropout\TK{was dropout mentioned before?} \nati{Probably not. But to keep it simple, we may just add a footnote or a reference.} layer did not help in the presence of noise.
 This is probably due to the fact that the dataset was augmented indefinitely through the addition of noise.
 Fourth, especially for the more difficult cases, orders 2 or 4 and large noise levels, a large architecture with many filters and many training iterations were necessary to achieve high accuracy levels.
 
