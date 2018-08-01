@@ -485,24 +485,36 @@ The gist of our method is to define the convolution operation on a sphere using 
 \subsection{HEALPix sampling}
 \label{sec:healpix}
 
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.45\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{exampleEarthTopo}
-        \caption{}
-        \label{fig:example_earth}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.45\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{exampleCMB}
-        \caption{}
-        \label{fig:example_cmb}
-    \end{subfigure}
-    \caption[]{Example of (a) an Earth topography map composed of \textasciitilde 3 million pixels (\textasciitilde 7 arcmin resolution) and (b) a model of the Cosmic Microwave Background (CMB) radiation temperature anisotropy, composed of \textasciitilde 13 million pixels (\textasciitilde 3.4 arcmin resolution).\footnotemark}
-    \label{fig:example_maps}
-\end{figure}
+\begin{figure*}
+\includegraphics[width=\linewidth]{figures/figure_example_maps.pdf}
+\caption{Exmaple maps on the sphere:
+(left) the CMB temperature (K) map from Planck \citep{planck2015overview}, with galactic plane masked,
+(middle) map of galaxy number counts (number of galaxies per arcmin$^2$) in SDSS DR14 \citep{abolfathi2017sdssDR14},
+and (right) simulated weak lensing convergence map (dimensionless) simulated with DES DR1 mask \citep{des2018dr1}.
+These maps were pixelised using \texttt{nside}=512.
+The CMB and weak lensing mass maps were smoothed with Gaussian kernels with FWHM=1 deg, and the galaxy count map with FWHM=0.5 deg.
+}
+\label{fig:example_maps}
+\end{figure*}
+
+% \begin{figure}
+%     \centering
+%     \begin{subfigure}[b]{0.45\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{exampleEarthTopo}
+%         \caption{}
+%         \label{fig:example_earth}
+%     \end{subfigure}
+%     \hfill
+%     \begin{subfigure}[b]{0.45\linewidth}
+%         \centering
+%         \includegraphics[width=\linewidth]{exampleCMB}
+%         \caption{}
+%         \label{fig:example_cmb}
+%     \end{subfigure}
+%     \caption[]{Example of (a) an Earth topography map composed of \textasciitilde 3 million pixels (\textasciitilde 7 arcmin resolution) and (b) a model of the Cosmic Microwave Background (CMB) radiation temperature anisotropy, composed of \textasciitilde 13 million pixels (\textasciitilde 3.4 arcmin resolution).\footnotemark}
+%     \label{fig:example_maps}
+% \end{figure}
 
 Before doing any numerical analysis on the sphere, one first has to choose a tessellation, i.e., an exhaustive partition of the sphere into finite area elements, where the data under study is quantized.
 The simplicity of the spherical form belies the intricacy of global analysis on the sphere.
