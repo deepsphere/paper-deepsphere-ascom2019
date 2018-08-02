@@ -213,7 +213,6 @@ Mass mapping
 
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-    \item (TK) make a new proposition for a plot Figure 6: Two levels of coarsening and pooling
     \item (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook.
     \item (TK) update the README for data zip - file from NP
     \item (NP) Finalise readme on Github code
@@ -225,21 +224,22 @@ Mass mapping
     \item (TK) add info on comparison with histograms, so that it's just a demonstration
     \item TK read the result section
     \item TK check the appendix
-    \item TK optional - example of data (CMB (mask) + mass map + radio intensity)
-    \item TK read everything
+    \item (almost done) TK optional - example of data (CMB (mask) + mass map + radio intensity)
+    \item (almost done) TK read everything
     \item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings.
     \item uniformize text size in figures
     \item (done! first version done) conclusions
     \item (done!) Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
     \item (done!) (TK NP) if we have time make a new candidate for network plot (optional)
     \item (done!) TK read the heat section again
+    \item (done!) (TK) make a new proposition for a plot Figure 6: Two levels of coarsening and pooling
     \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
 \end{itemize}
 
 \begin{figure*}
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
-	\includegraphics[width=\linewidth]{figure_architecture_v2}
+	\includegraphics[width=\linewidth]{figure_architecture_v3.pdf}
 	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier.
     %\nati{add the stat layer?}
     %\TK{added stats layer to figure text, hope that's OK}
@@ -864,9 +864,12 @@ The cosmological models could otherwise have been distinguished by the power spe
 
 \begin{figure*}
 \centering
-\includegraphics[width=0.75\linewidth]{smooth_map_class_1}
+% \includegraphics[width=0.75\linewidth]{smooth_map_class_1}
+% trim=left botm right top
+\includegraphics[trim=1cm 0cm 0cm 0cm, width=0.49\linewidth]{figures/figure_kappa_diff_model1.pdf}
 % \hfill
-\includegraphics[width=0.75\linewidth]{smooth_map_class_2}
+% \includegraphics[width=0.75\linewidth]{smooth_map_class_2}
+\includegraphics[trim=0cm 0cm 1cm 0cm, width=0.49\linewidth]{figures/figure_kappa_diff_model2.pdf}
 \caption{Example maps from two classes to be discriminated. Left: model 1 with $\Omega_m=0.31$ and $\sigma_8=0.82$. Right: model 2 with $\Omega_m=0.26$ and $\sigma_8=0.91$.
 The initial conditions for both simulations were the same, so differences only arise due to different cosmological parameters. \nati{Tomek: Is this correct?}}
 \label{fig:map_sample}
@@ -902,16 +905,17 @@ Initial conditions for these simulations were the same, so the differences in st
 \subsection{Problem formulation}
 While the number of maps might sound small for deep learning, the information contained in the maps is very recurrent, allowing us to use parts of the map as samples for our simulation.
 Using the properties of the HEALPix sampling, we can split each maps into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere.
-As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting samples are large enough to suffer from the effects of the spherical geometry.
+% As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting samples are large enough to suffer from the effects of the spherical geometry.
+The resulting maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\%, 2.1\% and 0.5\% of the total sphere area for $o=1,2,4$, respectively.
 We decided to only report simulation results for this specific setting as spherical cosmological data usually does not span the full sphere.
 Nevertheless, our code includes an example using the full sphere.
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{part_sphere}
-\caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
-\label{fig:part_sphere}
-\end{figure}
+% \begin{figure}
+% \centering
+% \includegraphics[width=\linewidth]{part_sphere}
+% \caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
+% \label{fig:part_sphere}
+% \end{figure}
 For all the experiments, we work with centred Gaussian noise.
 While the noise model of real mass maps often has a slightly different distribution, Gaussian should be a sufficient model to demonstrate the performance of our method.
 The noise added to our maps had levels spanning the range between 0 and 2  $\times$ the standard deviation of the mass maps.
@@ -1129,9 +1133,10 @@ visualization for a HEALPix graph convolution kernel. The kernel used is defined
 at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
 As a second visualization, we can observe the kernel directly on the sphere. To do so, we perform the convolution of a
 Kroneker on the sphere plot the result with gnomonic projection. Eventually, as we are
-working on the sphere with theoretically spherical filters (up to the irregularities of the sampling), we could only plot the section of the convoluted Kroneker. To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}. Note that, because of the small irregularities in the HEALPix
-sampling, the second and the third methods are subject to small variations depending on the
-chosen Kroneker.
+working on the sphere with theoretically spherical filters (up to the irregularities of the sampling), we could only plot the section of the convoluted Kroneker.
+% To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}.
+To do so, we convolve a Kroneker on the nodes along the equator and use the equator for our section.
+Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker.
 
 \begin{figure}
 \centering
@@ -1145,12 +1150,12 @@ Bottom: section plot.}
 \label{fig:gaussian_filters_visualization}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.6\linewidth]{index_plotting_order20_nside16}
-\caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
-\label{fig:index_section}
-\end{figure}
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.6\linewidth]{index_plotting_order20_nside16}
+% \caption{Indexes selected for the section ploting of \figref{gaussian_filters_visualization} middle. The delta was placed on the yellow node.}
+% \label{fig:index_section}
+% \end{figure}
 
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation} The original number of samples $480$, $1920$,
