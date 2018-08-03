@@ -405,9 +405,9 @@ For example with the HEALPix sampling, which was designed to have a fast SHT by 
 In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
 % Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented by the highly optimized \pkg{libsharp} library used by HEALPix \citep{reinecke2013libsharp}.
 % While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
-% \TK{This I would leave out here, as this is a "spoiler" of the results section.}
+% \TK{I would leave out here, as this is a "spoiler" of the results section.}
 
-Approaches by \citet{cohen2018spherical, boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.
+Approaches by \citet{cohen2018spherical, boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.  \nati{Why is \citet{boomsma2017spherical} here? I think it can be trivally accelerated.}
 That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
 One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals, on the latitude or longitude.
 It is, however, not straightforward to identify those empty directions, and computations would still be wasted; consider, for example, a ring which mostly contains zeros but a few measurements.
@@ -434,7 +434,7 @@ Finally, while the rotation invariance is desirable, the statistical layer used
 % \{TK} this should be explained earlier
 may not capture the information in an optimal way
 \todo{and hinders performance (should be empirically verified)}.
-\TK{This is a strong claim, can we support this?} \nati{It is not that strong as we use "may" right? We should probably soften it a bit. However the main idea is correct. If you compute some statistics on some features, you lose some information and may get worse results. }
+\TK{This is a strong claim, can we support this?} \nati{It is not that strong as we use "may" right? We should probably soften it a bit. However the main idea is correct. If you compute some statistics on some features, you lose some information and may get worse results. Nevertheless, since we are also using a statistical layer, I would juste remove this.}
 Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest.
 % While developing completely invariant transforms is a goal worth investigating, CNNs for image recognition, which are arguably the most researched and developed architectures, are not built to be fully invariant to translation.
 % As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features.
@@ -946,6 +946,9 @@ For fairness, we augmented the dataset of the baseline algorithm in a similar wa
 We stop adding new samples in the classifier once the validation error converges.
 This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the regularization parameter by cross-validating with the validation set.
+
+\subsection{Selected architecture}
+\todo{Describe our fully convolutional architecture}
 
 \subsection{Results}
 
