@@ -222,7 +222,6 @@ Mass mapping
     \item (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook.
     \item (TK) update the README for data zip - file from NP
     \item (NP) Finalise readme on Github code
-    \item (Waiting for Zenodo) (NP) Finalize the data on zenodo
     \item TK check part sphere notebook and whole sphere
     \item branch with notebooks with plots (results) NP
     \item NP move the repo to HealpixNet
@@ -453,13 +452,13 @@ In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i 
 Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \cdot 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
 \begin{equation*}
 	\W_{ij} = \begin{cases}
-		\exp \left( -\frac{\|\x_i-\x_j\|_2^2}{\sigma^2} \right) & \text{if pixels $i$ and $j$ are neighbors,} \\
+		\exp \left( -\frac{\|\x_i-\x_j\|_2^2}{\rho^2} \right) & \text{if pixels $i$ and $j$ are neighbors,} \\
 		0 & \text{otherwise,} \\
 	\end{cases}
 \end{equation*}
 where $\x_i$ is a vector encoding the 3-dimensional coordinates of pixel $i$, and
 \begin{equation*}
-	\sigma = \frac{1}{|\E|} \sum_{(v_i, v_j) \in \E} \|\x_i-\x_j\|_2
+	\rho = \frac{1}{|\E|} \sum_{(v_i, v_j) \in \E} \|\x_i-\x_j\|_2
 \end{equation*}
 is the average Euclidean distance over all connected pixels. This weighting scheme is important as distances between pixels are not equal.
 Other weighting schemes are possible. For example,~\cite{khasanova2017graphomni} uses the inverse of the distance instead. We found out that the one proposed above works well for our purpose, and did not investigate other approaches, leaving it to future work.
@@ -726,7 +725,6 @@ The optimization is performed by computing an error gradient w.r.t.\ all the par
 \end{equation*}
 where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples to gain speed by exploiting the parallelism afforded by modern computing platforms.
 
-\nati{4.8 is long... Should we go in such details?}
 \todo{Notation GC32 - P256 - FC10 to describe an architecture? Maybe more useful in Experiments where we describe the architecture used for each experiment.}
 
 \section{Related work}
@@ -944,7 +942,20 @@ This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
-\todo{Describe our fully convolutional architecture}
+The design of an neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two distributions cosmologicals maps. Hence, we assume that each pixel carries some information about the distribution. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the stistical evidence of each distribution for each pixel of a downsampled sphere. The last graph convolution layer is compose of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
+\begin{equation}
+NN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
+\end{equation}
+where
+\begin{itemize}
+    \item layer 1: $L_1 = P  \circ \sigma \circ BN  \circ GC_{16}$,
+    \item layer 2: $L_2 = P  \circ \sigma \circ BN  \circ GC_{32}$,
+    \item layer 3-5: $L_3 = L_4 = L_5= P \circ  \sigma \circ BN  \circ GC_{64}$,
+    \item layer 6: $L_6 = \sigma \circ BN  \circ GC_{2}$.
+\end{itemize}
+
+\todo{We use the ADAM optimizer, \cite{kingma2014adam}, with an initial learning rate of $2e-4$ that is exponentially decreased by $0.98$ a $100$ times to end at $2.7e-5$.}
+
 
 \subsection{Results}
 
