@@ -897,7 +897,9 @@ In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (se
 % While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
 % \TK{I would leave out here, as this is a "spoiler" of the results section.}
 
-Approaches by \citet{cohen2018spherical, boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.  \nati{Why is \citet{boomsma2017spherical} here? I think it can be trivally accelerated.}
+Approaches by \citet{cohen2018spherical,boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.
+
+\nati{Why is \citet{boomsma2017spherical} here? I think it can be trivally accelerated.}
 That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
 One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals, on the latitude or longitude.
 It is, however, not straightforward to identify those empty directions, and computations would still be wasted; consider, for example, a ring which mostly contains zeros but a few measurements.
