@@ -817,11 +817,11 @@ where $N_{classes}$ is the number of classes to discriminate. Thanks to the soft
 
 
 Given a map $\X \in \R^{N_{pix} \times F}$, the neural network is computing $\y = NN_\theta(\X) \in R^{N_{classes}}$, where $NN$ is a composition of the above layers and $\theta$ is the set of all trainable parameters.
-An example network can be defined as
-\begin{equation}
+An example network is
+\begin{equation*}
 NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC,
-\end{equation}
-\TK{what is the meaning of $\circ$ here?}\nati{where $\circ$ is the composition operator between two layers.}
+\end{equation*}
+where $\circ$ denotes composition, i.e., $f \circ g = f(g(\cdot))$.
 The number of features $F$ depends on the data at hand. For the CMB radiation temperature, $F = 1$. For observations in radio frequencies, $F$ would be equal to the number of surveyed frequencies. $F$ might also be the number of slices in the radial direction.
 The loss function $\ell(\y) = \ell(NN_\theta(\X))$ is a measure of how good the prediction $\y$ is for the sample $\X$. For a classification task, the loss is usually taken to be the cross-entropy
 \begin{equation*}
