@@ -359,6 +359,7 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 % the convolution is not restricted to the sphere, the coarsening/pooling is
 
 
+
 \section{Related work}
 \label{sec:related}
 
@@ -469,6 +470,7 @@ The connection has recently been made between graph CNNs and group equivariant C
 
 Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
+
 \section{Method}
 \label{sec:method}
 % \begin{itemize}
@@ -556,8 +558,6 @@ The lowest possible resolution is given by the base partitioning of the surface 
 As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels.
 \figref{example_maps} shows two examples of HEALPix maps: the Cosmic Microwave Background \citep{planck2015overview} and \TK{update}.
-
-\footnotetext{Figures from \url{https://healpix.jpl.nasa.gov/}.}
 
 \subsection{Graph construction}
 
@@ -821,11 +821,11 @@ where $N_{classes}$ is the number of classes to discriminate. Thanks to the soft
 
 
 Given a map $\X \in \R^{N_{pix} \times F}$, the neural network is computing $\y = NN_\theta(\X) \in R^{N_{classes}}$, where $NN$ is a composition of the above layers and $\theta$ is the set of all trainable parameters.
-An example network can be defined as
-\begin{equation}
+An example network is
+\begin{equation*}
 NN = SM \circ FC \circ \sigma \circ FC \circ ST \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC,
-\end{equation}
-\TK{what is the meaning of $\circ$ here?}\nati{where $\circ$ is the composition operator between two layers.}
+\end{equation*}
+where $\circ$ denotes composition, i.e., $f \circ g = f(g(\cdot))$.
 The number of features $F$ depends on the data at hand. For the CMB radiation temperature, $F = 1$. For observations in radio frequencies, $F$ would be equal to the number of surveyed frequencies. $F$ might also be the number of slices in the radial direction.
 The loss function $\ell(\y) = \ell(NN_\theta(\X))$ is a measure of how good the prediction $\y$ is for the sample $\X$. For a classification task, the loss is usually taken to be the cross-entropy
 \begin{equation*}
@@ -845,6 +845,115 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 
 \nati{4.8 is long... Should we go in such details?}
 \todo{Notation GC32 - P256 - FC10 to describe an architecture? Maybe more useful in Experiments where we describe the architecture used for each experiment.}
+
+\section{Related work}
+\label{sec:related}
+
+\begin{figure}
+    \centering
+    \includegraphics[height=7em]{sphere_grid_equirectangular}
+    \hfill
+    \includegraphics[height=7em]{sphere_grid_cubedsphere}
+    \hfill
+    \includegraphics[height=7em]{half_graph_4}
+    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citet{boomsma2017spherical}.}
+    \label{fig:sphere_grids}
+    \label{fig:healpix_graph_4}
+\end{figure}
+
+
+\citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
+As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
+It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
+\todo{How do they handle boundaries?}
+\TK{+1,good question}
+\nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was:
+\emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."}
+Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
+I do not think we should mention any of that in the paper.
+}
+% Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
+% Moreover, those samplings are not ideal as their resolution is not constant across the sphere.
+Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
+Indeed, the singularities, such as the poles for the equirectangular grid, and the corners of the cube for the cubed-sphere, are over-sampled.
+Equal areas of discrete elements is advantageous for many physical measurements, as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
+% \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
+Finally, a 2D CNN learns directional filters, which are well defined with respect of the image coordinates.
+Directions that make much sense for images (up, down, left, and right) are arbitrarily defined when setting the origin of the grids on the sphere.
+Any convolution using directions on the sphere is not equivariant to translation and rotation.
+
+% As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
+
+\citet{cohen2018spherical} uses the continuous spherical convolution.
+The goal of this contribution was to define a rotation-equivariant convolution on the sphere, i.e., a rotation of the input implies the same rotation in the output.
+The resulting convolution is performed by (i) a spherical harmonic transform (SHT), i.e., a projection on the spherical harmonics, (ii) a  multiplication in the spectral domain, and (iii) an inverse SHT. Hence the computational cost of a convolution is dominated by the two SHTs.
+A naive implementation of the SHT costs $\bO(N_{pix}^2)$ operations, where $N_{pix}$ is the number of pixels.
+Accelerated schemes exist for some sampling sets \citep[see][for examples]{mohlenkamp1999fast, rokhlin2006fast, reinecke2013libsharp}.
+The main advantage of this approach is that it provides a mathematically well defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
+For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO(\sqrt{N_{pix}})$ rings of constant latitude. Each ring has $\bO(\sqrt{N_{pix}})$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO(N_{pix} \log(\sqrt{N_{pix}}))$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO(N_{pix}^{3/2})$.}
+\citep{gorski2005healpix, reinecke2013libsharp}.
+In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
+% Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented by the highly optimized \pkg{libsharp} library used by HEALPix \citep{reinecke2013libsharp}.
+% While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
+% \TK{I would leave out here, as this is a "spoiler" of the results section.}
+
+Approaches by \citet{cohen2018spherical, boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.  \nati{Why is \citet{boomsma2017spherical} here? I think it can be trivally accelerated.}
+That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
+One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals, on the latitude or longitude.
+It is, however, not straightforward to identify those empty directions, and computations would still be wasted; consider, for example, a ring which mostly contains zeros but a few measurements.
+With graphs however, the computation is done only for the used pixels.
+This, however, results in some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}).
+These can be mitigated by padding with zeros a small area around the measurements.
+
+% In an attempt to get the best of the first two approaches, we follow a third
+% direction. We use a graph to adapt to the particular structure of the sphere.
+% While the convolution remains efficient, it still captures well the spherical
+% structure and is particularly adapted to the HEALPix sampling.
+% \TK{I am not sure what is the point of this paragraph, we described our approach already before}
+
+The use of a graph to model the discretised sphere was also considered by~\citet{khasanova2017graphomni}.
+The authors map omnidirectional images onto a sphere, with the goal of correcting for distortions induced by the lens, which was used for their acquisition.
+Besides a different practical application, for which the method was designed, there are two important differences.
+% First, a different sampling scheme is used: \cite{khasanova2017graphomni} uses a grid.
+First, similarly to~\citet{boomsma2017spherical}, they use an equirectangular grid sampling.
+% \TK{how is it different from us?}
+Second, it uses a graph CNN based on a different parameterisation of the convolution kernel.
+Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
+Finally, while the rotation invariance is desirable, the statistical layer used
+% --- an operation which computes a set of spatially invariant statistics of the last feature map ---
+% \{TK} this should be explained earlier
+may not capture the information in an optimal way
+\todo{and hinders performance (should be empirically verified)}.
+\TK{This is a strong claim, can we support this?} \nati{It is not that strong as we use "may" right? We should probably soften it a bit. However the main idea is correct. If you compute some statistics on some features, you lose some information and may get worse results. Nevertheless, since we are also using a statistical layer, I would juste remove this.}
+Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest.
+% While developing completely invariant transforms is a goal worth investigating, CNNs for image recognition, which are arguably the most researched and developed architectures, are not built to be fully invariant to translation.
+% As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features.
+% While that may not be ideal, it was shown to work well in practice.
+% \TK{The two sentences above look like a tangent to me.. can we skip it an go to the main point, which is I think the fact that we use the stat layer?}
+
+\todo{In HealpixNet we use the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere.
+\TK{We would need to describe the idea of the statistical layer for the cosmology audience. They don't have a clue what it is.}\nati{Can't they just wait for \secref{stat_layer}? }
+The use of the statistical layer is optional.
+In our approach, we are keeping all the statistical moments by retaining a full, learned learned feature histogram, an approach that performed the best in our tests.
+That is similar to the learnable histogram introduced by \citet{wang2016learnhist}, although for a purpose of integrating global context in object detection and segmentation tasks.
+\citet{khasanova2017graphomni} uses the mean and variance of diffused versions of the last feature maps in their statistical layer.}
+\TK{why is this section in TODO?\nati{Probably because, we have not decided if we use the histogram yet. This paragraph needs to be rewritten once we are clear with the code.}}
+
+
+There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to translation. \todo{better wording}
+\todo{three main interpretations: gsp, Bronstein manifold tangent plane, message passing, permutation invariant aggregation, spatial formulations}
+Bronstein is a spatial formulation where the registration is done by projection on the tangent plane.
+% Not Bronstein's manifold approach as we want a Fourier basis to compare to the spherical harmonics.
+% Be as close as possible to spherical harmonics.
+Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
+
+% Anisotropic cannot be invariant
+
+The connection has recently been made between graph CNNs and group equivariant CNNs \cite{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere.
+
+% In this work, we are using the graph CNN formulation introduced in~\cite{defferrard2016convolutional}.
+
+Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
 \section{Experiments}
 \label{sec:experiments}
