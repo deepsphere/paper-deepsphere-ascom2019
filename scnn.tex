@@ -217,26 +217,25 @@ Mass mapping
     \item (MD+NP) talk about the loss in 3.8 (old 4.8)
     \item (NP) make figure A.13 remove white space
     \item (TK) re-make figures to make the labels/legend/titles the same font size as the main text
-    \item (TK) add section in conclusions/ paragraph on possible extensions to the code: dense output, regression, GANs, segmentation
     \item (NP+MD)  paragraph on our chosen architecture in the Experiments sections
-    \item (TK) add reference to figure (pooling) to the area of orders
     \item (NP+MD) move the Related Work section after the Method section
     \item (NP) vertex interpretation
-
     \item (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook.
     \item (TK) update the README for data zip - file from NP
     \item (NP) Finalise readme on Github code
     \item TK check part sphere notebook and whole sphere
+    \item (TK) uniformize text size in figures
     \item branch with notebooks with plots (results) NP
     \item NP move the repo to HealpixNet
     \item check if papers which appear as arxiv were not published in a conference or journal
-    \item (TK) add info on comparison with histograms, so that it's just a demonstration
-    \item TK read the result section
-    \item TK check the appendix
-    \item (almost done) TK optional - example of data (CMB (mask) + mass map + radio intensity)
     \item (almost done) TK read everything
     \item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings.
-    \item uniformize text size in figures
+    \item (done!) TK check the appendix
+    \item (done!) TK optional - example of data (CMB (mask) + mass map + radio intensity)
+    \item (done!) (TK) add info on comparison with histograms, so that it's just a demonstration
+    \item (done!) TK read the result section
+    \item (done!) (TK) add reference to figure (pooling) to the area of orders
+    \item (done!) (TK) add section in conclusions/ paragraph on possible extensions to the code: dense output, regression, GANs, segmentation
     % \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
     % \item (done! first version done) conclusions
     % \item (done!) Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
@@ -359,115 +358,115 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 
 
 
-\section{Related work}
-\label{sec:related}
+% \section{Related work}
+% \label{sec:related}
 
 
-\begin{figure}
-    \centering
-    \includegraphics[height=7em]{sphere_grid_equirectangular}
-    \hfill
-    \includegraphics[height=7em]{sphere_grid_cubedsphere}
-    \hfill
-    \includegraphics[height=7em]{half_graph_4}
-    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citet{boomsma2017spherical}.}
-    \label{fig:sphere_grids}
-    \label{fig:healpix_graph_4}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics[height=7em]{sphere_grid_equirectangular}
+%     \hfill
+%     \includegraphics[height=7em]{sphere_grid_cubedsphere}
+%     \hfill
+%     \includegraphics[height=7em]{half_graph_4}
+%     \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citet{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citet{boomsma2017spherical}.}
+%     \label{fig:sphere_grids}
+%     \label{fig:healpix_graph_4}
+% \end{figure}
 
 
-\citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
-As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
-It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
-\todo{How do they handle boundaries?}
-\TK{+1,good question}
-\nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was:
-\emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."}
-Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
-I do not think we should mention any of that in the paper.
-}
-% Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
-% Moreover, those samplings are not ideal as their resolution is not constant across the sphere.
-Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
-Indeed, the singularities, such as the poles for the equirectangular grid, and the corners of the cube for the cubed-sphere, are over-sampled.
-Equal areas of discrete elements is advantageous for many physical measurements, as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
-% \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
-Finally, a 2D CNN learns directional filters, which are well defined with respect of the image coordinates.
-Directions that make much sense for images (up, down, left, and right) are arbitrarily defined when setting the origin of the grids on the sphere.
-Any convolution using directions on the sphere is not equivariant to translation and rotation.
+% \citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
+% As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
+% It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
+% \todo{How do they handle boundaries?}
+% \TK{+1,good question}
+% \nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was:
+% \emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."}
+% Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
+% I do not think we should mention any of that in the paper.
+% }
+% % Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
+% % Moreover, those samplings are not ideal as their resolution is not constant across the sphere.
+% Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
+% Indeed, the singularities, such as the poles for the equirectangular grid, and the corners of the cube for the cubed-sphere, are over-sampled.
+% Equal areas of discrete elements is advantageous for many physical measurements, as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
+% % \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
+% Finally, a 2D CNN learns directional filters, which are well defined with respect of the image coordinates.
+% Directions that make much sense for images (up, down, left, and right) are arbitrarily defined when setting the origin of the grids on the sphere.
+% Any convolution using directions on the sphere is not equivariant to translation and rotation.
 
-% As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
+% % As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
 
-\citet{cohen2018spherical} uses the continuous spherical convolution.
-The goal of this contribution was to define a rotation-equivariant convolution on the sphere, i.e., a rotation of the input implies the same rotation in the output.
-The resulting convolution is performed by (i) a spherical harmonic transform (SHT), i.e., a projection on the spherical harmonics, (ii) a  multiplication in the spectral domain, and (iii) an inverse SHT. Hence the computational cost of a convolution is dominated by the two SHTs.
-A naive implementation of the SHT costs $\bO(N_{pix}^2)$ operations, where $N_{pix}$ is the number of pixels.
-Accelerated schemes exist for some sampling sets \citep[see][for examples]{mohlenkamp1999fast, rokhlin2006fast, reinecke2013libsharp}.
-The main advantage of this approach is that it provides a mathematically well defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
-For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO(\sqrt{N_{pix}})$ rings of constant latitude. Each ring has $\bO(\sqrt{N_{pix}})$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO(N_{pix} \log(\sqrt{N_{pix}}))$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO(N_{pix}^{3/2})$.}
-\citep{gorski2005healpix, reinecke2013libsharp}.
-In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
-% Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented by the highly optimized \pkg{libsharp} library used by HEALPix \citep{reinecke2013libsharp}.
-% While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
-% \TK{I would leave out here, as this is a "spoiler" of the results section.}
-Approaches by \citet{cohen2018spherical,boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.
-\nati{Why is \citet{boomsma2017spherical} here? I think it can be trivally accelerated.}
-That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
-One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals, on the latitude or longitude.
-It is, however, not straightforward to identify those empty directions, and computations would still be wasted; consider, for example, a ring which mostly contains zeros but a few measurements.
-With graphs however, the computation is done only for the used pixels.
-This, however, results in some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}).
-These can be mitigated by padding with zeros a small area around the measurements.
+% \citet{cohen2018spherical} uses the continuous spherical convolution.
+% The goal of this contribution was to define a rotation-equivariant convolution on the sphere, i.e., a rotation of the input implies the same rotation in the output.
+% The resulting convolution is performed by (i) a spherical harmonic transform (SHT), i.e., a projection on the spherical harmonics, (ii) a  multiplication in the spectral domain, and (iii) an inverse SHT. Hence the computational cost of a convolution is dominated by the two SHTs.
+% A naive implementation of the SHT costs $\bO(N_{pix}^2)$ operations, where $N_{pix}$ is the number of pixels.
+% Accelerated schemes exist for some sampling sets \citep[see][for examples]{mohlenkamp1999fast, rokhlin2006fast, reinecke2013libsharp}.
+% The main advantage of this approach is that it provides a mathematically well defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
+% For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO(\sqrt{N_{pix}})$ rings of constant latitude. Each ring has $\bO(\sqrt{N_{pix}})$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO(N_{pix} \log(\sqrt{N_{pix}}))$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO(N_{pix}^{3/2})$.}
+% \citep{gorski2005healpix, reinecke2013libsharp}.
+% In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
+% % Moreover, \figref{filtering_speed} shows that a naive implementation of our method is more than ten times faster than the SHT implemented by the highly optimized \pkg{libsharp} library used by HEALPix \citep{reinecke2013libsharp}.
+% % While a comparison is theoretically possible, the experiments of~\cite{cohen2018spherical} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
+% % \TK{I would leave out here, as this is a "spoiler" of the results section.}
+% Approaches by \citet{cohen2018spherical,boomsma2017spherical} can not be easily accelerated when the data lies on a part of the sphere only.
+% \nati{Why is \citet{boomsma2017spherical} here? I think it can be trivally accelerated.}
+% That is an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
+% One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals, on the latitude or longitude.
+% It is, however, not straightforward to identify those empty directions, and computations would still be wasted; consider, for example, a ring which mostly contains zeros but a few measurements.
+% With graphs however, the computation is done only for the used pixels.
+% This, however, results in some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}).
+% These can be mitigated by padding with zeros a small area around the measurements.
 
-% In an attempt to get the best of the first two approaches, we follow a third
-% direction. We use a graph to adapt to the particular structure of the sphere.
-% While the convolution remains efficient, it still captures well the spherical
-% structure and is particularly adapted to the HEALPix sampling.
-% \TK{I am not sure what is the point of this paragraph, we described our approach already before}
+% % In an attempt to get the best of the first two approaches, we follow a third
+% % direction. We use a graph to adapt to the particular structure of the sphere.
+% % While the convolution remains efficient, it still captures well the spherical
+% % structure and is particularly adapted to the HEALPix sampling.
+% % \TK{I am not sure what is the point of this paragraph, we described our approach already before}
 
-The use of a graph to model the discretised sphere was also considered by~\citet{khasanova2017graphomni}.
-The authors map omnidirectional images onto a sphere, with the goal of correcting for distortions induced by the lens, which was used for their acquisition.
-Besides a different practical application, for which the method was designed, there are two important differences.
-% First, a different sampling scheme is used: \cite{khasanova2017graphomni} uses a grid.
-First, similarly to~\citet{boomsma2017spherical}, they use an equirectangular grid sampling.
-% \TK{how is it different from us?}
-Second, it uses a graph CNN based on a different parameterisation of the convolution kernel.
-Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
-Finally, while the rotation invariance is desirable, the statistical layer used
-% --- an operation which computes a set of spatially invariant statistics of the last feature map ---
-% \{TK} this should be explained earlier
-may not capture the information in an optimal way
-\todo{and hinders performance (should be empirically verified)}.
-\TK{This is a strong claim, can we support this?} \nati{It is not that strong as we use "may" right? We should probably soften it a bit. However the main idea is correct. If you compute some statistics on some features, you lose some information and may get worse results. Nevertheless, since we are also using a statistical layer, I would juste remove this.}
-Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest.
-% While developing completely invariant transforms is a goal worth investigating, CNNs for image recognition, which are arguably the most researched and developed architectures, are not built to be fully invariant to translation.
-% As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features.
-% While that may not be ideal, it was shown to work well in practice.
-% \TK{The two sentences above look like a tangent to me.. can we skip it an go to the main point, which is I think the fact that we use the stat layer?}
+% The use of a graph to model the discretised sphere was also considered by~\citet{khasanova2017graphomni}.
+% The authors map omnidirectional images onto a sphere, with the goal of correcting for distortions induced by the lens, which was used for their acquisition.
+% Besides a different practical application, for which the method was designed, there are two important differences.
+% % First, a different sampling scheme is used: \cite{khasanova2017graphomni} uses a grid.
+% First, similarly to~\citet{boomsma2017spherical}, they use an equirectangular grid sampling.
+% % \TK{how is it different from us?}
+% Second, it uses a graph CNN based on a different parameterisation of the convolution kernel.
+% Moreover, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling~\citep{kalchbrenner2014dcnn}.
+% Finally, while the rotation invariance is desirable, the statistical layer used
+% % --- an operation which computes a set of spatially invariant statistics of the last feature map ---
+% % \{TK} this should be explained earlier
+% may not capture the information in an optimal way
+% \todo{and hinders performance (should be empirically verified)}.
+% \TK{This is a strong claim, can we support this?} \nati{It is not that strong as we use "may" right? We should probably soften it a bit. However the main idea is correct. If you compute some statistics on some features, you lose some information and may get worse results. Nevertheless, since we are also using a statistical layer, I would juste remove this.}
+% Moreover, the chosen statistics have to be hand-crafted to capture statistics of interest.
+% % While developing completely invariant transforms is a goal worth investigating, CNNs for image recognition, which are arguably the most researched and developed architectures, are not built to be fully invariant to translation.
+% % As with the proposed spherical CNN, the fully connected layers at the end of the network depend on the spatial localization of features.
+% % While that may not be ideal, it was shown to work well in practice.
+% % \TK{The two sentences above look like a tangent to me.. can we skip it an go to the main point, which is I think the fact that we use the stat layer?}
 
-\todo{In HealpixNet we use the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere.
-\TK{We would need to describe the idea of the statistical layer for the cosmology audience. They don't have a clue what it is.}\nati{Can't they just wait for \secref{stat_layer}? }
-The use of the statistical layer is optional.
-In our approach, we are keeping all the statistical moments by retaining a full, learned learned feature histogram, an approach that performed the best in our tests.
-That is similar to the learnable histogram introduced by \citet{wang2016learnhist}, although for a purpose of integrating global context in object detection and segmentation tasks.
-\citet{khasanova2017graphomni} uses the mean and variance of diffused versions of the last feature maps in their statistical layer.}
-\TK{why is this section in TODO?\nati{Probably because, we have not decided if we use the histogram yet. This paragraph needs to be rewritten once we are clear with the code.}}
+% \todo{In HealpixNet we use the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere.
+% \TK{We would need to describe the idea of the statistical layer for the cosmology audience. They don't have a clue what it is.}\nati{Can't they just wait for \secref{stat_layer}? }
+% The use of the statistical layer is optional.
+% In our approach, we are keeping all the statistical moments by retaining a full, learned learned feature histogram, an approach that performed the best in our tests.
+% That is similar to the learnable histogram introduced by \citet{wang2016learnhist}, although for a purpose of integrating global context in object detection and segmentation tasks.
+% \citet{khasanova2017graphomni} uses the mean and variance of diffused versions of the last feature maps in their statistical layer.}
+% \TK{why is this section in TODO?\nati{Probably because, we have not decided if we use the histogram yet. This paragraph needs to be rewritten once we are clear with the code.}}
 
 
-There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to translation. \todo{better wording}
-\todo{three main interpretations: gsp, Bronstein manifold tangent plane, message passing, permutation invariant aggregation, spatial formulations}
-Bronstein is a spatial formulation where the registration is done by projection on the tangent plane.
-% Not Bronstein's manifold approach as we want a Fourier basis to compare to the spherical harmonics.
-% Be as close as possible to spherical harmonics.
-Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
+% There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to translation. \todo{better wording}
+% \todo{three main interpretations: gsp, Bronstein manifold tangent plane, message passing, permutation invariant aggregation, spatial formulations}
+% Bronstein is a spatial formulation where the registration is done by projection on the tangent plane.
+% % Not Bronstein's manifold approach as we want a Fourier basis to compare to the spherical harmonics.
+% % Be as close as possible to spherical harmonics.
+% Related to this, convolutional neural networks have been defined on manifolds and have achieved impressive results on shapes [Bronstein]. They however too depend on an orientation, which spheres do not possess.
 
-% Anisotropic cannot be invariant
+% % Anisotropic cannot be invariant
 
-The connection has recently been made between graph CNNs and group equivariant CNNs \cite{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere.
+% The connection has recently been made between graph CNNs and group equivariant CNNs \cite{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere.
 
-% In this work, we are using the graph CNN formulation introduced in~\cite{defferrard2016convolutional}.
+% % In this work, we are using the graph CNN formulation introduced in~\cite{defferrard2016convolutional}.
 
-Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
+% Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an orientation in order to match the edges with the filters. Most often the orientation is not given by the application, and one has to define it (for example by ordering by degree or any other measure, or by using a graph coloring). There is no good default good orientation on general graphs and the choice of an orientation is highly application dependent.
 
 
 \section{Method}
@@ -556,7 +555,7 @@ HEALPix is the sole pixelisation scheme which satisfies those three properties.
 The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal sized pixels (right-most sphere in \figref{pooling}).
 As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels.
-\figref{example_maps} shows two examples of HEALPix maps: the Cosmic Microwave Background \citep{planck2015overview} and \TK{update}.
+\figref{example_maps} shows two examples of HEALPix maps: the Cosmic Microwave Background \citep{planck2015overview}, galaxies found in Sloan Digital Sky Survey Data Release 14 \citep{abolfathi2017sdssDR14}, and an example simulated mass map on the footprint of Dark Energy Survey Data Release 1 \citep{des2018dr1}.
 
 \subsection{Graph construction}
 
@@ -965,8 +964,18 @@ Spatial definitions of graph convolutions, e.g. [Niepert] needs to define an ori
 % 4) Describe the result
 In this section we demonstrate the performance of the spherical neural network on a discrimination problem: the classification of convergence maps into two cosmological model classes.
 These maps are similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
-Nevertheless, by simply changing the loss, one could use the network for regression.
+The experiment presented here is similar the one by \citet{schmelze2017cosmologicalmodel}.
+The two set of maps were created using the standard cosmological model with two sets of cosmological parameters.
+The classification methods were trained to assign a predicted label using the Healpix maps.
 Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments is available online.
+
+We use the classification scenario in this work.
+Extensions to other tasks, such as regression or segmentation, is also possible; we do not, however, demonstrate it here.
+The regression task will most likely be the most practical cosmological applications, as described in \citep{gupta2018nongaussianinformation,fluri2018deep}.
+Implementation of full cosmological inference requires, however, many more simulations, building the likelihood function, and several other auxiliary tasks.
+The classification problem is much more straightforward to implement and execute, and can be used to fairly compare the accuracy of the algorithm against benchmarks \citep{schmelze2017cosmologicalmodel}.
+For these reasons we decided to use the classification problem in this work, and we expect the relative performance of the methods to generalise to the regression scenario.
+
 
 \subsection{Data}
 \label{sec:data}
@@ -1026,6 +1035,7 @@ While the number of maps might sound small for deep learning, the information co
 Using the properties of the HEALPix sampling, we can split each maps into $12*o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere.
 % As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting samples are large enough to suffer from the effects of the spherical geometry.
 The resulting maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\%, 2.1\% and 0.5\% of the total sphere area for $o=1,2,4$, respectively.
+The areas on the sphere corresponding to these orders can be seen in \figref{pooling}: the pixels in the left, middle and right spheres correspond to $o=4,2,1$, respectively.
 We decided to only report simulation results for this specific setting as spherical cosmological data usually does not span the full sphere.
 Nevertheless, our code includes an example using the full sphere.
 
@@ -1168,22 +1178,26 @@ While this may be a less general design compared to the one used by conventional
 The layered structure of the network can partially compensate for that.
 Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
 
-
-We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps.
+We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps, designed similarly to \citep{schmelze2017cosmologicalmodel}.
+The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are very similar.
+We compared the performance of the HealpixNet CNN versus that of two SVM-based classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
 Notably, HEALPix maintains good classification accuracy even for high noise levels and part-sky areas.
 
 We show that the modelling the discretised sphere by a graph enables an efficient convolution operation on HEALPix sampling.
 % Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
 % \TK{I would move the info about possible relaxation of the iso-latitude thing to a separate paragraph at the end on conclusions - future prospects?}
-Graph-based representation of the sphere can display small imprecisions in rotation invariance, which results in the property that the action of a graph filter slightly depends on the location.
-For applications that can tolerate this property, an graph-based representation may be a worthwhile alternative.
+Graph-based representation of the sphere can display small imprecisions in rotation invariance, the result of which is that an action of a graph filter slightly depends on the location.
+For applications that can tolerate this property, a graph-based representation may be a worthwhile alternative.
 % this relaxation might enable researchers to consider sampling sets with different properties.
 % \TK{this I don't understand}
 For example, a machine learning based cosmological inference algorithm can in principle tolerate this property, as it requires the simulations to be represented the same way as observations anyway.
 This way, imperfections in representation will affect the simulations and real data in the same way, and will not cause biases in the analysis result.
 
-The main product of this contribution is HealpixNet a small and easy-to-use python package for cosmologists to classify sky maps.
+The main product of this contribution is HealpixNet: a small and easy-to-use python package for spherical analysis of cosmological data.
 The code and data used in this work are publicly available\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
+The code was designed in a way to enable straightforward modifications of the architectures, so that HealpixNet can easily be used for a number of typical machine learning tasks, such as classification, regression, or segmentation.
+Notably, for a problem of cosmological parameter estimation \citep{fluri2018deep,gupta2018nongaussianinformation}, it is easy to replace the classification loss task with a regression loss.
+It should also be possible use dense layer for an output and perform segmentation tasks, such as masking, flagging, or object detection.
 
 As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
 Further comparison of HealpixNet to other spherical CNN algorithms, with different sampling schemes, would also be worthwhile.
