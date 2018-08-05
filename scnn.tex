@@ -478,6 +478,18 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 % 	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
 % \end{itemize}
 
+\begin{figure*}
+\includegraphics[width=\linewidth]{figures/figure_example_maps.pdf}
+\caption{Exmaple maps on the sphere:
+(left) the CMB temperature (K) map from Planck \citep{planck2015overview}, with galactic plane masked,
+(middle) map of galaxy number counts (number of galaxies per arcmin$^2$) in SDSS DR14 \citep{abolfathi2017sdssDR14},
+and (right) simulated weak lensing convergence map (dimensionless) simulated with DES DR1 mask \citep{des2018dr1}.
+These maps were pixelised using \texttt{nside}=512.
+The CMB and weak lensing mass maps were smoothed with Gaussian kernels with FWHM=1 deg, and the galaxy count map with FWHM=0.5 deg.
+}
+\label{fig:example_maps}
+\end{figure*}
+
 A CNN is composed of the following main building blocks~\citep{lecun1998cnn}:
 (i) a convolution,
 (ii) a non-linearity,
@@ -497,20 +509,10 @@ The implementation, however, does not need a direct access to the spectrum, whic
 % \TK{moving footnote to the main text }
 The gist of our method is to define the convolution operation on a sphere using a graph, and the down-sampling operation using a hierarchical pixelisation of the sphere.
 
+
 \subsection{HEALPix sampling}
 \label{sec:healpix}
 
-\begin{figure*}
-\includegraphics[width=\linewidth]{figures/figure_example_maps.pdf}
-\caption{Exmaple maps on the sphere:
-(left) the CMB temperature (K) map from Planck \citep{planck2015overview}, with galactic plane masked,
-(middle) map of galaxy number counts (number of galaxies per arcmin$^2$) in SDSS DR14 \citep{abolfathi2017sdssDR14},
-and (right) simulated weak lensing convergence map (dimensionless) simulated with DES DR1 mask \citep{des2018dr1}.
-These maps were pixelised using \texttt{nside}=512.
-The CMB and weak lensing mass maps were smoothed with Gaussian kernels with FWHM=1 deg, and the galaxy count map with FWHM=0.5 deg.
-}
-\label{fig:example_maps}
-\end{figure*}
 
 % \begin{figure}
 %     \centering
@@ -603,6 +605,12 @@ Indeed,
 \end{equation*}
 is a measure of the variation of the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$.
 
+
+Figure \figref{graph_harmonics} shows the Fourier modes of a HEALPix graph, created using the graph construction described above.
+The graph Fourier modes resemble the spherical harmonics.
+That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling.
+This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
+
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{eigenvectors}
@@ -612,13 +620,9 @@ is a measure of the variation of the eigenvector $\b u_i$ is on the graph define
 	\label{fig:graph_harmonics}
 \end{figure}
 
-Figure \figref{graph_harmonics} shows the Fourier modes of a HEALPix graph, created using the graph construction described above.
-The graph Fourier modes resemble the spherical harmonics.
-That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling.
-This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
-
 \subsection{Convolution on graphs}
 \label{sec:graph_convolution}
+
 
 As there is no notion of translation on a graph, we cannot convolve two graph signals in a strict sense.
 We can, however, convolve a signal with a kernel defined in the spectral domain.
@@ -671,6 +675,17 @@ In \ref{sec:heat_diffusion}, we present an example application of graph-based co
 \subsection{Efficient convolutions}
 \label{sec:efficient_convolution}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\linewidth]{filtering_speed}
+    \caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes.
+    The fast spherical harmonic transform (SHT) is implemented by the \texttt{healpy} Python package (via the \texttt{healpy.sphtfunc.smoothing} function with $\ell_{max} = 3 N_{side} - 1$, the default).
+    The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the \texttt{numpy} and \texttt{scipy} Python packages.
+    Both are executed on a single core.
+    The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3)$ for the spherical harmonics, where $\ell_{max}$ is the largest degree (i.e., the spectrum is truncated at $\ell_{max}$).}
+    \label{fig:filtering_speed}
+\end{figure}
+
 While \eqnref{graph_convolution} is a theoretically well justified definition of the convolution of a graph signal $\f$ by a kernel $h$, it is computationally cumbersome.
 As no general Fast Fourier Transform (FFT) exist for graphs, the execution of the Fourier transform by multiplication of the signal $\f$ by the dense matrix $\U$ costs $\bO(N_{pix}^2)$ operations.
 % \footnote{See \citep{le2018fgft} for a comparison between the polynomial definition of filters presented here and a class of fast graph Fourier transforms based on the approximation of the Fourier basis $\U$ by a product of sparse matrices.}
@@ -719,16 +734,7 @@ That is especially true for smooth kernels which require a low polynomial degree
 \figref{filtering_speed} demonstrates the speed comparison of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
 The performance of our approach is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\linewidth]{filtering_speed}
-	\caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes.
-    The fast spherical harmonic transform (SHT) is implemented by the \texttt{healpy} Python package (via the \texttt{healpy.sphtfunc.smoothing} function with $\ell_{max} = 3 N_{side} - 1$, the default).
-    The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the \texttt{numpy} and \texttt{scipy} Python packages.
-    Both are executed on a single core.
-    The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3)$ for the spherical harmonics, where $\ell_{max}$ is the largest degree (i.e., the spectrum is truncated at $\ell_{max}$).}
-	\label{fig:filtering_speed}
-\end{figure}
+
 
 \subsection{Coarsening and Pooling}
 
