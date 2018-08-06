@@ -1285,6 +1285,20 @@ not ideal tho as the graph convolution depends on the localization
 \section{Filter visualization}
 \label{sec:filter_visualization}
 
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{gaussian_filters_spectral}
+\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$ in spectral domain.}
+\vspace{0.3in}
+\includegraphics[width=\linewidth]{gaussian_filters_gnomonic}
+\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$: cross-section of the kernel through the pixels along the equator.}
+\vspace{0.3in}
+\includegraphics[width=\linewidth]{gaussian_filters_section}
+\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$ in a gnomonic projection.}
+\label{fig:gaussian_filters_visualization}
+\end{figure}
+
+
 In \figref{gaussian_filters_visualization}, we present three different
 visualization for a HEALPix graph convolution kernel. The kernel used is defined in the graph spectral domain as $K_t(x)=e^{-\tau t x}$. This is the domain used for our first visualization. In this case, we simply evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
@@ -1295,17 +1309,8 @@ working on the sphere with theoretically spherical filters (up to the irregulari
 To do so, we convolve a Kroneker on the nodes along the equator and use the equator for our section.
 Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker.
 
-\begin{figure}
-\centering
-\includegraphics[width=\linewidth]{gaussian_filters_spectral}
-\includegraphics[width=\linewidth]{gaussian_filters_gnomonic}
-\includegraphics[width=\linewidth]{gaussian_filters_section}
-\caption{Three different visualizations of the convolution kernel $K_t(x)=e^{-\tau t x}$.
-Top: graph spectral domain.
-Middle: gnomonic projection.
-Bottom: section plot.}
-\label{fig:gaussian_filters_visualization}
-\end{figure}
+
+
 
 % \begin{figure}
 % \centering
