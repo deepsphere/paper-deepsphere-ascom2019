@@ -1058,11 +1058,11 @@ The noise added to our maps had levels spanning the range between 0 and 2  $\tim
 We build a robust classifier, which automatically discriminates between the two classes in the presence of noise.
 We check the classification performance as a function of the area used, the order $o$, and the relative level of the noise added to the map.
 
-To improve the stability of the spherical CNN, we slowly increase the amount of noise added to the training data over the iterations.
+% Nati: Not done anymore
+% To improve the stability of the spherical CNN, we slowly increase the amount of noise added to the training data over the iterations.
 Furthermore in order to avoid overfitting, the noise is randomly produced during the training process.
-We trained our model between $50$ and $290$ epochs depending on the complexity and the size of the problem.
 The $20\%$ of the training set that we call \emph{validation set} was left out of the training process and simply used to assess the global performance of the network.
-Training took less than a day for each model using a single NVIDIA Tesla K20.
+
 
 We compare the performance of the spherical CNN against two simple benchmark algorithms.
 The two baselines are based on building features with
@@ -1074,7 +1074,7 @@ All classifiers are trained with noisy samples.
 For fairness, we augmented the dataset of the baseline algorithm in a similar way as for the network; we created samples by adding new random realizations of the noise.
 We stop adding new samples in the classifier once the validation error converges.
 This process is detailed in \ref{sec:dataset_augmentation}.
-We tune the regularization parameter by cross-validating with the validation set.
+We tune the SVM regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
 The design of an neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two distributions cosmologicals maps. Hence, we assume that each pixel carries some information about the distribution. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the stistical evidence of each distribution for each pixel of a downsampled sphere. The last graph convolution layer is compose of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
@@ -1089,8 +1089,9 @@ where
     \item layer 6: $L_6 = \sigma \circ BN  \circ GC_{2}$.
 \end{itemize}
 
-\todo{We use the ADAM optimizer, \cite{kingma2014adam}, with an initial learning rate of $2e-4$ that is exponentially decreased by $0.98$ a $100$ times to end at $2.7e-5$.}
-
+\todo{We use the ADAM optimizer, \cite{kingma2014adam}, with an initial learning rate of $2e-4$ that is exponentially decreased by $0.98$ a $100$ times to end at $2.7e-5$.
+All models where trained $80$ epochs with a batch size of $16\times o^2$. With this choice, all models recieve an identical amount of data within a batch and were trained with $1920$ gradient steps.}
+Training took less \nati{queue bottleneck to be fixed} than $3$ hours for each model using a single NVIDIA Tesla K20.
 
 \subsection{Results}
 
@@ -1104,7 +1105,7 @@ where
 \caption{
 Classification errors for the 3 different areas of the sphere.
 Green lines show the performance of the CNN, blue of the PDF+SVM, and red of the histogram+SVM.
-Green dashed line corresponds to the performance of CNN without the statistical layer.
+% Green dashed line corresponds to the performance of CNN without the statistical layer.
 The noise level was increased from zero to $2\times$ the standard deviation of the mass map.
 }
 \label{fig:results}
@@ -1121,21 +1122,20 @@ As a result, one needs to use other statistics to solve the problem.
 In this case, the histogram features allow for a significant improvement over the PSD ones.
 Unfortunately, while the histogram features contain information about the distribution of pixels, they do not include any spatial information.
 In contrast, both the PSD features and the HealpixNet can exploit the spatial information.
-Note that without this graph structure, a fully connected neural network approach would have to be used.
-Problematically, fully connected neural networks generally scales squarely with their number of inputs.
-\TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
+% Note that without this graph structure, a fully connected neural network approach would have to be used.
+% Problematically, fully connected neural networks generally scales squarely with their number of inputs.
+% \TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
 
 We tried several different spherical neural network architectures and observed the following results.
 First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more steadily decrease.
-%\TK{what are monomials? stable in what sense?}
 Nevertheless once the network is trained, we could not observe a significant accuracy difference.
-Second, using a statistical layer improved the result unlimited for our problem.
+Second, using a statistical layer slightly improved the accuracy in our problem.
 We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
-The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse.
-Third, the use of the dropout\TK{was dropout mentioned before?} \nati{Probably not. But to keep it simple, we may just add a footnote or a reference.} layer did not help in the presence of noise.
-This is probably due to the fact that the dataset was augmented indefinitely through the addition of noise.
-Fourth, especially for the more difficult cases, orders 2 or 4 and large noise levels, a large architecture with many filters and many training iterations were necessary to achieve high accuracy levels.
-
+The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse. Hence we chose to simply use the `mean' statistic.
+Third, adding fully connected layers after the statistical layer does not improve the performance, but lead to models requiring more training steps and regularization.
+\todo{Fourth, using $\ell_2$ regularization does not help neither with the performance nor the training of the models, but slightly reduce the performance variance between different runs due to the random initialization.
+Eventually, recommend to ignitialize the Chebyshev coeffecient with a centered Gaussian distribution with standart deviation $2/(F * (K + 0.5))$, where $K$ is the Chebyshef order and $F$ the number of input channels. The
+}
 
 
 
@@ -1182,7 +1182,7 @@ Spherical properties of the domain are still captured well.
 The method presented here restricts the shape of the filters learned by the network to be radial.
 While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
 The layered structure of the network can partially compensate for that.
-Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
+% Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
 
 We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps, designed similarly to \citep{schmelze2017cosmologicalmodel}.
 The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are very similar.
