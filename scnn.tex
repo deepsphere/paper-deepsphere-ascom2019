@@ -237,6 +237,7 @@ Mass mapping
     \item (done!) TK read the result section
     \item (done!) (TK) add reference to figure (pooling) to the area of orders
     \item (done!) (TK) add section in conclusions/ paragraph on possible extensions to the code: dense output, regression, GANs, segmentation
+	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
     % \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
     % \item (done! first version done) conclusions
     % \item (done!) Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
@@ -738,22 +739,20 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
     \label{fig:healpix_graph_4}
 \end{figure}
 
-
-\citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
-As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
-It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
-% \todo{How do they handle boundaries?}
-% \TK{+1,good question}
-% \nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was:
-% \emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."}
-% Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
-% I do not think we should mention any of that in the paper.
-% }
+\citet{boomsma2017spherical} propose to apply a standard 2D CNN to a grid discretization of the sphere. Two pixelisations, illustrated in \figref{sphere_grids}, were used: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
+As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally efficient.
+Some losses are due to the handling of boundary conditions, for example by padding a grid with the content of the opposite side (equirectangular) or of the neighboring grids (cubed-sphere, HEALPix).
+%It is, however, restricted to those grid sampling sets.
+As many pixelizations are based on the subdivision of a base polyhedron
+Similarly to the cubed-sphere, HEALPix is made of twelve grids. As those grids are not independent, each grid has to be  to handle , .
 % Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
 % Moreover, those samplings are not ideal as their resolution is not constant across the sphere.
-Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
-Indeed, the singularities, such as the poles for the equirectangular grid, and the corners of the cube for the cubed-sphere, are over-sampled.
-Equal areas of discrete elements is advantageous for many physical measurements, as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
+
+% Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
+% Indeed, the singularities, such as the poles for the equirectangular grid, and the corners of the cube for the cubed-sphere, are over-sampled.
+% Equal areas of discrete elements is advantageous for many physical measurements, as white noise at the sampling frequency of the instrument gets integrated exactly into white noise in the pixel space, and sky signals are sampled without regional dependence \citep{gorski2005healpix}.
+% => 2D CNN can be applied on HEALPix as well.
+
 % \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 Finally, a 2D CNN learns directional filters, which are well defined with respect of the image coordinates.
 Directions that make much sense for images (up, down, left, and right) are arbitrarily defined when setting the origin of the grids on the sphere.
@@ -895,7 +894,7 @@ The parameters $\Omega_m$ and $\sigma_8$ were chosen to have the same spherical 
 That means that it is very difficult to distinguish between these cosmological models using these maps if this range of scales is used.
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
-The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function in the HEALpix package, are displayed in \figref{psd_sigma3}.
+The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function in the HEALPix package, are displayed in \figref{psd_sigma3}.
 In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $N_{side}=1024$.
 
 
@@ -1064,12 +1063,8 @@ We compared the performance of the HealpixNet CNN versus that of two SVM-based c
 Notably, HEALPix maintains good classification accuracy even for high noise levels and part-sky areas.
 
 We show that the modeling the discretised sphere by a graph enables an efficient convolution operation on HEALPix sampling.
-% Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
-% \TK{I would move the info about possible relaxation of the iso-latitude thing to a separate paragraph at the end on conclusions - future prospects?}
 Graph-based representation of the sphere can display small imprecisions in rotation invariance, the result of which is that an action of a graph filter slightly depends on the location.
 For applications that can tolerate this property, a graph-based representation may be a worthwhile alternative.
-% this relaxation might enable researchers to consider sampling sets with different properties.
-% \TK{this I don't understand}
 For example, a machine learning based cosmological inference algorithm can in principle tolerate this property, as it requires the simulations to be represented the same way as observations anyway.
 This way, imperfections in representation will affect the simulations and real data in the same way, and will not cause biases in the analysis result.
 
@@ -1082,13 +1077,17 @@ It should also be possible use dense layer for an output and perform segmentatio
 As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
 Further comparison of HealpixNet to other spherical CNN algorithms, with different sampling schemes, would also be worthwhile.
 
-
+% Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
+% \TK{I would move the info about possible relaxation of the iso-latitude thing to a separate paragraph at the end on conclusions - future prospects?}
+% this relaxation might enable researchers to consider sampling sets with different properties.
+% \TK{this I don't understand}
 
 \section*{Acknowledgements}
+
 This work was supported by a grant from the Swiss Data Science Centre (SDCS) under project ID \textit{sd01 - DLOC:  Deep Learning for Observational Cosmology} and grant number 200021\_169130 from the Swiss National Science Foundation.
 \nati{@Tomek: do we need to thank Janis?}
-%% The Appendices part is started with the command \appendix;
-%% appendix sections are then done as normal sections
+We would like to thank Jean-François Cardoso for helpful discussions about the spherical harmonics.
+
 \appendix
 
 \section{Graph Fourier modes and spherical harmonics}
