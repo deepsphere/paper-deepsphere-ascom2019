@@ -47,7 +47,8 @@
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage{url}
-\usepackage{hyperref}
+% \usepackage{hyperref}
+\usepackage[draft]{hyperref}
 \usepackage{graphicx,array} \graphicspath{{figures/}}
 \usepackage{subcaption}
 \usepackage{amsmath}
@@ -215,19 +216,20 @@ Mass mapping
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 
     \item (MD+NP) talk about the loss in 3.8 (old 4.8)
-    \item (NP) make figure A.13 remove white space
-    \item (NP+MD)  paragraph on our chosen architecture in the Experiments sections
+    \item (done!) (NP) make figure A.13 remove white space
+    \item (firsr version done!)(NP+MD)  paragraph on our chosen architecture in the Experiments sections
     \item (NP) vertex interpretation
+    \item (MD) Are you happy with the vertex interpretation in section 3.5 Efficient convolutions?
     \item (NP) Finalise readme on Github code
     \item branch with notebooks with plots (results) NP
     \item NP move the repo to HealpixNet
     \item check if papers which appear as arxiv were not published in a conference or journal
-    \item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings.
+    \item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings. \nati{I think this is too much for this paper.}
     \item TK check part sphere notebook and whole sphere
     \item (done!) (TK) update the README for data zip - file from NP
     \item (almost done) TK read everything
     \item (done!) (TK) uniformize text size in figures
-    \item (done!) (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook.
+    \item (done!) (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook. \nati{We need to talk about that.}
     \item (done!) (TK) re-make figures to make the labels/legend/titles the same font size as the main text
     \item (done!) TK check the appendix
     \item (done!) TK optional - example of data (CMB (mask) + mass map + radio intensity)
@@ -241,6 +243,8 @@ Mass mapping
     % \item (done!) (TK NP) if we have time make a new candidate for network plot (optional)
     % \item (done!) TK read the heat section again
     % \item (done!) (TK) make a new proposition for a plot Figure 6: Two levels of coarsening and pooling
+    % \item \todo{Notation GC32 - P256 - FC10 to describe an architecture? Maybe more useful in Experiments where we describe the architecture used for each experiment.}
+    % Nati: I did it without this notation. Since we have two architectures, I think it is OK.
 \end{itemize}
 
 \begin{figure*}
@@ -528,36 +532,15 @@ Finally, the graph convolution can be interpreted in the vertex domain as a scal
 \begin{equation} \label{eqn:graph_convolution_spatial}
 	(h(\L) \f)_i = \langle h(\L) \b \delta_i, \f \rangle.
 \end{equation}
+We would like to emphasis that traditional convolution can be written in the same form as \eqnref{graph_convolution_spatial}. Given $f,g$ two 1 dimentional discrete signals, their convolution can be written as
+\begin{equation}
+(f \ast g) (n) = \sum_{m=-\infty}^\infty f(m) g(n-m) = \langle T_n g,  f \rangle,
+\end{equation}
+where $T_n g(m)=g(n-m)$ is (up to a flip) a translation operator. 
+
 In \ref{sec:heat_diffusion}, we present an example application of graph-based convolution to a simple heat-diffusion problem in order to shed some light on what is the convolution on a graph.
-% \textbf{Example.}
-% Let us consider the heat diffusion problem
-% \begin{equation} \label{eqn:heat_equation}
-% 	\L \b{f}(t) = \tau \partial_t \b{f}(t),
-% \end{equation}
-% where $\b{f}: \R_+ \rightarrow \R^{N_{pix}}$. Given the initial condition
-% $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
-% \begin{equation*}
-% 	\b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
-% \end{equation*}
-% which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization} and~\ref{sec:filter_visualization}.
 
-% \begin{figure}
-% 	\centering
-% 	\includegraphics[width=\linewidth]{gaussian_filters_sphere}
-% 	\caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
-% 	Top: Diffusion of a unit of heat for different times $t$ using the graph.
-% 	Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
-% 	Relative difference between graph convolution and spherical smoothing: $10.4$\%, $4.8$\%, $3.8$\%.
-% \todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
-% \nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
-% 	\label{fig:gaussian_filters_comparizon}
-% \end{figure}
 
-% Furthermore, this result is another sign that the constructed graph is able to capture the spherical
-% structure of the HEALPix sampling. In some applications, where the
-% exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
-% The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
-% not ideal tho as the graph convolution depends on the localization
 
 \subsection{Efficient convolutions}
 \label{sec:efficient_convolution}
@@ -596,8 +579,9 @@ This operation is performed in the vertex domain.
 The matrix $\L^k$ captures $k$-neighborhoods of each pixel, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$.
 As such, filtering with a polynomial convolution kernel can be interpreted in the pixel (vertex) domain as a weighted linear combination of the pixels neighbors values. The weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$.
 We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical Euclidean signal-domain convolution to a patch. In the classical setting, the convolution with a patch is simply a weighted sum of the neighbors with the weights defined by the patch. Similarly, each lines of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an "irregular patch of radius $K$" for our irregular domain.
-\todo{Better vertex domain explanation. \nati{I gave it a try. Should we take a single vertex and explain what heppens to it? Note that I suppressed the following paragraph. }}
-\TK{For me it's understandable:)}
+% \todo{Better vertex domain explanation. 
+% \nati{I gave it a try. Should we take a single vertex and explain what heppens to it? Note that I suppressed the following paragraph. }}
+% \TK{For me it's understandable:)}
 
 % To make the parallel with classical Euclidean signal-domain convolution, i.e., filtering by multiplying the signal with translated versions of a patch, we here match our filter at the level of neighborhoods\footnote{The 1-neighborhood of a node is the set of nodes which are directly connected to it. The 2-neighborhood is the set of nodes which are connected through paths of length 2.} rather than individual nodes. That is required as there is no notion of ordering in a general graph. For example, in a classical convolution on the grid, the relative ordering of vertices is up, down, left, and right. There is no such ordering on the sphere either, especially if irregularly sampled.
 
@@ -609,10 +593,10 @@ where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-
 Finally, the coefficients can be computed such as the truncated Chebyshev expansions gives an approximate minimax polynomial of a given filter \citep{hammond2011wavelets}. While that is irrelevant when learning filters, it is useful when smoothing a signal on the sphere by filtering it with an approximated low-pass filter.
 In practice, we found out in our experiment that Chebyshev polynomials are slightly more stable than the monomials used in~\cite{khasanova2017graphomni}(i.e. optimizing directly the $\theta_k$ in \eqnref{graph_convolution_polynomial}).
 We believe that this is due to their orthogonality (as explained above) and uniformity\footnote{The amplitude of Chebyshev polynomials is more or less constant over the domain $[-1, 1]$ independently of the order $k$. On the contrary the amplitude of $x^k$ is very different for $|x|\approx 0$ and $|x| \approx 1$.}.
-\nati{I added a sentence and I think we should not give much more details here. If we do an experiment, we can comment in the experiment section.}
-\todo{(i) scale of $\theta_k$: they are mostly uniform for Chebyshev polynomials, end exploding for monomials. Though SGD implicitly imposes a uniform prior on the learned parameters.}
-\todo{(ii) numerical stability of $\L^k \f$ v.s. $T_k(\L) \f$}
-\todo{(iii) in the code, initialize $\theta_k$ with stdev adapted to $F_{in}$ and $K$}
+% \nati{I added a sentence and I think we should not give much more details here. If we do an experiment, we can comment in the experiment section.}
+% \todo{(i) scale of $\theta_k$: they are mostly uniform for Chebyshev polynomials, end exploding for monomials. Though SGD implicitly imposes a uniform prior on the learned parameters.}
+% \todo{(ii) numerical stability of $\L^k \f$ v.s. $T_k(\L) \f$}
+% \todo{(iii) in the code, initialize $\theta_k$ with stdev adapted to $F_{in}$ and $K$}
 
 Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the dense vector $\f$ with the sparse matrix $\tL$.
 The cost of one such multiplication is $\bO(|\E|)$. By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution is thus reduced to $\bO(N_{pix})$ operations.
@@ -734,7 +718,6 @@ The optimization is performed by computing an error gradient w.r.t.\ all the par
 \end{equation*}
 where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples to gain speed by exploiting the parallelism afforded by modern computing platforms.
 
-\todo{Notation GC32 - P256 - FC10 to describe an architecture? Maybe more useful in Experiments where we describe the architecture used for each experiment.}
 
 \section{Related work}
 \label{sec:related}
@@ -755,13 +738,13 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 \citet{boomsma2017spherical} apply a standard 2D CNN to a grid discretization of the sphere. Two grids, illustrated in \figref{sphere_grids}, are used in their work: the equirectangular grid, and the cubed-sphere grid defined by~\citet{ronchi1996cubed}.
 As this formulation uses the standard 2D convolutions, all the optimizations developed for 2D images can be applied, what make it computationally very efficient.
 It is, however, restricted to those grid sampling sets. Similarly to the cubed-sphere, HEALPix is a composition of twelve grids. While each of those twelve grids could potentially be independently fed into a 2D CNN, boundary conditions would have to be properly handled, as those grids are not independent.
-\todo{How do they handle boundaries?}
-\TK{+1,good question}
-\nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was:
-\emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."}
-Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
-I do not think we should mention any of that in the paper.
-}
+% \todo{How do they handle boundaries?}
+% \TK{+1,good question}
+% \nati{They are almost not talking about that. For the cubed sphere, the only reference I could found was:
+% \emph{"When implementing convolutions and pooling operations for the cubed-sphere grid, one has to be careful in padding each patch with the contents of the four neighbouring patches, in order to preserve the wrapped topology of the sphere (figure 2, right)."}
+% Note that for the cubed sphere sampling each pixel has exactly four neighboors which make the problem of border effect handable. As for the equirectangular grid, it is equivalent to a cylinder. So I guess they take the standard image processing border conditions (reflective).
+% I do not think we should mention any of that in the paper.
+% }
 % Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
 % Moreover, those samplings are not ideal as their resolution is not constant across the sphere.
 Moreover, the pixel area is not constant across the sphere in those sampling schemes, which may limit their potential applications.
@@ -1127,6 +1110,7 @@ Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N
 	\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
+\nati{There is a break here...}
 The graph setting used through this contribution assumes reflective border conditions. That is irrelevant when working on the complete sphere as this surface has no border. When working with a part of the sphere however, its border slightly affects the convolution. As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile. These border effects can however be mitigated by padding with zeros a small area around the part of interest.
 
 \begin{figure}
