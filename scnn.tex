@@ -149,7 +149,7 @@
 %% \address[label1]{}
 %% \address[label2]{}
 
-\author{}
+\author{Nathanaël Perraudin, Michaël Defferrard and Tomasz Kacprzak}
 
 \address{}
 
@@ -1091,12 +1091,18 @@ This work was supported by a grant from the Swiss Data Science Centre (SDCS) und
 
 \section{Graph Fourier modes and spherical harmonics}
 \label{sec:comparison_spherical_harmonics}
-\label{sec:border_effects}
+The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}. 
+Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$. 
+Its eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
+We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped by $2\ell + 1$ is an hint that the graph eigenvectors approximate the spherical harmonics.
+In order to push the comparison one step further, we shows the correspondence (scalar product) between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}. 
+The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 
-The eigenvalues of the graph Laplacian $\L$, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
-The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}. \figref{subspace_harmonics_eigenvectors} shows the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. While there is again a clear resemblance with the spherical harmonics, the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an effect on the graph Fourier modes.
-First, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere.
+While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
+First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}. 
 Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is however out of the scope of this contribution.
+Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere. 
+Nevertheless, our experiments suggest that the theses downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
 
 \begin{figure}
 	\centering
@@ -1112,8 +1118,14 @@ Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N
 	\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
-\nati{There is a break here...}
-The graph setting used through this contribution assumes reflective border conditions. That is irrelevant when working on the complete sphere as this surface has no border. When working with a part of the sphere however, its border slightly affects the convolution. As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile. These border effects can however be mitigated by padding with zeros a small area around the part of interest.
+\section{Border effects}
+\label{sec:border_effects}
+
+One should not forget that a significant part of our analysis is done with a full sphere and that in practice we often use only part of the graph as the data may be incomplete (see \figref{example_maps}). 
+In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
+It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution. 
+As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile. 
+These border effects can however be mitigated by padding with zeros a small area around the part of interest.
 
 \begin{figure}
 	\centering
@@ -1124,6 +1136,7 @@ The graph setting used through this contribution assumes reflective border condi
 
 \section{Example: heat diffusion}
 \label{sec:heat_diffusion}
+\label{sec:filter_visualization}
 
 Let us consider the heat diffusion problem
 \begin{equation}
@@ -1135,7 +1148,8 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation*}
   \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation*}
-which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization} and~\ref{sec:filter_visualization}.
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization}.
+% and~\ref{sec:filter_visualization}.
 
 \begin{figure}
   \centering
@@ -1144,8 +1158,10 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
   Top: Diffusion of a unit of heat for different times $t$ using the graph.
   Bottom: spherical symmetric Gaussian smoothing for different $\sigma$ (arcmin).
   Relative difference between graph convolution and spherical smoothing: $10.4$\%, $4.8$\%, $3.8$\%.
-\todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
-\nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}}
+% nati: I commented this issue as this is already in appendix and it will go a bit too far. We will not do an appendix of appendix :-).
+% \todo{The main issue with our filters is that their shape depends on the localization. It would be nice to measure the expectation and variance of the error over all locations. That would show how severe the distortion is.}
+% \nati{Let us keep that for the next paper. I am quite sure, it is negligible in this particular case.}
+}
   \label{fig:gaussian_filters_comparizon}
 \end{figure}
 
@@ -1155,8 +1171,8 @@ exactitude of the convolution is not a requirement, such as de-noising, graph co
 The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
 not ideal tho as the graph convolution depends on the localization
 
-\section{Filter visualization}
-\label{sec:filter_visualization}
+% \section{Filter visualization}
+% \label{sec:filter_visualization}
 
 \begin{figure}
 \centering
@@ -1171,13 +1187,11 @@ not ideal tho as the graph convolution depends on the localization
 \label{fig:gaussian_filters_visualization}
 \end{figure}
 
-
-In \figref{gaussian_filters_visualization}, we present three different
-visualization for a HEALPix graph convolution kernel. The kernel used is defined in the graph spectral domain as $K_t(x)=e^{-\tau t x}$. This is the domain used for our first visualization. In this case, we simply evaluate $K_t$
-at the graph eigenvalues $\text{diag}(\bLambda)$. The lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
-As a second visualization, we can observe the kernel directly on the sphere. To do so, we perform the convolution of a
-Kroneker on the sphere plot the result with gnomonic projection. Eventually, as we are
-working on the sphere with theoretically spherical filters (up to the irregularities of the sampling), we could only plot the section of the convoluted Kroneker.
+In \figref{gaussian_filters_visualization}, we further leverage this example to present the three visualization of a HEALPix graph convolution kernel.
+We remember that the convolution kernel resulting from the heat diffusion is defined as $K_t(x)=e^{-\tau t x}$. For our visualization, we simply plot this function, i.e., we evaluate $K_t$
+at the graph eigenvalues $\text{diag}(\bLambda)$. Note that, the lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
+As a second visualization, we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker to obtain a representation on the sphere. We then plot the result with gnomonic projection. 
+For our third visualization, we leverage the fact that we are working on the sphere and hence theoretically have  spherical filters (up to the irregularities of the sampling). We plot the section of the convoluted Kroneker.
 % To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}.
 To do so, we convolve a Kroneker on the nodes along the equator and use the equator for our section.
 Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker.
