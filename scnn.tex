@@ -215,7 +215,7 @@ Mass mapping
 \section{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 
-    \item (MD+NP) talk about the loss in 3.8 (old 4.8)
+    \item (MD+NP) talk about the loss in 3.8 (old 4.8) \nati{I was very brief. In color for now.}
     \item (done!) (NP) make figure A.13 remove white space
     \item (first version done!)(NP+MD) paragraph on our chosen architecture in the Experiments sections
     \item (Done) (NP) vertex interpretation 
@@ -709,6 +709,8 @@ The loss function $\ell(\y) = \ell(NN_\theta(\X))$ is a measure of how good the 
 	\ell(\y) = -\log(y_i),
 \end{equation*}
 where $i$ is the correct class label.
+\todo{For a regression task, the most common choice is the $L^2$ norm $\ell(\y) = \|\y-\bar{\y}\|_2^2$, where $\bar{\y}$ is the desired output, as it minimize the mean square error. We emphasis that by sole change of the loss, one can solve regularization instead of classification.}
+
 The parameters $\theta$ of the neural network are optimized to minimize the loss over the training dataset $\left\{ \X_i \right\}_{i=1}^{N_{samples}}$:
 \begin{equation*}
 	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} \ell(NN_\theta(\X_i)).
