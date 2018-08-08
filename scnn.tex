@@ -217,7 +217,7 @@ Mass mapping
 
     \item (MD+NP) talk about the loss in 3.8 (old 4.8)
     \item (done!) (NP) make figure A.13 remove white space
-    \item (firsr version done!)(NP+MD)  paragraph on our chosen architecture in the Experiments sections
+    \item (first version done!)(NP+MD) paragraph on our chosen architecture in the Experiments sections
     \item (Done) (NP) vertex interpretation 
     \item (MD) Are you happy with the vertex interpretation in section 3.5 Efficient convolutions? Also do you like the end of 3.4?
     \item (NP) Finalise readme on Github code
@@ -1061,7 +1061,7 @@ The maps were produced from two cosmological models with varying $\sigma_8$ and 
 We compared the performance of the HealpixNet CNN versus that of two SVM-based classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
 Notably, HEALPix maintains good classification accuracy even for high noise levels and part-sky areas.
 
-We show that the modelling the discretised sphere by a graph enables an efficient convolution operation on HEALPix sampling.
+We show that the modeling the discretised sphere by a graph enables an efficient convolution operation on HEALPix sampling.
 % Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
 % \TK{I would move the info about possible relaxation of the iso-latitude thing to a separate paragraph at the end on conclusions - future prospects?}
 Graph-based representation of the sphere can display small imprecisions in rotation invariance, the result of which is that an action of a graph filter slightly depends on the location.
@@ -1084,7 +1084,7 @@ Further comparison of HealpixNet to other spherical CNN algorithms, with differe
 
 \section*{Acknowledgements}
 This work was supported by a grant from the Swiss Data Science Centre (SDCS) under project ID \textit{sd01 - DLOC:  Deep Learning for Observational Cosmology} and grant number 200021\_169130 from the Swiss National Science Foundation.
-
+\nati{@Tomek: do we need to thank Janis?}
 %% The Appendices part is started with the command \appendix;
 %% appendix sections are then done as normal sections
 \appendix
@@ -1214,12 +1214,12 @@ classifier. As a result, we use a classical dataset augmentation technique.
 Before entering the network for training each sample is added a random
 realization of Gaussian noise. The effect is twofold. First, the network never
 ends up seing the same sample and is less likely to overfit the training set.
-Second the trained network will be robust to Gaussian noise.
+Second the trained network will be robust to Gaussian noise. 
 
 When comparing the network to the baselines, we want to ensure that the SVM classifier has
-access to the same amount of data that the network, i.e, potentially an
+access to the same amount of data than the network, i.e, potentially an
 infinite number of samples. Hence, we fit different linear SVM classifiers using
-various training set size until we observe experimentally that
+various training set size until we experimentally observe that
 increasing the amount of data does not improve the accuracy. The validation
 set remain the same and is used for cross-validation to tune the L2
 penalization parameter of SVM. Eventually, we evaluate the final classifier on
