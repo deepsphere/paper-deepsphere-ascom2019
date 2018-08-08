@@ -218,8 +218,8 @@ Mass mapping
     \item (MD+NP) talk about the loss in 3.8 (old 4.8)
     \item (done!) (NP) make figure A.13 remove white space
     \item (firsr version done!)(NP+MD)  paragraph on our chosen architecture in the Experiments sections
-    \item (NP) vertex interpretation
-    \item (MD) Are you happy with the vertex interpretation in section 3.5 Efficient convolutions?
+    \item (Done) (NP) vertex interpretation 
+    \item (MD) Are you happy with the vertex interpretation in section 3.5 Efficient convolutions? Also do you like the end of 3.4?
     \item (NP) Finalise readme on Github code
     \item branch with notebooks with plots (results) NP
     \item NP move the repo to HealpixNet
@@ -526,17 +526,19 @@ $h: \R_+ \rightarrow \R$, a signal $\f \in \R^{N_{pix}}$ on the graph is filtere
 where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii} = h(\bLambda_{ii})$, and $h(\bLambda) \hat{\f}$ is the spectral representation of $\f$ after filtering.
 
 Contrary to classical signal processing on Euclidean domains, the kernel $h$ has no single representation in the vertex domain and cannot be translated on the graph. It can however be localized on any vertex $v_i$ by the convolution with a Kronecker delta $\b \delta_i \in \R^{N_{pix}}$,\footnote{A Kronecker delta is the signal $\b \delta_i \in \R^{N_{pix}}$ that is zero everywhere except on vertex $v_i$ where it takes the value one.} that is $h(\L) \b \delta_i$, a column of $h(\L)$.
-This localization can be useful to visualize kernels as explained in~\ref{sec:filter_visualization}.
+This localization of the kernel $h$ can be useful to visualize kernels as explained in~\ref{sec:filter_visualization}.
 If the graph is not regular, i.e., all nodes do not have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
-Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with all localizations of the kernel:
+Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with the localizations of the kernel $h$, i.e. 
 \begin{equation} \label{eqn:graph_convolution_spatial}
 	(h(\L) \f)_i = \langle h(\L) \b \delta_i, \f \rangle.
 \end{equation}
 We would like to emphasis that traditional convolution can be written in the same form as \eqnref{graph_convolution_spatial}. Given $f,g$ two 1 dimentional discrete signals, their convolution can be written as
-\begin{equation}
+\begin{equation} \label{eqn:standard_convolution}
 (f \ast g) (n) = \sum_{m=-\infty}^\infty f(m) g(n-m) = \langle T_n g,  f \rangle,
 \end{equation}
-where $T_n g(m)=g(n-m)$ is (up to a flip) a translation operator. 
+where $T_n g(m)=g(n-m)$ is, up to a flip, a translation operator. As a result, the convolution is simply the scalar product with the translated kernel $g$.
+Additionally to the fact that \eqnref{graph_convolution_spatial} and \eqnref{standard_convolution} are both scalar product, it turns out that the localization operator $h(\L) \b \delta_i$ is some generalization of the translation for graphs. Furthermore that in the particular case where the Laplacian matrix $\L$ is circulant, $h(\L) \b \delta_i$ is a translated version of $h(\L) \b \delta_j$ for all $i,j$ and both convolution are equivalent.
+For a detailled explanation of the connection between translation and localization, refer to \citep[Sec 2.2]{perraudin2017stationary}.
 
 In \ref{sec:heat_diffusion}, we present an example application of graph-based convolution to a simple heat-diffusion problem in order to shed some light on what is the convolution on a graph.
 
