@@ -47,8 +47,8 @@
 \usepackage{amssymb}
 \usepackage{color}
 \usepackage{url}
-% \usepackage{hyperref}
-\usepackage[draft]{hyperref}
+\usepackage{hyperref}
+% \usepackage[draft]{hyperref}
 \usepackage{graphicx,array} \graphicspath{{figures/}}
 \usepackage{subcaption}
 \usepackage{amsmath}
@@ -212,14 +212,14 @@ Mass mapping
 
 %% \linenumbers
 
-\section{TODO list}
+\section*{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 
-    \item (MD+NP) talk about the loss in 3.8 (old 4.8) \nati{I was very brief. In color for now.}
+    \item (MD+NP) talk about the loss in 2.8 (old 4.8) \nati{I was very brief. In color for now.}
     \item (done!) (NP) make figure A.13 remove white space
     \item (first version done!)(NP+MD) paragraph on our chosen architecture in the Experiments sections
     \item (Done) (NP) vertex interpretation 
-    \item (MD) Are you happy with the vertex interpretation in section 3.5 Efficient convolutions? Also do you like the end of 3.4?
+    \item (MD) Are you happy with the vertex interpretation in section 2.5 Efficient convolutions? Also do you like the end of 2.4?
     \item (NP) Finalise readme on Github code
     \item branch with notebooks with plots (results) NP
     \item NP move the repo to HealpixNet
@@ -238,6 +238,8 @@ Mass mapping
     \item (done!) (TK) add reference to figure (pooling) to the area of orders
     \item (done!) (TK) add section in conclusions/ paragraph on possible extensions to the code: dense output, regression, GANs, segmentation
 	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
+    \item Check names: HealpixNet, Healpix CNN, Healpix FCN
+    \item Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
     % \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
     % \item (done! first version done) conclusions
     % \item (done!) Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
@@ -293,8 +295,10 @@ For ground-based observations this can be due to limited visibility of the sky f
 
 % cohen2017convolutional (ICML workshop) and cohen2018spherical (ICLR best paper) are redundant
 A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretisation of the sphere~\citep{boomsma2017spherical}. While this approach uses the well-developed 2D convolution and hierarchical pooling, it is restricted to those specific grid samplings which are highly irregular on the sphere.
-An attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the convolution in the spectral domain, thanks to the convolution theorem.
+An attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier transform and to perform the SO(3) convolution in the spectral domain, thanks to the convolution theorem. 
+The resulting convolution is rotational equivariant, meaning that a rotation of the input implies the same rotation of the output.
 While there exists fast spherical Fourier transforms for some samplings, this approach can still be computationally expensive.
+\todo{Add here the paper of Risi?}
 Finally, the use of a graph to model the discretised sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of designing network that were invariant to rotations and translation.
 While their architecture accommodates these invariances on the sphere, they did not take advantage of a hierarchical pixelisation.
 Moreover, the statistical layer, which introduces the invariance, needs to be hand-crafted to capture statistics of interest.
@@ -950,7 +954,7 @@ This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the SVM regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
-The design of a neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network (FCN). Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
+The design of a neural network architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network (FCN). Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
 \begin{equation}
 FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
@@ -1080,7 +1084,7 @@ The code was designed in a way to enable straightforward modifications of the ar
 Notably, for a problem of cosmological parameter estimation \citep{fluri2018deep,gupta2018nongaussianinformation}, it is easy to replace the classification loss task with a regression loss.
 It should also be possible use dense layer for an output and perform segmentation tasks, such as masking, flagging, or object detection.
 
-As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
+As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics. Furthermore, the influence of the irregular sampling on the rotational equivariance should be quantified empirically and ideally bounded theoretically.
 Further comparison of HealpixNet to other spherical CNN algorithms, with different sampling schemes, would also be worthwhile.
 
 % Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
