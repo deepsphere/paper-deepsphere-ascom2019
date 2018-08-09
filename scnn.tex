@@ -963,7 +963,7 @@ This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the SVM regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
-The choice of a particular HealPixNet architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network referred as HealPixFCN. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The order of the convolution kernel was set to $K=5$. The network can be summarized as
+The choice of a particular HealPixNet architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network referred as the FCN variant of HealPixNet. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The order of the convolution kernel was set to $K=5$. The network can be summarized as
 \begin{equation}
 FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
@@ -976,7 +976,7 @@ where \hspace{0.5cm} \begin{tabular}{lll}
 \end{tabular}
 \end{center}
 Thanks to its statistical layer, the FCN architecture is close invariant to rotation.
-We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not invariant to rotation anymore. The network is referred as HealPixCNN and can be summarized as
+We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not invariant to rotation anymore. The network is referred as CNN variant of HealPixNet and can be summarized as
 \begin{equation}
 CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
 \end{equation}
