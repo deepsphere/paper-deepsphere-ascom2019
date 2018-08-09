@@ -238,7 +238,7 @@ Mass mapping
     \item (done!) (TK) add reference to figure (pooling) to the area of orders
     \item (done!) (TK) add section in conclusions/ paragraph on possible extensions to the code: dense output, regression, GANs, segmentation
 	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
-    \item Check names: HealpixNet, Healpix CNN, Healpix FCN
+    \item Check names: HealpixNet, HealpixCNN, HealpixFCN
     \item Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
     % \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
     % \item (done! first version done) conclusions
@@ -954,7 +954,7 @@ This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the SVM regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
-The design of a neural network architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network (FCN). Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
+The choice of a particular HealPixNet architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network referred as HealPixFCN. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
 \begin{equation}
 FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
@@ -966,13 +966,14 @@ where
    $L_6$ & $ = \sigma \circ BN  \circ GC_{2}$ \\
 \end{tabular}
 Thanks to its statistical layer, the FCN architecture is almost (because of the sampling irregularities) equivariant to rotation.
-We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not equivariant to rotation anymore. The network can be summarized as
+We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not equivariant to rotation anymore. The network is referred as HealPixCNN and can be summarized as
 \begin{equation}
 CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
 \end{equation}
 We use the ADAM optimizer, \cite{kingma2014adam}, with $\beta_1=0.9$, $\beta_2=0.999$ and an initial learning rate of $2e-4$ that is exponentially decreased by $0.999$ at each step.
 All models were trained $80$ epochs with a batch size of $16\times o^2$. With this choice, all models receive an identical amount of data within a batch and were trained with $1920$ gradient steps.
-Training took less than $4$ hours for each model using a single NVIDIA Tesla K20.
+Training took less than $5$ hours for each model using a single NVIDIA Tesla K20.
+% The CPU is probably slow which explain the 5 hours. I believe we could be much faster than that by computer less summaries and improving the data. But, Michael, is OKAY to have to margin of improvement :-)
 
 \subsection{Results}
 
@@ -985,7 +986,7 @@ Training took less than $4$ hours for each model using a single NVIDIA Tesla K20
 \includegraphics[width=0.32\linewidth]{result_order4}
 \caption{
 Classification errors for the 3 different areas of the sphere.
-Green lines show the performance of the FCN,CNN, blue of the PDF+SVM, and red of the histogram+SVM.
+Green lines show the performance of the two HealPixNet architectures, blue of the PDF+SVM, and red of the histogram+SVM.
 % Green dashed line corresponds to the performance of CNN without the statistical layer.
 The noise level was increased from zero to $2\times$ the standard deviation of the mass map.
 }
