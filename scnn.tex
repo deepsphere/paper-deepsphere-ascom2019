@@ -958,15 +958,16 @@ The choice of a particular HealPixNet architecture highly depends on the problem
 \begin{equation}
 FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
-where
-\begin{tabular}{lll}
-   $L_1$ & $ = P  \circ \sigma \circ BN  \circ GC_{16}$ \\
-   $L_2$ & $ = P  \circ \sigma \circ BN  \circ GC_{32}$ \\
-   $L_3,L_4,L_5$ & $= P \circ  \sigma \circ BN  \circ GC_{64}$ \\
-   $L_6$ & $ = \sigma \circ BN  \circ GC_{2}$ \\
+\begin{center}
+where \hspace{0.5cm} \begin{tabular}{lll}
+   $L_1$ &  $=$ &$ P  \circ \sigma \circ BN  \circ GC_{16}$ \\
+   $L_2$ &  $=$ &$ P  \circ \sigma \circ BN  \circ GC_{32}$ \\
+   $L_3,L_4,L_5$ & $=$ &$ P \circ  \sigma \circ BN  \circ GC_{64}$ \\
+   $L_6$ &  $=$& $ \sigma \circ BN  \circ GC_{2}$ \\
 \end{tabular}
-Thanks to its statistical layer, the FCN architecture is almost (because of the sampling irregularities) equivariant to rotation.
-We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not equivariant to rotation anymore. The network is referred as HealPixCNN and can be summarized as
+\end{center}
+Thanks to its statistical layer, the FCN architecture is close invariant to rotation.
+We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not invariant to rotation anymore. The network is referred as HealPixCNN and can be summarized as
 \begin{equation}
 CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
 \end{equation}
@@ -1009,7 +1010,8 @@ In contrast, both the PSD features and the HealpixNet can exploit the spatial in
 % Problematically, fully connected neural networks generally scales squarely with their number of inputs.
 % \TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
 
-While testing the FCN and CNN architectures, we made the following empirical observations:
+\nati{Michael: I am highly uncertain of what should be kept in the following paragraph. Maybe the full paragraph should be left out!}
+While testing the FCN and CNN architectures, we made the following empirical observations.
 First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more monotone decrease.
 Nevertheless once the network is trained, we could not observe a significant accuracy difference.
 Second, using a statistical layer (FCN) to get equivariant features slightly improved the accuracy in our problem.
@@ -1018,6 +1020,7 @@ The `mean', `histogram' and `mean + variance' were providing the same level of a
 Third, adding fully connected layers after the statistical layer does not improve the performance, but lead to models requiring more training steps and regularization.
 Fourth, using $\ell_2$ regularization does not help either with the performance or the training of the models.
 Fifth, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F * (K + 0.5))}$, where $K$ is the Chebyshev order and $F$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less at the same level between the different layers.
+% Nati to Michael: The problem with the previous claim is that it depends on the non-linarity. Furthermore, does it make sense to make such a claim if we use batch norm?
 Eventually, we observe that rescaling the Laplacian eigenvalues between $[-a,a]$, where $1<a\leq1$ significantly helps to stabilize the optimization. For our experiment we use $a=0.75$.
 
 
