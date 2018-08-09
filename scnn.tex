@@ -135,12 +135,12 @@
 %% \address{Address\fnref{label3}}
 %% \fntext[label3]{}
 
-\title{HealpixNet: Efficient spherical Convolutional Neural Network with Healpix sampling for cosmological applications}
+\title{HealpixNet: Efficient spherical Convolutional Neural Network with HEALPix sampling for cosmological applications}
 % \title{Efficient Spherical ConvNet with Graph Convolutions for Cosmological Applications}
-% \title{HealpixNet: Efficient spherical Convolutional Neural Network with graphs and Healpix sampling for cosmological applications}
-%\title{HealpixNet: Graph Convolutional Neural Network for efficient spherical convolutions on Healpix sampling for cosmological applications}
+% \title{HealpixNet: Efficient spherical Convolutional Neural Network with graphs and HEALPix sampling for cosmological applications}
+%\title{HealpixNet: Graph Convolutional Neural Network for efficient spherical convolutions on HEALPix sampling for cosmological applications}
 % Graph Convolutional Networks for efficient spherical ???
-% Efficient spherical ??? with GCNs and Healpix sampling
+% Efficient spherical ??? with GCNs and HEALPix sampling
 % (Tomek) How about HealpixCNN? Or HealpixNet? Or HealNet?}
 % spherical convolutions with graphs
 
@@ -185,11 +185,11 @@ Code and examples are available at \todo{\url{https://github.com/SwissDataScienc
 % Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
 % In this paper we take the latter view and represent a sampled sphere as a graph, for which we define the convolution and pooling operations.
 % Spherical maps appear in many applications, such as the study of phenomena on the Earth for meteorologists or on the sky for cosmologists.
-% A popular format for spherical maps is Healpix, which uses an equal-area, isolatitude sampling.
-% Hence, we present a spherical CNN for analysis of full and partial Healpix maps, which we call HealpixNet.
+% A popular format for spherical maps is HEALPix, which uses an equal-area, isolatitude sampling.
+% Hence, we present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
 % \nati{I am not that we should talk about pooling in the abstract. Another angle would be to say that HEALPix sampling is well suited for spherical CNN with graphs as a) it is very regular => the graph capture well the spherical structure of the Manifold and b) pooling is natural.}
 % While the convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far.
-% As such, while HealpixNet is a special case of a graph CNN, it is tailored to the Healpix sampling of the sphere.
+% As such, while HealpixNet is a special case of a graph CNN, it is tailored to the HEALPix sampling of the sphere.
 % This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
 % The filters learned by the HealpixNet are restricted to being radial.
 % Michaël: not necessary in the abstract?
@@ -340,9 +340,9 @@ Finally, \secref{experiments} presents our experimental results on the weak lens
 
 % Cite the following papers:
 % \begin{itemize}
-%     \item Healpix paper \citep{gorski2005healpix}
+%     \item HEALPix paper \citep{gorski2005healpix}
 %     \item First DES mass maps \citep{chang2017curvedsky}
-%     \item Healpix convolutions with asymetric beams \citep{mitra2011fastpixel}
+%     \item HEALPix convolutions with asymetric beams \citep{mitra2011fastpixel}
 %     \item Mass mapping on the sphere \citep{wallis2017mappingdark}
 %     \item Wavelets on the sphere \citep{leistedt2016wavelet} and ball \citep{leistedt2012exactwavelets}
 %     \item Planck main result \citep{planck2015cosmologicalparameters,komatsu2011sevenyear}
@@ -858,8 +858,8 @@ In this section we demonstrate the performance of the spherical neural network o
 These maps are similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
 The experiment presented here is similar the one by \citet{schmelze2017cosmologicalmodel}.
 The two set of maps were created using the standard cosmological model with two sets of cosmological parameters.
-The classification methods were trained to assign a predicted label using the Healpix maps.
-Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments is available online.
+The classification methods were trained to assign a predicted label using the HEALPix maps.
+Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are available online.
 
 We use the classification scenario in this work.
 Extensions to other tasks, such as regression or segmentation, is also possible; we do not, however, demonstrate it here.
@@ -1004,7 +1004,7 @@ The noise level was increased from zero to $2\times$ the standard deviation of t
 \end{figure*}
 
 \figref{results} presents the results for $5$ different noise levels and $3$ different sample areas.
-HealPixNet (FCN and CNN) has a significant lead for all levels of noise and sample areas.
+HealpixNet (FCN and CNN) has a significant lead for all levels of noise and sample areas.
 In particular, the difference seems to increase as the problem becomes more complex; as the order is increased, there is less information in each sample.
 This is likely due to the fact that the HealpixNet can learn optimal features for the problem and does not rely on hand-designed features. 
 
