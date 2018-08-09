@@ -950,21 +950,25 @@ This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the SVM regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
-The design of an neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two distributions cosmologicals maps. Hence, we assume that each pixel carries some information about the distribution. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the stistical evidence of each distribution for each pixel of a downsampled sphere. The last graph convolution layer is compose of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
+The design of an neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two distributions cosmologicals maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network (FCN). Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a downsampled sphere. The last graph convolution layer is compose of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
 \begin{equation}
-NN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
+FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
 where
-\begin{itemize}
-    \item layer 1: $L_1 = P  \circ \sigma \circ BN  \circ GC_{16}$,
-    \item layer 2: $L_2 = P  \circ \sigma \circ BN  \circ GC_{32}$,
-    \item layer 3-5: $L_3 = L_4 = L_5= P \circ  \sigma \circ BN  \circ GC_{64}$,
-    \item layer 6: $L_6 = \sigma \circ BN  \circ GC_{2}$.
-\end{itemize}
-
-\todo{We use the ADAM optimizer, \cite{kingma2014adam}, with an initial learning rate of $2e-4$ that is exponentially decreased by $0.98$ a $100$ times to end at $2.7e-5$.
-All models where trained $80$ epochs with a batch size of $16\times o^2$. With this choice, all models recieve an identical amount of data within a batch and were trained with $1920$ gradient steps.}
-Training took less \nati{queue bottleneck to be fixed} than $3$ hours for each model using a single NVIDIA Tesla K20.
+\begin{tabular}{lll}
+   $L_1$ & $ = P  \circ \sigma \circ BN  \circ GC_{16}$ \\
+   $L_2$ & $ = P  \circ \sigma \circ BN  \circ GC_{32}$ \\
+   $L_3,L_4,L_5$ & $= P \circ  \sigma \circ BN  \circ GC_{64}$ \\
+   $L_6$ & $ = \sigma \circ BN  \circ GC_{2}$ \\
+\end{tabular}
+Thanks to its statistical layer, the FCN architecture is almost (because of the sampling irregularities) equivariant to rotation.
+We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not equivariant to rotation anymore. The network can be summarized as
+\begin{equation}
+CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
+\end{equation}
+We use the ADAM optimizer, \cite{kingma2014adam}, with $\beta_1=0.9$, $\beta_2=0.999$ and an initial learning rate of $2e-4$ that is exponentially decreased by $0.999$ at each step.
+All models where trained $80$ epochs with a batch size of $16\times o^2$. With this choice, all models receive an identical amount of data within a batch and were trained with $1920$ gradient steps.
+Training took less than $4$ hours for each model using a single NVIDIA Tesla K20.
 
 \subsection{Results}
 
@@ -977,7 +981,7 @@ Training took less \nati{queue bottleneck to be fixed} than $3$ hours for each m
 \includegraphics[width=0.32\linewidth]{result_order4}
 \caption{
 Classification errors for the 3 different areas of the sphere.
-Green lines show the performance of the CNN, blue of the PDF+SVM, and red of the histogram+SVM.
+Green lines show the performance of the FCN,CNN, blue of the PDF+SVM, and red of the histogram+SVM.
 % Green dashed line corresponds to the performance of CNN without the statistical layer.
 The noise level was increased from zero to $2\times$ the standard deviation of the mass map.
 }
@@ -985,30 +989,32 @@ The noise level was increased from zero to $2\times$ the standard deviation of t
 \end{figure*}
 
 \figref{results} presents the results for $5$ different noise levels and $3$ different sample areas.
-The spherical CNN has a significant lead for all levels of noise and sample areas.
+HealPixNet (FCN and CNN) has a significant lead for all levels of noise and sample areas.
 In particular, the difference seems to increase as the problem becomes more complex; as the order is increased, there is less information in each sample.
-This is likely due to the fact that the HealpixNet can learn optimal features for the problem and does not rely on hand-designed features.
+This is likely due to the fact that the HealpixNet can learn optimal features for the problem and does not rely on hand-designed features. 
 
 We observe that the PSD is unable to perform the desired task.
 The main reason is that the two different models were designed to have very similar PSDs (see \figref{psd_sigma3}).
 As a result, one needs to use other statistics to solve the problem.
 In this case, the histogram features allow for a significant improvement over the PSD ones.
 Unfortunately, while the histogram features contain information about the distribution of pixels, they do not include any spatial information.
-In contrast, both the PSD features and the HealpixNet can exploit the spatial information.
+In contrast, both the PSD features and the HealpixNet can exploit the spatial information. 
+
 % Note that without this graph structure, a fully connected neural network approach would have to be used.
 % Problematically, fully connected neural networks generally scales squarely with their number of inputs.
 % \TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
 
-We tried several different spherical neural network architectures and observed the following results.
+While testing the FCN and CNN architecture we made the following empirical observations:
 First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more steadily decrease.
 Nevertheless once the network is trained, we could not observe a significant accuracy difference.
-Second, using a statistical layer slightly improved the accuracy in our problem.
+Second, using a statistical layer (FCN) to get equivariant features slightly improved the accuracy in our problem.
 We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
 The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse. Hence we chose to simply use the `mean' statistic.
 Third, adding fully connected layers after the statistical layer does not improve the performance, but lead to models requiring more training steps and regularization.
-\todo{Fourth, using $\ell_2$ regularization does not help neither with the performance nor the training of the models, but slightly reduce the performance variance between different runs due to the random initialization.
-Eventually, recommend to ignitialize the Chebyshev coeffecient with a centered Gaussian distribution with standart deviation $2/(F * (K + 0.5))$, where $K$ is the Chebyshef order and $F$ the number of input channels. The
-}
+Fourth, using $\ell_2$ regularization does not help neither with the performance nor the training of the models.
+Fifth, we recommend to initialize the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F * (K + 0.5))}$, where $K$ is the Chebyshev order and $F$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less at the same level between the different layers.
+Eventually, we observe that rescaling the Laplacian eigenvalues between $[-a,a]$, where $1<a\leq1$ significantly helps to stabilize the optimization. For our experiment we use $a=0.75$.
+
 
 
 
@@ -1031,7 +1037,7 @@ An example of filter interpretation was demonstrated in \citep{Ribli2018learning
 \includegraphics[width=0.47\linewidth]{section_filter_last}
 \hfill
 \includegraphics[width=0.45\linewidth]{gnonomic_filter_last}
-\caption{24 learned filters selected from the last spherical convolutional layer. Left: section. Right: gnonomic view.}
+\caption{24 learned filters selected from the fifth spherical convolutional layer $L_5$. Left: section. Right: gnonomic view.}
 \label{fig:learned_filter}
 \end{figure*}
 
