@@ -176,7 +176,7 @@ This way, HealpixNet is a special case of a graph CNN, tailored to the HEALPix s
 % This approach is very efficient computationally than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
 An advantage of this representation is that the convolution operations with this approach are very efficient, which enables the algorithm to run very fast.
 We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
-Our experimental result show that the performance of HealpixNet to always better or equal to both of these baselines.
+Our experimental result shows that the performance of HealpixNet to always be better or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
 Finally, we propose a visualization of filters learned by the HealpixNet from the mass maps as some analysis tool for the neural network.
 Code and examples are available at \todo{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
@@ -895,7 +895,7 @@ That means that it is very difficult to distinguish between these cosmological m
 We found that for $\ell>1000$ the differences in power spectrum is $~5\%$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
 The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function in the HEALPix package, are displayed in \figref{psd_sigma3}.
-In the pre-processing step, we also remove the mean of each map and downsample them to a resolution of of $N_{side}=1024$.
+In the pre-processing step, we also remove the mean of each map and down-sample them to a resolution of of $N_{side}=1024$.
 
 
 The simulations are created using the fast lightcone method described in~\citep{sgier2018fastgeneration}.
@@ -924,7 +924,7 @@ Nevertheless, our code includes an example using the full sphere.
 % \caption{Three parts of the sphere with different sizes. Blue: $o=1$. Green: order $o=2$. Yellow: order $o=4$.}
 % \label{fig:part_sphere}
 % \end{figure}
-For all the experiments, we work with centred Gaussian noise.
+For all the experiments, we work with centered Gaussian noise.
 While the noise model of real mass maps often has a slightly different distribution, Gaussian should be a sufficient model to demonstrate the performance of our method.
 The noise added to our maps had levels spanning the range between 0 and 2  $\times$ the standard deviation of the mass maps.
 
@@ -933,7 +933,7 @@ We check the classification performance as a function of the area used, the orde
 
 % Nati: Not done anymore
 % To improve the stability of the spherical CNN, we slowly increase the amount of noise added to the training data over the iterations.
-Furthermore in order to avoid overfitting, the noise is randomly produced during the training process.
+Furthermore in order to avoid over-fitting, the noise is randomly produced during the training process.
 The $20\%$ of the training set that we call \emph{validation set} was left out of the training process and simply used to assess the global performance of the network.
 
 
@@ -950,7 +950,7 @@ This process is detailed in \ref{sec:dataset_augmentation}.
 We tune the SVM regularization parameter by cross-validating with the validation set.
 
 \subsection{Selected architecture}
-The design of an neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two distributions cosmologicals maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network (FCN). Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a downsampled sphere. The last graph convolution layer is compose of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
+The design of a neural network architecture highly depends on the problem at hand. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network (FCN). Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The network can be summarized as
 \begin{equation}
 FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
@@ -967,7 +967,7 @@ We also tried a more traditional architecture, where the statistical and last co
 CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
 \end{equation}
 We use the ADAM optimizer, \cite{kingma2014adam}, with $\beta_1=0.9$, $\beta_2=0.999$ and an initial learning rate of $2e-4$ that is exponentially decreased by $0.999$ at each step.
-All models where trained $80$ epochs with a batch size of $16\times o^2$. With this choice, all models receive an identical amount of data within a batch and were trained with $1920$ gradient steps.
+All models were trained $80$ epochs with a batch size of $16\times o^2$. With this choice, all models receive an identical amount of data within a batch and were trained with $1920$ gradient steps.
 Training took less than $4$ hours for each model using a single NVIDIA Tesla K20.
 
 \subsection{Results}
@@ -1004,15 +1004,15 @@ In contrast, both the PSD features and the HealpixNet can exploit the spatial in
 % Problematically, fully connected neural networks generally scales squarely with their number of inputs.
 % \TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
 
-While testing the FCN and CNN architecture we made the following empirical observations:
-First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more steadily decrease.
+While testing the FCN and CNN architectures, we made the following empirical observations:
+First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more monotone decrease.
 Nevertheless once the network is trained, we could not observe a significant accuracy difference.
 Second, using a statistical layer (FCN) to get equivariant features slightly improved the accuracy in our problem.
 We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
 The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse. Hence we chose to simply use the `mean' statistic.
 Third, adding fully connected layers after the statistical layer does not improve the performance, but lead to models requiring more training steps and regularization.
-Fourth, using $\ell_2$ regularization does not help neither with the performance nor the training of the models.
-Fifth, we recommend to initialize the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F * (K + 0.5))}$, where $K$ is the Chebyshev order and $F$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less at the same level between the different layers.
+Fourth, using $\ell_2$ regularization does not help either with the performance or the training of the models.
+Fifth, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F * (K + 0.5))}$, where $K$ is the Chebyshev order and $F$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less at the same level between the different layers.
 Eventually, we observe that rescaling the Laplacian eigenvalues between $[-a,a]$, where $1<a\leq1$ significantly helps to stabilize the optimization. For our experiment we use $a=0.75$.
 
 
@@ -1023,10 +1023,10 @@ Eventually, we observe that rescaling the Laplacian eigenvalues between $[-a,a]$
 One common visualization for CNN is to observe the shape of the learned filters.
 Since our construction leads to almost (up to the sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the radial profile and a gnomonic projection on a plane of a random selection of learned filters.
 The filters are selected from the last layer of the network corresponding the experiment with order $o=2$ for a relative noise level of $2$.
-Nevertheless, all networks presented visually similar gnomonic and profile pattern.
+Nevertheless, all networks presented visually similar gnomonic and profile patterns.
 % The gnomonic projection clearly exibits the sampling issue of HEALPix.
 % \TK{what issue? Commenting out for now}
-Detail of how the convolution kernels are plotted are described in \ref{sec:filter_visualization}.
+Details of how the convolution kernels are plotted are described in \ref{sec:filter_visualization}.
 While it is usually difficult to interpret the shape of the filters in the context of the type of data, we can notice that they often have a ``peak'' like structures.
 An example of filter interpretation was demonstrated in \citep{Ribli2018learningfrom}.
 % \todo{Tomek: can you say something about the filters.}
@@ -1101,15 +1101,15 @@ We would like to thank Jean-François Cardoso for helpful discussions about the 
 The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}. 
 Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$. 
 Its eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
-We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped by $2\ell + 1$ is an hint that the graph eigenvectors approximate the spherical harmonics.
-In order to push the comparison one step further, we shows the correspondence (scalar product) between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}. 
+We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
+In order to push the comparison one step further, we show the correspondence (scalar product) between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}. 
 The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 
 While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
 First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}. 
-Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is however out of the scope of this contribution.
+Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
 Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere. 
-Nevertheless, our experiments suggest that the theses downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
+Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
 
 \begin{figure}
 	\centering
@@ -1121,7 +1121,7 @@ Nevertheless, our experiments suggest that the theses downsides do not have an i
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors}
-	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics which correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics which correspond to the same degree $\ell$ are linearly dependent. There is $2 \ell + 1$ orders per degree $\ell$. Moreover, we see that the Fourier modes have the correct symmetries, indicated by the perfect orthogonality between even and odd functions.}
+	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics which correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics which correspond to the same degree $\ell$ are linearly dependent. There are $2 \ell + 1$ orders per degree $\ell$. Moreover, we see that the Fourier modes have the correct symmetries, indicated by the perfect orthogonality between even and odd functions.}
 	\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
@@ -1132,7 +1132,7 @@ One should not forget that a significant part of our analysis is done with a ful
 In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
 It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution. 
 As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile. 
-These border effects can however be mitigated by padding with zeros a small area around the part of interest.
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
 
 \begin{figure}
 	\centering
@@ -1155,7 +1155,7 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation*}
   \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation*}
-which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, graph convolution can approximate spherical convolution. For additional insides about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization}.
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, the graph convolution can approximate the spherical convolution. For additional insights about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization}.
 % and~\ref{sec:filter_visualization}.
 
 \begin{figure}
@@ -1175,8 +1175,8 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 Furthermore, this result is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. In some applications, where the
 exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
-The fact that both convolutions are not identical is not relevant in a neural network setting, as the convolution kernels are learned anyway.
-not ideal tho as the graph convolution depends on the localization
+The fact that the graph convolution is not exactly rotational equivariant is probably compensated by the fact that in a neural network setting the convolution kernels are learned.
+\todo{not ideal tho as the graph convolution depends on the localization}
 
 % \section{Filter visualization}
 % \label{sec:filter_visualization}
@@ -1194,10 +1194,10 @@ not ideal tho as the graph convolution depends on the localization
 \label{fig:gaussian_filters_visualization}
 \end{figure}
 
-In \figref{gaussian_filters_visualization}, we further leverage this example to present the three visualization of a HEALPix graph convolution kernel.
+In \figref{gaussian_filters_visualization}, we further leverage this example to present the three visualizations of a HEALPix graph convolution kernel.
 We remember that the convolution kernel resulting from the heat diffusion is defined as $K_t(x)=e^{-\tau t x}$. For our visualization, we simply plot this function, i.e., we evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. Note that, the lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
-As a second visualization, we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker to obtain a representation on the sphere. We then plot the result with gnomonic projection. 
+As a second visualization, we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker to obtain a representation on the sphere. We then plot the result with a gnomonic projection. 
 For our third visualization, we leverage the fact that we are working on the sphere and hence theoretically have  spherical filters (up to the irregularities of the sampling). We plot the section of the convoluted Kroneker.
 % To do so, we convolve a Kroneker on the equator and use the equator for our section as shown in~\figref{index_section}.
 To do so, we convolve a Kroneker on the nodes along the equator and use the equator for our section.
@@ -1215,16 +1215,16 @@ Note that, because of the small irregularities in the HEALPix sampling, the seco
 
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation} The original number of samples $480$, $1920$,
-$7680$ respectively for order $o=1,2,4$ is considered small to train deep a architecture,
+$7680$ respectively for order $o=1,2,4$ is considered small to train a deep architecture,
 especially when one desire to build a noise robust
 classifier. As a result, we use a classical dataset augmentation technique.
 Before entering the network for training each sample is added a random
 realization of Gaussian noise. The effect is twofold. First, the network never
-ends up seing the same sample and is less likely to overfit the training set.
+ends up seeing the same sample and is less likely to over-fit the training set.
 Second the trained network will be robust to Gaussian noise. 
 
 When comparing the network to the baselines, we want to ensure that the SVM classifier has
-access to the same amount of data than the network, i.e, potentially an
+access to the same amount of data as the network, i.e, potentially an
 infinite number of samples. Hence, we fit different linear SVM classifiers using
 various training set size until we experimentally observe that
 increasing the amount of data does not improve the accuracy. The validation
