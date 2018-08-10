@@ -275,7 +275,7 @@ This is possible as CNNs have the capacity to build very rich models and capture
 
 % \TK{I would move the discussion about this to a later place in the paper}
 % Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture.
-% Indeed, sky maps are translation invariant, which means that translating and rotating maps on the sphere doesn't change their interpretation.
+% Indeed, sky maps are rotation invariant, which means that rotating maps on the sphere doesn't change their interpretation.
 % Only the statistics of the maps is relevant.
 % The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle).
 % As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
@@ -298,7 +298,7 @@ An attempt by~\citet{cohen2018spherical} was to leverage the spherical Fourier t
 The resulting convolution is rotational equivariant, meaning that a rotation of the input implies the same rotation of the output.
 While there exists fast spherical Fourier transforms for some samplings, this approach can still be computationally expensive.
 \todo{Add here the paper of Risi?}
-Finally, the use of a graph to model the discretised sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of designing network that were invariant to rotations and translation.
+Finally, the use of a graph to model the discretised sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of designing network that were invariant to rotations.
 While their architecture accommodates these invariances on the sphere, they did not take advantage of a hierarchical pixelisation.
 Moreover, the statistical layer, which introduces the invariance, needs to be hand-crafted to capture statistics of interest.
 
@@ -647,7 +647,7 @@ That operation is often taken to be the maximum value, but it can be any permuta
 % Or Global pooling?
 
 Following \citet{khasanova2017tigranet}, we implement an optional statistical layer between the last graph convolutional layer and the first fully connected layer for the neural network.
-This introduces the invariance of the output to isometric transformations, such as rotation and translation of maps on the sphere.
+This introduces the invariance of the output to isometric transformations, such as rotation of maps on the sphere.
 The role of the layer is to compute global and location independent statistics from feature maps.
 Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map $N_{pix}$. That compression results in much smaller fully connected layers, which usually contain a significant fraction of trainable parameters of a neural network.
 The invariance and reduced representation should help the network to learn from less samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
@@ -769,7 +769,7 @@ Similarly to the cubed-sphere, HEALPix is made of twelve grids. As those grids a
 % \nati{Michael: Under some very specific hypothesis, this second approach is a particular case of our method, i.e. (i) our method with a stupid sampling, (ii) assumption that graph convolution on a grid == 2d convolution. Do you think we should mention that? I think we should not.}
 Finally, a 2D CNN learns directional filters, which are well defined with respect of the image coordinates.
 Directions that make much sense for images (up, down, left, and right) are arbitrarily defined when setting the origin of the grids on the sphere.
-Any convolution using directions on the sphere is not equivariant to translation and rotation.
+Any convolution using directions on the sphere is not equivariant to rotation.
 
 % As presented by~\cite{cohen2018spherical}, the most mathematical approach to extend the convolution on a sphere is to use a spherical Fourier transform. The convolution is then simply defined as the product in the spectral domain. This approach requires one Fourier and one inverse Fourier transform per convolution which remain, even with accelerated algorithms, expensive.
 
@@ -822,7 +822,7 @@ Moreover, the chosen statistics have to be hand-crafted to capture statistics of
 % While that may not be ideal, it was shown to work well in practice.
 % \TK{The two sentences above look like a tangent to me.. can we skip it an go to the main point, which is I think the fact that we use the stat layer?}
 
-\todo{In HealpixNet we use the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as translation and rotation on the sphere.
+\todo{In HealpixNet we use the idea of a statistical layer, described in \secref{stat_layer}, to provide invariance to isometric transformations such as rotation on the sphere.
 \TK{We would need to describe the idea of the statistical layer for the cosmology audience. They don't have a clue what it is.}\nati{Can't they just wait for \secref{stat_layer}? }
 The use of the statistical layer is optional.
 In our approach, we are keeping all the statistical moments by retaining a full, learned learned feature histogram, an approach that performed the best in our tests.
@@ -831,7 +831,7 @@ That is similar to the learnable histogram introduced by \citet{wang2016learnhis
 \TK{why is this section in TODO?\nati{Probably because, we have not decided if we use the histogram yet. This paragraph needs to be rewritten once we are clear with the code.}}
 
 
-There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to translation. \todo{better wording}
+There exists many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. Its tie to a graph Fourier transform allows us to compare with the spherical harmonic transform, and study its invariance properties. More geometric than permutation invariant aggregation. A contrario, formulations with exploit the tengant space of manifolds define a local coordinate system. While this formulation of convolution can learn anisotropic filters, it is not equivariant to rotation. \todo{better wording}
 \todo{three main interpretations: gsp, Bronstein manifold tangent plane, message passing, permutation invariant aggregation, spatial formulations}
 Bronstein is a spatial formulation where the registration is done by projection on the tangent plane.
 % Not Bronstein's manifold approach as we want a Fourier basis to compare to the spherical harmonics.
