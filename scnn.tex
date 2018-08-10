@@ -229,7 +229,7 @@ Mass mapping
     \item (NP) D.18 text size bigger
     \item (NP) Remove caption B.13
 	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
-    \item Check names: HealpixNet, HealpixCNN, HealpixFCN
+    \item Check names: we use HealpixNet, HealpixNet variant CNN, HealpixNet variant FCN
     \item (NP) Check the wording. Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
     \item Change equation after (2) and check all kroneker
 	\item Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices.
@@ -237,6 +237,7 @@ Mass mapping
 	\item (TK) Font: do we have to use times (set in the documentclass)? I (MD) find the rendering of math a bit ugly.
     \item (TK) fix the bibliography
     \item Check links in footnotes.
+
 \end{itemize}
 
 \begin{figure*}
@@ -246,7 +247,7 @@ Mass mapping
 	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier.
     %\nati{add the stat layer?}
     %\TK{added stats layer to figure text, hope that's OK}
-    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is however the same when working with parts of sphere, except that the graph is only built for the part of interest.}
+    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is, however, the same when working with parts of sphere, except that the graph is only built for the part of interest.}
 	\label{fig:architecture}
 \end{figure*}
 
@@ -278,7 +279,7 @@ Perhaps the most straightforward approach to the analysis of spherical data is t
 While this approach has been demonstrated to work \citep{fluri2018deep,gupta2018nongaussianinformation,schmelze2017cosmologicalmodel,gillet2018deeplearning}, it may be more natural for some applications and accurate to work directly on the sphere.
 The main challenge in designing a CNN on the sphere is to define a convolution operation that is suitable for this irregularly sampled domain.
 To be able to train the network efficiently, the convolution has to be performed fast.
-Another important feature is for a CNN to be able to work on part-spheres, as for many cosmological observations cover only a part of the sky.
+Another important feature is for a CNN to be able to work on subpart of the sphere, as for many cosmological observations cover only a part of the sky.
 For ground-based observations this can be due to limited visibility of the sky from a particular telescope location, and for space-based instruments due to masking of the galactic plane area.
 
 % cohen2017convolutional (ICML workshop) and cohen2018sphericalcnn (ICLR best paper) are redundant
@@ -760,7 +761,7 @@ The main advantage of this approach is that it provides a mathematically well de
 For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO\left(\sqrt{N_{pix}}\right)$ rings of constant latitude. Each ring has $\bO\left(\sqrt{N_{pix}}\right)$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\left( N_{pix} \log \sqrt{N_{pix}} \right)$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO\left(N_{pix}^{3/2}\right)$.}
 \citep{gorski2005healpix, reinecke2013libsharp}.
 In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
-\citet{kondor2018clebsch} proposed to use the Clebsh-Gordan transform to perform a non-linear transformation in the spectral domain. As such, a SHT only has to be performed once to transform the data in the spectral domain. No need to transform back and forth between every layer. While a clever trick, it is unclear if it results in any speed gain in practice. \todo{computation complexity? no speed comparison in paper?}
+\citet{kondor2018clebsch} proposed to use the Clebsh-Gordan transform to perform a non-linear transformation in the spectral domain. As such, a SHT only has to be performed once at the input of the network and the back and forth SHT between every layer are no longer required. While this clever trick make the convolution complexity $\bO(N_{pix})$, the non-linearity\nati{ scales as the squared of the number of channels and as }. As a result, it is yet unclear which speed gain is obtained in practice. \todo{computation complexity? no speed comparison in paper?}
 \todo{Polynomial formulation enforces locality, which otherwise has to be enforced by smoothness in the spectral domain.}
 \todo{Pooling in the spectral domain? \citet{esteves2017sphericalcnn} do something.}
 % While a comparison is theoretically possible, the experiments of~\cite{cohen2018sphericalcnn} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
@@ -969,7 +970,7 @@ In contrast, both the PSD features and the HealpixNet can exploit the spatial in
 
 \nati{Michael: I am highly uncertain of what should be kept in the following paragraph. Maybe the full paragraph should be left out!}
 While testing the FCN and CNN architectures, we made the following empirical observations.
-First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_polynomial}), in the sense that the training loss had a more monotone decrease.
+First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_monomial}), in the sense that the training loss had a more monotone decrease.
 Nevertheless once the network is trained, we could not observe a significant accuracy difference.
 Second, using a statistical layer (FCN) to get equivariant features slightly improved the accuracy in our problem.
 We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
