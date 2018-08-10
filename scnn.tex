@@ -217,25 +217,19 @@ Mass mapping
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
 	\item (TK) Related work in cosmo. The only cosmological applications of spherical CNNs in the related work are about projection on the tangent plane \citep{schmelze2017cosmologicalmodel, fluri2018deep, gupta2018nongaussianinformation}. Aren't there applications in cosmology for the other (c.f. related work section) approaches? Most of them are illustrated in omnidirectional imagery.
 	\item (MD) distinction between CNN and FCN
-    \item (done!) (NP) make figure A.13 remove white space
     \item (first version done!)(NP+MD) paragraph on our chosen architecture in the Experiments sections
     \item (Done) (NP) vertex interpretation
-    \item (MD) Are you happy with the vertex interpretation in section 2.5 Efficient convolutions? Also do you like the end of 2.4?
+    \item (MD) Are you happy with the vertex interpretation in section 2.5 Efficient convolutions?
     \item (NP) Finalise readme on Github code
     \item branch with notebooks with plots (results) NP
     \item NP move the repo to HealpixNet
     \item check if papers which appear as arxiv were not published in a conference or journal
-    \item MD add irregular (random) sampling to comparison with spherical harmonics? Could motivate people to think about different samplings. \nati{I think this is too much for this paper.}
     \item TK check part sphere notebook and whole sphere
     \item (done!) (TK) update the README for data zip - file from NP
     \item (almost done) TK read everything
-    \item (done!) (TK) uniformize text size in figures
     \item (done!) (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook. \nati{We need to talk about that.}
     \item (done!) (TK) re-make figures to make the labels/legend/titles the same font size as the main text
-    \item (done!) TK check the appendix
-    \item (done!) TK optional - example of data (CMB (mask) + mass map + radio intensity)
     \item (done!) (TK) add info on comparison with histograms, so that it's just a demonstration
-    \item (done!) TK read the result section
     \item (done!) (TK) add reference to figure (pooling) to the area of orders
     \item (done!) (TK) add section in conclusions/ paragraph on possible extensions to the code: dense output, regression, GANs, segmentation
 	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
@@ -243,14 +237,7 @@ Mass mapping
     \item Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
 	\item Have a "Contributions" paragraph?
 	\item Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices.
-    % \item (TK took exec decision and moved it :D) Should the heat example go to appendix?
-    % \item (done! first version done) conclusions
-    % \item (done!) Michael section 4.5 (efficient convolutions) and 3.2 (conv on graphs)
-    % \item (done!) (TK NP) if we have time make a new candidate for network plot (optional)
-    % \item (done!) TK read the heat section again
-    % \item (done!) (TK) make a new proposition for a plot Figure 6: Two levels of coarsening and pooling
-    % \item \todo{Notation GC32 - P256 - FC10 to describe an architecture? Maybe more useful in Experiments where we describe the architecture used for each experiment.}
-    % Nati: I did it without this notation. Since we have two architectures, I think it is OK.
+	\item Try to make the paper shorter?
 \end{itemize}
 
 \begin{figure*}
