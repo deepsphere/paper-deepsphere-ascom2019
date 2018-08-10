@@ -216,24 +216,23 @@ Mass mapping
 \section*{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
     \item (TK) check text figure 1
-	\item (TK) Related work in cosmo. The only cosmological applications of spherical CNNs in the related work are about projection on the tangent plane \citep{schmelze2017cosmologicalmodel, fluri2018deep, gupta2018nongaussianinformation}. Aren't there applications in cosmology for the other (c.f. related work section) approaches? Most of them are illustrated in omnidirectional imagery.
+	\item (TK) Related work in cosmo. The only cosmological applications of spherical CNNs in the related work are about projection on the tangent plane \citep{schmelze2017cosmologicalmodel, fluri2018deep, gupta2018nongaussianinformation}. Aren't there applications in cosmology for the other (c.f. related work section) approaches? Most of them are illustrated in omnidirectional imagery. If none, say it and mention some alternatives, e.g., wavelets?
 	\item (MD) distinction between CNN and FCN
-    \item (first version done!)(NP+MD) paragraph on our chosen architecture in the Experiments sections
-    \item (MD) Are you happy with the vertex interpretation in section 2.5 Efficient convolutions?
+	\item (MD) check paragraph on our chosen architecture in the Experiments sections
+    \item (MD) check vertex interpretation in Efficient convolutions. Powers of L are weights of paths.
     \item (TK) check if papers which appear as arxiv were not published in a conference or journal
     \item (TK) check part sphere notebook and whole sphere
     \item (TK) read everything
     \item (NP) Put Raphael in the dataset author. 
     \item (done!) (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook. \nati{We need to talk about that.}
-    \item (TK) color text in 2.8
+	\item (TK) Example applications for dense prediction (classification and regression) for cosmology (color text in 2.8)
     \item (NP) D.18 text size bigger
     \item (NP) Remove caption B.13
 	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
-    \item Check names: we use HealpixNet, HealpixNet variant CNN, HealpixNet variant FCN
+	\item Check names: we use HealpixNet, HealpixNet (CNN variant), HealpixNet (FCN variant)
     \item (NP) Check the wording. Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
-    \item Change equation after (2) and check all kroneker
-	\item Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices.
-	\item Try to make the paper shorter?
+	\item (NP) Change equation after (2) and check all kroneker
+	\item Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices. Keep indices.
 	\item (TK) Font: do we have to use times (set in the documentclass)? I (MD) find the rendering of math a bit ugly.
     \item (TK) fix the bibliography
     \item Check links in footnotes.
@@ -569,7 +568,7 @@ In that specific case, the filtering operation \eqnref{graph_convolution_fourier
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
 an operation requiring $k$ multiplications of the graph Laplacian matrix $\L$.
-In our case, the Laplacian is extremly sparse, with $8-9$ entries per line, making the filtering operation for a fixed $K$ linear in the number of pixel $N_{pix}$.
+In our case, the Laplacian is extremely sparse, with $8-9$ entries per line, making the filtering operation for a fixed $K$ linear in the number of pixel $N_{pix}$.
 % Moreover, here happens the transition from filtering in the spectral domain to filtering in the vertex domain.
 This operation is performed in the vertex domain.
 The matrix $\L^k$ captures $k$-neighborhoods of each pixel, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$.
@@ -1104,7 +1103,7 @@ These border effects can, however, be mitigated by padding with zeros a small ar
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{border_effects}
-	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on pixel $i$ as $h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
+	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
 	\label{fig:border_effects}
 \end{figure}
 
