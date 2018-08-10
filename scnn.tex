@@ -703,24 +703,24 @@ Dense prediction, i.e., predicting $F_{out}$ values per pixel, is obtained by om
 \end{equation*}
 Such networks are useful for (i) dense regression, such as denoising a map, interpolating missing values, or predicting a density map given the CMB, or (ii) dense classification, such as segmenting galactic clusters in a \todo{xx} map. \todo{TK: please find better cosmological applications. Maybe some refs?} We emphasize that the use of FC and ST layers is the sole difference between a neural network engineered for global or dense prediction.
 
-The loss function $\ell(\Y, \bar \Y) = \ell(NN_\theta(\X), \bar \Y)$ measures how good the prediction $\Y$ is for sample $\X$, given the ground truth $\bar \Y$. For a classification task, the loss is usually taken to be the cross-entropy
+The cost (or loss) function $C(\Y, \bar \Y) = C(NN_\theta(\X), \bar \Y)$ measures how good the prediction $\Y$ is for sample $\X$, given the ground truth $\bar \Y$. For a classification task, the cost is usually taken to be the cross-entropy
 \begin{equation*}
-	\ell(\Y, \bar \Y) = - \sum_{i=1}^{N_{pix}} \sum_{j=1}^{N_{classes}} \bar y_{ij} \log(y_{ij}),
+	C(\Y, \bar \Y) = - \sum_{i=1}^{N_{pix}} \sum_{j=1}^{N_{classes}} \bar y_{ij} \log(y_{ij}),
 \end{equation*}
-where $\bar \Y \in \R^{N_{pix} \times N_{classes}}$ is the ground truth label indicator, i.e., $\bar y_{ij} = 1$ if pixel $i$ of sample $\X$ belongs to class $j$ and is zero otherwise. For global prediction, the loss is as if $N_{pix} = 1$.
+where $\bar \Y \in \R^{N_{pix} \times N_{classes}}$ is the ground truth label indicator, i.e., $\bar y_{ij} = 1$ if pixel $i$ of sample $\X$ belongs to class $j$ and is zero otherwise. For global prediction, the cost is as if $N_{pix} = 1$.
 For a regression task, a common choice is the mean squared error (MSE)
 \begin{equation*}
-	\ell(\Y, \bar \Y) = \frac{\|\Y-\bar{\Y}\|_2^2}{N_{pix} F_{out}} = \frac{1}{N_{pix} F_{out}} \sum_{i=1}^{N_{pix}} \sum_{j=1}^{F_{out}} (y_{ij} - \bar y_{ij})^2,
+	C(\Y, \bar \Y) = \frac{\|\Y-\bar{\Y}\|_2^2}{N_{pix} F_{out}} = \frac{1}{N_{pix} F_{out}} \sum_{i=1}^{N_{pix}} \sum_{j=1}^{F_{out}} (y_{ij} - \bar y_{ij})^2,
 \end{equation*}
-where $\bar{\Y}$ is the desired output. Again, take $N_{pix} = 1$ for global regression. We emphasize that the loss and the SM layer is the sole difference between a neural network engineered for classification or regression.
+where $\bar{\Y}$ is the desired output. Again, take $N_{pix} = 1$ for global regression. We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
 
-The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ \ell \left( NN_\theta(\X), \bar \Y \right) \right]$. In general, that expectation cannot be computed as the data distribution is unknown. We can however minimize an approximation, the empirical risk over the training set $\left\{ \left( \X_i, \bar \Y_i \right) \right\}_{i=1}^{N_{samples}}$:
+The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ C \left( NN_\theta(\X), \bar \Y \right) \right]$. In general, that expectation cannot be computed as the data distribution is unknown. We can however minimize an approximation, the empirical risk over the training set $\left\{ \left( \X_i, \bar \Y_i \right) \right\}_{i=1}^{N_{samples}}$:
 \begin{equation*}
-	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} \ell \left(NN_\theta(\X_i), \bar \Y_i \right).
+	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} C \left(NN_\theta(\X_i), \bar \Y_i \right).
 \end{equation*}
 The optimization is performed by computing an error gradient w.r.t.\ all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
 \begin{equation*}
-	\theta \leftarrow \theta - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial \ell \left( NN_\theta(\X_i), \bar \Y_i \right)}{\partial \theta} ,
+	\theta \leftarrow \theta - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial C \left( NN_\theta(\X_i), \bar \Y_i \right)}{\partial \theta} ,
 \end{equation*}
 where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples to gain speed by exploiting the parallelism afforded by modern computing platforms.
 
