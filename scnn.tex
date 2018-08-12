@@ -226,13 +226,11 @@ Mass mapping
     \item (NP) Put Raphael in the dataset author. 
     \item (done!) (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook. \nati{We need to talk about that.}
 	\item (TK) Example applications for dense prediction (classification and regression) for cosmology (color text in 2.8)
-    \item (NP) D.18 text size bigger
-    \item (NP) Remove caption B.13
-	\item Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
-	\item Check names: we use HealpixNet, HealpixNet (CNN variant), HealpixNet (FCN variant)
-    \item (NP) Check the wording. Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
-	\item (NP) Change equation after (2) and check all kroneker
-	\item Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices. Keep indices.
+	\item (Probably OK) Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
+	\item (Should be done) Check names: we use HealpixNet, HealpixNet (CNN variant), HealpixNet (FCN variant)
+    \item (I think it is OK) (NP) Check the wording. Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
+	\item (Done) (NP) Change equation after (2) and check all kroneker
+	\item (Everyone should check this) Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices. Keep indices.
 	\item (TK) Font: do we have to use times (set in the documentclass)? I (MD) find the rendering of math a bit ugly.
     \item (TK) fix the bibliography
     \item Check links in footnotes.
@@ -284,7 +282,7 @@ For ground-based observations this can be due to limited visibility of the sky f
 
 % cohen2017convolutional (ICML workshop) and cohen2018sphericalcnn (ICLR best paper) are redundant
 A first direction to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretisation of the sphere~\citep{boomsma2017spherical,su2017sphericalconv,coors2018spherenet}. While this approach uses the well-developed 2D convolution and hierarchical pooling, it is restricted to those specific grid samplings which are highly irregular on the sphere and hence inherently deform the domain where the data is supported. 
-A second direction attempted by~\citet{cohen2018sphericalcnn} was to leverage the spherical Fourier transform and to perform the SO(3) convolution in the spectral domain, thanks to the convolution theorem.
+A second direction attempted by~\citet{cohen2018sphericalcnn} was to leverage the spherical Fourier transform and to perform the convolution associated to the SO(3) rotation group in the spectral domain, thanks to the convolution theorem.
 Contrarily to the first direction, the resulting convolution is rotational equivariant, meaning that a rotation of the input implies the same rotation of the output.
 This is an important property as translation invariance is probably one of the main reason why classic CNN were successful in the first place.
 Nevertheless, this approach is computationally expensive even if a fast spherical Fourier transforms is used. 
@@ -532,12 +530,15 @@ Finally, the graph convolution can be interpreted in the vertex domain as a scal
 \begin{equation} \label{eqn:graph_convolution_spatial}
 	(h(\L) \f)_i = \langle \T_i h(\L), \f \rangle = \langle h(\L) \b \delta_i, \f \rangle.
 \end{equation}
-To make the parallel with the classical 1D convolution, let $f, g$ be two 1D discrete signals. Their convolution can be written in the same form as \eqnref{graph_convolution_spatial}:
+To make the parallel with the classical 1D convolution, let $f, g\in \mathbb{Z} \rightarrow \mathbb{R}$ be two 1D discrete signals. Their convolution can be written in the same form as \eqnref{graph_convolution_spatial}:
 \begin{equation*}
-	(f \ast g) (i) = \sum_{j=-\infty}^\infty f(j) g(i-j) = \langle T_i g,  f \rangle,
+	(f \ast g) [i] = \sum_{j=-\infty}^\infty f[j] g[i-j] = \langle T_i g,  f \rangle,
 \end{equation*}
-where $T_i g(j) = g(i-j)$ is, up to a flip, a translation operator. Similarly as \eqnref{graph_convolution_spatial}, the convolution of the signal $f$ by a kernel $g$ is the scalar product of $f$ with translated versions $T_i g$ of the kernel $g$.
+where $T_i g[j] = g[i-j]$ is, up to a flip, a translation operator. 
+% nati: I think now the indexing is clear and will not confuse with the rest of the paper.
+Similarly as \eqnref{graph_convolution_spatial}, the convolution of the signal $f$ by a kernel $g$ is the scalar product of $f$ with translated versions $T_i g$ of the kernel $g$.
 % Signals and kernels are the same thing in classical signal processing precisely because there exists a proper definition of translation.
+% For Michael: I know what you mean here, but it is slightly more complicated than that. 
 Additionally, it turns out that the localization operator $\T_i h$ is a generalization of the translation operator on graphs. In the particular case where the Laplacian matrix $\L$ is circulant, $\T_i h$ is a translated version of $\T_j h$ for all $i, j$ and both convolutions are equivalent. We refer the reader to \citet[Sec 2.2]{perraudin2017stationary} for a detailed discussion of the connection between translation $T_i$ and localization $\T_i$.
 
 In \ref{sec:heat_diffusion}, we show that the diffusion of heat on a graph can be expressed as the convolution of an initial condition $f$ with a heat kernel $h$. It should hopefully shed some light on the meaning of the convolution on a graph.
@@ -918,7 +919,7 @@ We tune the SVM regularization parameter by cross-validating with the validation
 \subsection{Selected architecture}
 \label{sec:selected_architecture}
 
-The choice of a particular HealPixNet architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network referred as the FCN variant of HealPixNet. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The order of the convolution kernel was set to $K=5$. The network can be summarized as
+The choice of a particular HealpixNet architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network referred as the FCN variant of HealpixNet. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The order of the convolution kernel was set to $K=5$. The network can be summarized as
 \begin{equation}
 FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1
 \end{equation}
@@ -931,7 +932,7 @@ where \hspace{0.5cm} \begin{tabular}{lll}
 \end{tabular}
 \end{center}
 Thanks to its statistical layer, the FCN architecture is close invariant to rotation.
-We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not invariant to rotation anymore. The network is referred as CNN variant of HealPixNet and can be summarized as
+We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not invariant to rotation anymore. The network is referred as CNN variant of HealpixNet and can be summarized as
 \begin{equation}
 CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
 \end{equation}
@@ -951,7 +952,7 @@ Training took less than $5$ hours for each model using a single NVIDIA Tesla K20
 \includegraphics[width=0.32\linewidth]{result_order4}
 \caption{
 Classification errors for the 3 different areas of the sphere.
-Green lines show the performance of the two HealPixNet architectures, blue of the PDF+SVM, and red of the histogram+SVM.
+Green lines show the performance of the two HealpixNet architectures, blue of the PDF+SVM, and red of the histogram+SVM.
 % Green dashed line corresponds to the performance of CNN without the statistical layer.
 The noise level was increased from zero to $2\times$ the standard deviation of the mass map.
 }
