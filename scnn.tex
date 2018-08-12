@@ -274,24 +274,29 @@ This is possible as CNNs have the capacity to build very rich models and capture
 % \nati{@Tomek: I think what Michael has in mind is that the graph approach is very versatile and extendable. It can be used with other samplings (even irregular ones) or only part of the sphere. This flexibility might be an advantage to mention. In particular, compared to~\citet{cohen2018sphericalcnn} it allows us to do only do the required computation when only a part of the sphere is considered.}
 
 So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
-Perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces. \todo{Tune according to the story in the related work.}
+Perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces. 
+% \todo{Tune according to the story in the related work.}
 While this approach has been demonstrated to work \citep{fluri2018deep,gupta2018nongaussianinformation,schmelze2017cosmologicalmodel,gillet2018deeplearning}, it may be more natural for some applications and accurate to work directly on the sphere.
-The main challenge in designing a CNN on the sphere is to define a convolution operation that is suitable for this irregularly sampled domain.
-To be able to train the network efficiently, the convolution has to be performed fast.
+The main challenge in designing a CNN on the sphere is to define a convolution operation that is suitable for this domain, while taking care of the necessary irregular sampling.
+Furthermore, to be able to train the network efficiently, the convolution has to be performed fast.
 Another important feature is for a CNN to be able to work on subpart of the sphere, as for many cosmological observations cover only a part of the sky.
-For ground-based observations this can be due to limited visibility of the sky from a particular telescope location, and for space-based instruments due to masking of the galactic plane area.
+For ground-based observations this can be due to limited visibility of the sky from a particular telescope location, and for space-based instruments due to masking of the galactic plane area (see for example \figref{example_maps}). 
 
 % cohen2017convolutional (ICML workshop) and cohen2018sphericalcnn (ICLR best paper) are redundant
-A first attempt to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretisation of the sphere~\citep{boomsma2017spherical}. While this approach uses the well-developed 2D convolution and hierarchical pooling, it is restricted to those specific grid samplings which are highly irregular on the sphere.
-An attempt by~\citet{cohen2018sphericalcnn} was to leverage the spherical Fourier transform and to perform the SO(3) convolution in the spectral domain, thanks to the convolution theorem.
-The resulting convolution is rotational equivariant, meaning that a rotation of the input implies the same rotation of the output.
-While there exists fast spherical Fourier transforms for some samplings, this approach can still be computationally expensive.
+A first direction to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretisation of the sphere~\citep{boomsma2017spherical,su2017sphericalconv,coors2018spherenet}. While this approach uses the well-developed 2D convolution and hierarchical pooling, it is restricted to those specific grid samplings which are highly irregular on the sphere and hence inherently deform the domain where the data is supported. 
+A second direction attempted by~\citet{cohen2018sphericalcnn} was to leverage the spherical Fourier transform and to perform the SO(3) convolution in the spectral domain, thanks to the convolution theorem.
+Contrarily to the first direction, the resulting convolution is rotational equivariant, meaning that a rotation of the input implies the same rotation of the output.
+This is an important property as translation invariance is probably one of the main reason why classic CNN were successful in the first place.
+Nevertheless, this approach is computationally expensive even if a fast spherical Fourier transforms is used. 
+%(They exist for particular samplings.)
 Finally, the use of a graph to model the discretised sphere was considered by~\citet{khasanova2017graphomni} as well, towards the goal of designing network that were invariant to rotations.
-While their architecture accommodates these invariances on the sphere, they did not take advantage of a hierarchical pixelisation.
+While their architecture accommodates these invariances on the sphere and remains fairly efficient, they did not take advantage of a hierarchical pixelisation and use a grid discretisation of the sphere. 
 Moreover, the statistical layer, which introduces the invariance, needs to be hand-crafted to capture statistics of interest.
-\todo{better identify the shortcomings: (i) part of sphere / missing data, (ii) computational efficiency, (iii) equivarience}
 
-To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling.
+%\todo{better identify the shortcomings: (i) part of sphere / missing data, (ii) computational efficiency, (iii) equivarience}
+\nati{The part of the sphere/missing data is not really there, but I still do not know how to include it!}
+
+To overcome those shortcomings, we introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling, while working with the HEALPix sampling.
 The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
 The length (or weight) of the shortest path between two pixels is an approximation of the geodesic distance between them on the manifold.
 The use of this approach is enabled by recent developments in graph signal processing, where fundamental tools, such as for example the Fourier transform, were defined for graphs \citep{shuman2013emerging}.
@@ -752,7 +757,7 @@ The main issue with the above two approaches is that they depend on a (local) co
 % Moreover, when different grids require different filters as their orientation is not compatible.
 % => same as for tangent planes
 
-\citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn} addressed the problem of rotation equivariance by defining the convolution on the 3D rotation group SO(3), with applications to atomization energy regression and 3D model classification, alignment and retrieval.
+\citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn} addressed the problem of rotation equivariance leveraging the convolution associated to the the 3D rotation group SO(3), with applications to atomization energy regression and 3D model classification, alignment and retrieval.
 The resulting convolution is performed by (i) a spherical harmonic transform (SHT), i.e., a projection on the spherical harmonics, (ii) a  multiplication in the spectral domain, and (iii) an inverse SHT. Hence the computational cost of a convolution is dominated by the two SHTs.
 A naive implementation of the SHT costs $\bO(N_{pix}^2)$ operations, where $N_{pix}$ is the number of pixels. Note the similarity with the naive graph convolution defined in \eqnref{graph_convolution_fourier}.
 Accelerated schemes exist for some sampling sets \citep[see][for examples]{mohlenkamp1999fast, rokhlin2006fast, reinecke2013libsharp}.
@@ -760,9 +765,10 @@ The main advantage of this approach is that it provides a mathematically well de
 For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO\left(\sqrt{N_{pix}}\right)$ rings of constant latitude. Each ring has $\bO\left(\sqrt{N_{pix}}\right)$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\left( N_{pix} \log \sqrt{N_{pix}} \right)$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO\left(N_{pix}^{3/2}\right)$.}
 \citep{gorski2005healpix, reinecke2013libsharp}.
 In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
-\citet{kondor2018clebsch} proposed to use the Clebsh-Gordan transform to perform a non-linear transformation in the spectral domain. As such, a SHT only has to be performed once at the input of the network and the back and forth SHT between every layer are no longer required. While this clever trick make the convolution complexity $\bO(N_{pix})$, the non-linearity\nati{ scales as the squared of the number of channels and as }. As a result, it is yet unclear which speed gain is obtained in practice. \todo{computation complexity? no speed comparison in paper?}
-\todo{Polynomial formulation enforces locality, which otherwise has to be enforced by smoothness in the spectral domain.}
-\todo{Pooling in the spectral domain? \citet{esteves2017sphericalcnn} do something.}
+\citet{kondor2018clebsch} proposed to use the Clebsh-Gordan transform to perform a non-linear transformation in the spectral domain. As such, a SHT only has to be performed once at the input of the network and the back and forth SHT between every layer are no longer required. While this clever trick makes the convolution complexity $\bO(N_{pix})$, the non-linearity scales, to the best of our understanding, as  $\bO(N_{pix}^{3/2})$. At the time of writing this paper, computation time is unfortunately not reported, hence making unclear which speed gain is obtained in practice. 
+While the convolution in the spectral domain avoid all sampling problems, one of its downside might the lack of natural locality, a property that is naturally obtained by the polynomial approach of graph convolution. Because the convolution is at the begging of the neural network, we believe that is should focus on local correlations first before exacting more complex structures.
+%\todo{Polynomial formulation enforces locality, which otherwise has to be enforced by smoothness in the spectral domain.}
+%\todo{Pooling in the spectral domain? \citet{esteves2017sphericalcnn} do something.}
 % While a comparison is theoretically possible, the experiments of~\cite{cohen2018sphericalcnn} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
 
 All the above methods can not easily be accelerated when the data lies on a part of the sphere only.
@@ -776,11 +782,12 @@ While it results in some distortions due to border effects (see \figref{border_e
 The use of a graph to model the discretised sphere was also considered by \citet{khasanova2017graphomni} for omnidirectional imaging.
 % The authors map omnidirectional images onto a sphere, with the goal of correcting for distortions induced by the lens, which was used for their acquisition.
 % First, similarly to~\citet{boomsma2017spherical}, they use an equirectangular grid sampling.
-This work is the closest to our method, with three differences. First, they parametrise their convolution kernel with \eqnref{graph_convolution_monomial} instead of \eqnref{graph_convolution_cheby} (see \secref{efficient_convolution} for a discussion and comparison).
+This work is the closest to our method, with three differences. First, they parametrize their convolution kernel with \eqnref{graph_convolution_monomial} instead of \eqnref{graph_convolution_cheby} (see \secref{efficient_convolution} for a discussion and comparison).
 Second, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling \citep{kalchbrenner2014dcnn}. While that operation is useful for sequences of varying length, such as sentences in language models, it is overkill in our context as it is not local and destroys spatial coherence.
 Third, they introduced a statistical layer --- an operation that computes a set of statistics from the last feature maps --- to provide full rotation invariance. We propose to use the idea of fully convolutional networks (FCNs) instead (see \secref{selected_architecture}). While statistics have to be hand-chosen to capture relevant information for the task, the filters in a FCN are trained end-to-end to capture relevant information.
 
-The connection has been made between graph CNNs and group equivariant CNNs by \citet{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere. \todo{More here.}
+The connection has been made between graph CNNs and group equivariant CNNs by \citet{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere. 
+\todo{More here.}
 
 Many formulations of graph neural networks, reviewed by \citet{bronstein2017review} and \citet{hamilton2017review}, have been proposed. For this contribution, we chose the formulation of \citet{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}. As the convolution is motivated by a multiplication in the graph Fourier spectrum, it is close in spirit, and empirically, to the formulation based on the spherical harmonics, which is the ideal rotation equivariant formulation.
 % and study its equivariance properties.
