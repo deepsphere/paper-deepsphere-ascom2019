@@ -601,7 +601,7 @@ We believe that this is due to their orthogonality (as explained above) and unif
 
 Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the dense vector $\f$ with the sparse matrix $\tL$.
 The cost of one such multiplication is $\bO(|\E|)$. By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution is thus reduced to $\bO(N_{pix})$ operations.
-That is much more efficient than filtering with spherical harmonics, even tho the HEALPix was designed as an iso-latitude sampling to leverage a fast spherical transform.
+That is much more efficient than filtering with spherical harmonics, even though the HEALPix was designed as an iso-latitude sampling to leverage a fast spherical transform.
 That is especially true for smooth kernels which require a low polynomial degree $K$.
 \figref{filtering_speed} compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
 A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform implemented by the highly optimized library used by HEALPix, \pkg{libsharp} \citep{reinecke2013libsharp}.
@@ -642,7 +642,7 @@ Following \citet{khasanova2017tigranet}, we implement an optional statistical la
 This introduces the invariance of the output to isometric transformations, such as rotation of maps on the sphere.
 The role of the layer is to compute global and location independent statistics from feature maps.
 Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map $N_{pix}$. That compression results in much smaller fully connected layers, which usually contain a significant fraction of trainable parameters of a neural network.
-The invariance and reduced representation should help the network to learn from less samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
+The invariance and reduced representation should help the network to learn from fewer samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
 
 Given a feature map $\x \in \R^{N_{pix}}$, the statistical layer is defined as
 \begin{equation} \label{eqn:stat_layer}
@@ -745,39 +745,39 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 \end{figure}
 
 A first approach, explored by \citet{boomsma2017spherical} for molecular modeling and \citet{su2017sphericalconv, coors2018spherenet} for omnidirectional imaging, is to use a 2D CNN on a discretization of the sphere that is a grid, such as the equirectangular projection (\figref{sphere_grids} left), or a set of grids, such as the cubed-sphere defined by~\citet{ronchi1996cubed} (\figref{sphere_grids} middle).
-As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, what make it computationally efficient.
+As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, what makes it computationally efficient.
 This approach is applicable to the many pixelizations that are based on a regular subdivision of a base polyhedron, such as HEALPix. Each base polyhedron then forms a grid.
-Care has to be taken to handle boundary conditions: for example by padding a grid with the content of the opposite side (equirectangular) or of the neighboring grids (cubed-sphere, HEALPix). That incures some computational losses.
+Care has to be taken to handle boundary conditions: for example by padding a grid with the content of the opposite side (equirectangular) or of the neighboring grids (cubed-sphere, HEALPix). That incurs some computational losses.
 For samplings that are not equal area, such as the equirectangular projection, the convolution operation can be adjusted to take the induced distortion into account \citep{su2017sphericalconv, coors2018spherenet}.
 % Furthermore, the grid requirement makes it impossible for the convolution to capture the spherical properties of the domain, i.e., the cubed-sphere sampling is by definition adapted to a cube and not to a sphere. Nope, the graph can adapt to any sampling.
 
 Another approach to leverage 2D CNNs is to project spherical data onto many tangent planes, which are flat 2D surfaces. This approach has been extensively used for cosmological maps \citep{fluri2018deep, gupta2018nongaussianinformation, schmelze2017cosmologicalmodel, gillet2018deeplearning} and omnidirectional imaging \citep{xiao2012recognizing, zhang2014panocontext}. This idea has been generalized to arbitrary 2D manifolds for shape alignment and retrieval \citep{masci2015gcnn, boscaini2016acnn, monti2017monet}.
 
-The main issue with the above two approaches is that they depend on a (local) coordinate system to define anisotropic filters, i.e., filters which are direction dependent. Direction is well defined and matters for some applications, such as the analysis of weather and climate data on the Earth (north, south, east, west), and omnidirectional imaging (up, down). Indeed, full rotation invariance has been shown to reduce discriminative power for omnidirectional imaging \citep{coors2018spherenet}. Some problems are however intrinsically invariant to rotation, such as the analysis of cosmological maps, or the modeling of atoms and molecules. In such cases, directions are arbitrarily defined when setting the origin of the pixelization. A rotation equivariant convolution, i.e., a rotation of the input implies the same rotation in the output, thus has to be isotropic.
+The main issue with the above two approaches is that they depend on a (local) coordinate system to define anisotropic filters, i.e., filters which are direction dependent. Direction is well defined and matters for some applications, such as the analysis of weather and climate data on the Earth (north, south, east, west), and omnidirectional imaging (up, down). Indeed, full rotation invariance has been shown to reduce discriminative power for omnidirectional imaging \citep{coors2018spherenet}. Some problems are, however, intrinsically invariant to rotation, such as the analysis of cosmological maps, or the modeling of atoms and molecules. In such cases, directions are arbitrarily defined when setting the origin of the pixelization. A rotation equivariant convolution, i.e., a rotation of the input implies the same rotation in the output, thus has to be isotropic.
 
 % Moreover, when different grids require different filters as their orientation is not compatible.
 % => same as for tangent planes
 
-\citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn} addressed the problem of rotation equivariance leveraging the convolution associated to the the 3D rotation group SO(3), with applications to atomization energy regression and 3D model classification, alignment and retrieval.
+\citet{cohen2018sphericalcnn} and \citet{esteves2017sphericalcnn} addressed the problem of rotation equivariance leveraging the convolution associated to the 3D rotation group SO(3), with applications to atomization energy regression and 3D model classification, alignment and retrieval.
 The resulting convolution is performed by (i) a spherical harmonic transform (SHT), i.e., a projection on the spherical harmonics, (ii) a  multiplication in the spectral domain, and (iii) an inverse SHT. Hence the computational cost of a convolution is dominated by the two SHTs.
 A naive implementation of the SHT costs $\bO(N_{pix}^2)$ operations, where $N_{pix}$ is the number of pixels. Note the similarity with the naive graph convolution defined in \eqnref{graph_convolution_fourier}.
 Accelerated schemes exist for some sampling sets \citep[see][for examples]{mohlenkamp1999fast, rokhlin2006fast, reinecke2013libsharp}.
-The main advantage of this approach is that it provides a mathematically well defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
-For example with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO\left(\sqrt{N_{pix}}\right)$ rings of constant latitude. Each ring has $\bO\left(\sqrt{N_{pix}}\right)$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\left( N_{pix} \log \sqrt{N_{pix}} \right)$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO\left(N_{pix}^{3/2}\right)$.}
+The main advantage of this approach is that it provides a mathematically well-defined rotation-equivariant network. Nevertheless, even with accelerated SHTs, the convolutions remain expensive, limiting the practical use of this approach.
+For example, with the HEALPix sampling, which was designed to have a fast SHT by being iso-latitude, the computational cost of the SHT is $\bO(N_{pix}^{3/2}) = \bO(N_{side}^3) = \bO(\ell_{max}^3)$, where $\ell_{max}$ is the largest angular frequency\footnote{All pixels are placed on $N_{ring} = 4N_{side}-1 = \bO\left(\sqrt{N_{pix}}\right)$ rings of constant latitude. Each ring has $\bO\left(\sqrt{N_{pix}}\right)$ pixels. Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude. The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\left( N_{pix} \log \sqrt{N_{pix}} \right)$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO\left(N_{pix}^{3/2}\right)$.}
 \citep{gorski2005healpix, reinecke2013libsharp}.
 In comparison, filtering with our HealpixNet method scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}).
-\citet{kondor2018clebsch} proposed to use the Clebsh-Gordan transform to perform a non-linear transformation in the spectral domain. As such, a SHT only has to be performed once at the input of the network and the back and forth SHT between every layer are no longer required. While this clever trick makes the convolution complexity $\bO(N_{pix})$, the non-linearity scales, to the best of our understanding, as  $\bO(N_{pix}^{3/2})$. At the time of writing this paper, computation time is unfortunately not reported, hence making unclear which speed gain is obtained in practice. 
-While the convolution in the spectral domain avoid all sampling problems, one of its downside might the lack of natural locality, a property that is naturally obtained by the polynomial approach of graph convolution. Because the convolution is at the begging of the neural network, we believe that is should focus on local correlations first before exacting more complex structures.
+\citet{kondor2018clebsch} proposed to use the Clebsh-Gordan transform to perform a non-linear transformation in the spectral domain. As such, a SHT only has to be performed once at the input of the network and the back and forth SHT between every layer is no longer required. While this clever trick makes the convolution complexity $\bO(N_{pix})$, the non-linearity scales, to the best of our understanding, as  $\bO(N_{pix}^{3/2})$. At the time of writing this paper, computation time is unfortunately not reported, hence making unclear which speed gain is obtained in practice. 
+While the convolution in the spectral domain avoid all sampling problems, one of its downsides might the lack of natural locality, a property that is naturally obtained by the polynomial approach of graph convolution. Because the convolution is at the begging of the neural network, we believe that is should focus on local correlations first before exacting more complex structures.
 %\todo{Polynomial formulation enforces locality, which otherwise has to be enforced by smoothness in the spectral domain.}
 %\todo{Pooling in the spectral domain? \citet{esteves2017sphericalcnn} do something.}
 % While a comparison is theoretically possible, the experiments of~\cite{cohen2018sphericalcnn} are done using the geodesic grid sampling set and do not provide any code for the HEALPix one. Hence, a practical comparison is not possible.
 
-All the above methods can not easily be accelerated when the data lies on a part of the sphere only.
-That is however an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
-One could still fill the unseen part of the sphere with zeros, and avoid to compute empty integrals.
+All the above methods cannot easily be accelerated when the data lies on a part of the sphere only.
+That is, however, an important use case in cosmology as measurements are often partial, i.e., full-sky maps are rare.
+One could still fill the unseen part of the sphere with zeros, and avoid computing empty integrals.
 % on the latitude or longitude for SHTs, on square holes for 2D CNNs
 It is, however, not straightforward to identify empty space, and computations would still be wasted; consider, for example, a ring which mostly contains zeros but a few measurements.
-With graphs however, the computation is done only for the used pixels.
+With graphs, however, the computation is done only for the used pixels.
 While it results in some distortions due to border effects (see \figref{border_effects} and \ref{sec:border_effects}), these can be mitigated by padding with zeros a small area around the measurements.
 
 The use of a graph to model the discretised sphere was also considered by \citet{khasanova2017graphomni} for omnidirectional imaging.
@@ -811,7 +811,7 @@ Another trend, parallel to the modeling of structured data, is the use of graph 
 In this section we demonstrate the performance of the spherical neural network on a discrimination problem: the classification of convergence maps into two cosmological model classes.
 These maps are similar to those created with gravitational lensing technique \citep{chang2017curvedsky}.
 The experiment presented here is similar the one by \citet{schmelze2017cosmologicalmodel}.
-The two set of maps were created using the standard cosmological model with two sets of cosmological parameters.
+The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
 The classification methods were trained to assign a predicted label using the HEALPix maps.
 Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are available online.
 
@@ -1111,7 +1111,7 @@ These border effects can, however, be mitigated by padding with zeros a small ar
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{border_effects}
-	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
+	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
 	\label{fig:border_effects}
 \end{figure}
 
