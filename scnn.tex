@@ -447,7 +447,7 @@ Isolatitude is essential for the implementation of a fast spherical transform.
 HEALPix is the sole pixelisation scheme which satisfies those three properties.
 
 The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal-sized pixels (right-most sphere in \figref{pooling}).
-As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \cdot 12 = 2^2 \cdot 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \cdot 12 = 4^2 \cdot 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
+As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \times 12 = 2^2 \times 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \times 12 = 4^2 \times 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
 High-resolutions HEALPix maps easily reach millions of pixels.
 \figref{example_maps} shows two examples of HEALPix maps: the Cosmic Microwave Background \citep{planck2015overview}, galaxies found in Sloan Digital Sky Survey Data Release 14 \citep{abolfathi2017sdssDR14}, and an example simulated mass map on the footprint of Dark Energy Survey Data Release 1 \citep{des2018dr1}.
 
@@ -459,7 +459,7 @@ While our construction will not exactly respect the setting defined by \citet{be
 
 From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
 In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i \in \V$.
-Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \cdot 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
+Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \times 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
 \begin{equation*}
 	\W_{ij} = \begin{cases}
 		\exp \left( -\frac{\|\x_i-\x_j\|_2^2}{\rho^2} \right) & \text{if pixels $i$ and $j$ are neighbors,} \\
@@ -670,7 +670,7 @@ Using the efficient graph convolution from \eqnref{graph_convolution_cheby}, eac
 \begin{equation*}
 	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + b_i \in \R^{N_{pix}}, \ \ \forall i \in [F_{out}].
 \end{equation*}
-As such, a GC layer is composed of $F_{in} \cdot F_{out}$ filters, each parameterized by $K$ numbers (see \secref{efficient_convolution}). A bias term $\b b \in \R^{F_{out}}$ is jointly optimized.
+As such, a GC layer is composed of $F_{in} \times F_{out}$ filters, each parameterized by $K$ numbers (see \secref{efficient_convolution}). A bias term $\b b \in \R^{F_{out}}$ is jointly optimized.
 % only if batch normalization is not used
 
 Given a matrix $\X \in \R^{N_{pix} \times F}$, a pooling layer computes $\Y = P(\X) \in \R^{N'_{pix} \times F}$ by reducing its spatial resolution ($N'_{pix} < N_{pix}$) according to \eqnref{pooling}.
@@ -689,7 +689,7 @@ A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs
 	\y = FC(\x) = \b W \x + \b b \in \R^{F_{out}} ,
 \end{equation*}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
-Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the ST), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \cdot F_{out}$ (or $N_{stat} \cdot F_{out}$).
+Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the ST), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
 
 The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last FC (or ST), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
 \begin{equation*}
