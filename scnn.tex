@@ -960,9 +960,11 @@ In this case, the histogram features allow for a significant improvement over th
 Unfortunately, while the histogram features contain information about the distribution of pixels, they do not include any spatial information.
 In contrast, both the PSD features and the HealpixNet can exploit the spatial information.
 
-% Note that without this graph structure, a fully connected neural network approach would have to be used.
-% Problematically, fully connected neural networks generally scales squarely with their number of inputs.
-% \TK{I don't understand this comment.} \nati{Maybe we should leave it out then. It is not that important.}
+We also observe that the FCN architecture slightly outperforms the CNN one. This may seem counterintuitive as the CNN is a generalization of the FCN and hence should provide, at least, equivalently good results. Nevertheless, one should not forget that in practice the complexity of the architecture trades with more data requirements and more difficulties in the training.
+We have two interpretations that explains why FCN architecture leads to better performance for two reasons. First, the network is almost invariant to rotation on the SO(3) group and hence intrinsically augments the dataset. The convergence mass map dataset is likely to be rotational invariant as ... \nati{Tomek: could you justify this from a cosmological point of view?}.
+Second, the FCN architecture can be interpreted as a voting procedure where 1) each pixel is being classified using the data in its surroundings, and 2) the average score is computed to determine the class.
+This procedure suits the data as we believe that each class of the dataset is stationary with a small-support radial autocorrelation function. \nati{Tomek: can you justify this from a cosmological point of view?} It implies that a pixel can be statistically classified using only its surroundings.
+For other datasets not having these two properties the CNN architecture may be better and one should always, when possible, adapt the architecture to the data.
 
 \nati{Michael: I am highly uncertain of what should be kept in the following paragraph. Maybe the full paragraph should be left out!}
 While testing the FCN and CNN architectures, we made the following empirical observations.
@@ -1051,8 +1053,8 @@ Further comparison of HealpixNet to other spherical CNN algorithms, with differe
 \section*{Acknowledgements}
 
 This work was supported by a grant from the Swiss Data Science Centre (SDCS) under project ID \textit{sd01 - DLOC:  Deep Learning for Observational Cosmology} and grant number 200021\_169130 from the Swiss National Science Foundation.
-\nati{@Tomek: do we need to thank Janis?}
 We would like to thank Jean-François Cardoso for helpful discussions about the spherical harmonics.
+\nati{@Tomek: Raphael?}
 
 \appendix
 
