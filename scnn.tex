@@ -840,9 +840,9 @@ The experiment presented here is similar to the one by \citep{schmelze2017cosmol
 These maps are similar to those created with gravitational lensing techniques \citep{chang2017curvedsky}.
 The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
 The classification methods were trained to predict a label from an HEALPix map.
-Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything, thank to Binder.
+Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
 
-While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible (c.f. \secref{architecture}).
+While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible (see \secref{architecture}).
 The regression task will most likely be the most practical cosmological application, as described in \citep{gupta2018nongaussianinformation} and \citep{fluri2018deep}.
 Implementation of full cosmological inference requires, however, many more simulations, building the likelihood function, and several other auxiliary tasks.
 The classification problem is much more straightforward to implement and execute, and can be used to fairly compare the accuracy of the algorithm against benchmarks \citep{schmelze2017cosmologicalmodel}.
@@ -883,7 +883,7 @@ That means that it is very difficult to distinguish between these cosmological m
 We found that the differences in power spectrum is $~5\%$ for $\ell>1000$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
 The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
-We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$.
+We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
 
 The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}.
 We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=1$, instead of $z=1.5$.
@@ -895,19 +895,11 @@ Initial conditions for these simulations are the same, so the differences in str
 
 \subsection{Problem formulation}
 
-\todo{thanks to stationarity, quantity of information is constant. Motivation: partial sky maps. Larger surfaces improve confidence in the prediction, the average trick.}
-All pixels are as informative as any other.
-Stationarity of N-body simulations.
-\TK{Not sure what is meant here}
-
-% While the number of maps might sound small for deep learning, the information contained in the maps is very redundant, allowing us to use parts of the map as samples for our simulation.
-As many cosmological applications will use datasets located on part-sphere only, we use parts of the map as independent samples for our analysis.
-Using the properties of the HEALPix sampling, we can split each map into $12 \times o^2$ ($o=1,2,4,\dots$) samples that span a smaller part of the sphere.
-% As shown in \figref{part_sphere}, we used $o=1,2,4$ as the resulting samples are large enough to suffer from the effects of the spherical geometry.
-The resulting maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\%, 2.1\% and 0.5\% of the total sphere area for $o=1,2,4$, respectively.
-The areas on the sphere corresponding to these orders can be seen in \figref{pooling}: the pixels in the left, middle and right spheres correspond to $o=4,2,1$, respectively.
-We decided to only report simulation results for this specific setting as spherical cosmological data usually does not span the full sphere.
-Nevertheless, our code includes an example using the full sphere.
+As the distribution of matter in the universe is homogeneous and isotropic, no pixel is more informative than any other.\footnote{Contrast that with images, where the subject of interest is most often around the center of the picture.}
+As such, we can control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from full sky maps.
+Using the properties of HEALPix, we split maps into $12 \times o^2$ ($o=1,2,4,\dots$) independent samples of $(N_{pix} / o)^2$ pixels. The resulting partial maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\% ($\approx 1 \times 10^6$ pixels), 2.1\% ($\approx 260 \times 10^3$ pixels), and 0.5\% ($\approx 65 \times 10^3$ pixels) of the sphere for $o=1,2,4$, respectively.
+Corresponding areas can be seen in \figref{pooling}: the surface of pixels in the left, middle, and right spheres correspond to samples at order $o=4,2,1$, respectively.
+We report results for $o=1,2,4$ only, as full sphere classification is easy at such resolution (perfect classification accuracy is already attainable for $o=1$, see \figref{results}), and many cosmological applications will use datasets located on part-sphere only. Our code nonetheless includes an example demoing classification on full spheres of much lower resolution ($N_{side} = 64$).
 
 % \begin{figure}
 % \centering
@@ -917,49 +909,52 @@ Nevertheless, our code includes an example using the full sphere.
 % \end{figure}
 
 To make the discrimination harder and the problem more realistic, centered Gaussian noise is added to the simulated maps.
-The standard deviation of the noise varies from $0\times$ (i.e., no noise) to $2\times$ the standard deviation of the noiseless maps.
+The standard deviation of the noise varies from zero (i.e., no noise) to $2\times$ the standard deviation of pixel's values in the noiseless maps.
 While the noise model of real maps often has a slightly different distribution, Gaussian noise should be a sufficient model to demonstrate the performance of our method.
 To avoid over-fitting, random noise is generated during training, so that no two samples are exactly the same (i.e., two samples might be from the same simulation, but the added noise will be different).
 That is a data augmentation scheme, as it creates more training examples than we have simulations.
 % Nati: Not done anymore
 % To improve the stability of the spherical CNN, we slowly increase the amount of noise added to the training data over the iterations.
 
-We build a robust classifier, which automatically discriminates between the two classes in the presence of noise.
-We check the classification performance as a function of the area used, the order $o$, and the relative level of the noise added to the map.
-
 HealpixNet is compared against two simple yet powerful benchmarks.
-The two baselines are based on features that are (i) the power spectral densities (PSD), and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
+The two baselines are based on features that are (i) the power spectral densities (PSD) of maps, and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
 After normalization, those features are used by a linear support vector machine (SVM) trained for classification.
 A linear kernel is used as other kernels did not provide better results, while having significantly worse scaling properties.
 For fairness, the training set was augmented in a similar way as for HealpixNet: we created samples by adding new random realizations of the noise. We stopped adding new samples to the training data once the validation error converged. This process is detailed in \ref{sec:dataset_augmentation}.
 As for HealpixNet, the SVM regularization hyper-parameter was tuned based on the performance over the validation set.
+The classification accuracy of HealpixNet and both baselines was checked as a function of the used area (the order $o$), and the relative level of additive noise.
 
-\subsection{Selected architecture and hyper-parameters}
+\subsection{Network architecture and hyper-parameters}
 %\subsection{Selected network architecture}
+%\subsection{Methods} % baselines and HealpixNet together
 \label{sec:selected_architecture}
 
-The choice of a particular HealpixNet architecture highly depends on the problem at hand. Convolution layers construct \emph{almost} rotational equivariant features and the statistical layer can turn them into rotational invariant ones. In our case, we are trying to discriminate samples of two cosmological maps. Hence, we assume that each pixel carries some information about the distribution. Our principal architecture is a fully convolutional network referred as the FCN variant of HealpixNet. Thanks to 6 graph convolution layers (GC sizes: 16, 32, 64, 64, 64, 2) we first build the statistical evidence of each distribution for each pixel of a down-sampled sphere. The last graph convolution layer is composed of 2 channels as we have 2 distributions. Then we use a statistical 'mean' layer (SL) to average the evidence for each distribution and we compute the probabilities thanks to a softmax layer (SM). We use batch normalization (BN), pooling (P) and relu non-linearity $\sigma$ for each convolutional layer. The degree of the Chebyshev polynomials was set to $K=5$. The network can be summarized as
+As discussed in \secref{variants}, the choice of an HealpixNet variant depends on the data and task at hand.
+For our problem, where we assume that each pixel carries the same quantity of information about the cosmological model, a rotation invariant FCN architecture should be best.
+The chosen network is defined as
 \begin{equation*}
-	FCN = SM \circ ST_{\text{mean}} \circ L_6 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1,
+	FCN = SM \circ ST_{\text{mean}} \circ GC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1,
 \end{equation*}
 \begin{center}
-where \hspace{0.5cm} \begin{tabular}{lll}
-   $L_1$ &  $=$ &$ P \circ \sigma \circ BN \circ GC_{16}$, \\
-   $L_2$ &  $=$ &$ P \circ \sigma \circ BN \circ GC_{32}$, \\
-   $L_3,L_4,L_5$ & $=$ &$ P \circ \sigma \circ BN \circ GC_{64}$, \\
-   $L_6$ &  $=$& $ \sigma \circ BN \circ GC_{2}$. \\
+with \hspace{0.5cm} \begin{tabular}{lll}
+   $L_1$ &  $=$ &$ P_4 \circ \sigma \circ BN \circ GC_{16}$, \\
+   $L_2$ &  $=$ &$ P_4 \circ \sigma \circ BN \circ GC_{32}$, \\
+   $L_3,L_4,L_5$ & $=$ &$ P_4 \circ \sigma \circ BN \circ GC_{64}$, \\
 \end{tabular}
 \end{center}
-Thanks to its statistical layer, the FCN architecture is close invariant to rotation.
-We also tried a more traditional architecture, where the statistical and last convolutional layers are replaced by a fully connected layer. Hence we end up with a convolutional neural network (CNN) that is not invariant to rotation anymore. The network is referred as CNN variant of HealpixNet and can be summarized as
-\begin{equation}
-CNN = SM \circ \sigma \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1.
-\end{equation}
+where $GC_k$ indicates a graph convolutional layer with $k$ output feature maps, $P_4$ is a pooling layer which divides the number of pixels by 4, $\sigma$ is a ReLU, and the Chebyshev polynomials are of degree $K=5$.
 
-We use the Adam optimizer \citep{kingma2014adam} with $\beta_1=0.9$, $\beta_2=0.999$, and an initial learning rate of $2 \times 10^{-4}$ that is exponentially decreased by a multiplication with $0.999$ at each step.
+For comparison, we tried the more conventional CNN variant, where the classification is performed by a fully connected layer from the last feature maps instead of the average of local classifications. This architecture is not invariant to rotation. The network is defined as
+\begin{equation*}
+	CNN = SM \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1,
+\end{equation*}
+where $FC_2$ denotes a fully connected layer with two output neurons.
+Architectures were chosen over their performance on the validation set.
+
+The Adam optimizer \citep{kingma2014adam} with $\beta_1=0.9$, $\beta_2=0.999$ was used with an initial learning rate of $2 \times 10^{-4}$ that is exponentially decreased by a multiplication with $0.999$ at each step.
 All models were trained for $80$ epochs, which corresponds to $1920$ steps. The batch size is set to $16 \times  o^2$ to keep the amount of supervision used to estimate the gradient identical, irrespective of the chosen order $o$ (the learning rate would otherwise need to be adapted). By this choice, HealpixNet is trained with the same amount of information, i.e., the number of pixels, across all variants of the problem.
 Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti ($5$ hours with a Tesla K20).
-% The CPU is probably slow which explain the 5 hours. I believe we could be much faster than that by computing less summaries and improving the data. But, Michael, it's OKAY to have a margin of improvement. :-)
+% Could probably be faster with a better input pipeline.
 
 \subsection{Results}
 
@@ -971,88 +966,65 @@ Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti
 	\hfill
 	\includegraphics[width=0.32\linewidth]{result_order4}
 	\caption{
-		Classification errors that compare the performance of the fully convolutional (FCN) and the standard convolutional (CNN) variants of the HealpixNet architecture, the support vector machine (SVM) with the power spectral densities (PSDs) as features, and the SVM with histogram as features.
-		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order 1 corresponds to samples which area is $1/12=8.1\%$ of the sphere, order 2 to $1/(12 \times 2^2) = 2.1\%$, and order 4 to $1/(12 \times 4^2) = 0.5\%$. The standard deviation of the added Gaussian noise varies from zero to $2\times$ the standard deviation of the noiseless maps.
-		It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). The FCN variant of HealpixNet beats the CNN variant by exploiting rotation invariance. Both variants largely beat the two SVM baselines.
+		Classification accuracy of the fully convolutional (FCN) variant of HealpixNet, the standard convolutional (CNN) variant of HealpixNet, the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
+		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere, order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$, and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$. The standard deviation of the added Gaussian noise varies from zero to $2\times$ the standard deviation of pixel's values in the noiseless maps.
+		It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). The FCN variant of HealpixNet beats the CNN variant by being invariant to rotation. Both variants largely beat the two SVM baselines.
 	}
 	\label{fig:results}
 \end{figure*}
 
-\figref{results} presents the results for $5$ different noise levels and $3$ different sample areas.
-HealpixNet (FCN and CNN) has a significant lead for all levels of noise and sample areas.
-In particular, the difference seems to increase as the problem becomes more complex; as the order is increased, there is less information in each sample.
-This is likely due to the fact that the HealpixNet can learn optimal features for the problem and does not rely on hand-designed features.
-The accuracy of HealpixNet is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
+\figref{results} compares the classification accuracy of HealpixNet (FCN and CNN variants) and the two baselines across five noise levels and three sample sizes.
+We indeed observe that the problem is made more difficult as the sample size decreases, and the noise increases.
+As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
+As the noise increases, the useful information gets diluted in irrelevant data, i.e., the signal-to-noise ratio (SNR) diminishes.
 
-We observe that the PSD is unable to perform the desired task, with accuracy decreasing significantly for all noisy cases.
-The main reason is that the two different models were designed to have very similar PSDs (see \figref{psd_sigma3}).
-% As a result, one needs to use other statistics to solve the problem.
-In this case, the histogram features allow for a significant improvement over the PSD ones.
-The performance of the histogram features is very good for larger maps and deteriorates for the smaller cases with increased noise level, reaching 80\% at the highest noise level for $o=4$.
+As the cosmological parameters were chosen for the maps to have similar PSDs (see \figref{psd_sigma3}), it is reassuring to observe that an SVM with those as features has difficulties discriminating the models.
+Other statistics are therefor needed to solve the problem. Using histograms as features gives a significant improvement.
+Performance is very good for larger maps and deteriorates for the smaller cases with increased noise level, reaching 80\% at the highest noise level for $o=4$.
 The histogram features contain information about the distribution of pixels, which clearly varies for the two classes.
 They do not, however, include any spatial information.
-In contrast, both the PSD features and the HealpixNet can exploit the spatial information.
+HealpixNet (both the FCN and CNN variants) shows superior performance over all configurations.
+The gap even widens as the problem becomes more difficult.
+This is likely due to HealpixNet learning features that are adapted to the problem instead of relying on hand-designed features.
+The accuracy of HealpixNet is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 
-We also observe that the FCN architecture slightly outperforms the CNN one.
-This may seem counter-intuitive as the CNN is a generalization of the FCN and hence should provide, at least, equivalently good results.
-Nevertheless, one should not forget that in practice the complexity of the architecture trades with more data requirements and more difficulties in the training.
-We have two interpretations that explains why FCN architecture leads to better performance.
-First, the network is almost invariant to rotation on the SO(3) group and hence intrinsically augments the dataset.
-The convergence mass map dataset is likely to be rotational invariant as the mass distribution is homogeneous and isotropic.
-Second, the FCN architecture can be interpreted as a voting procedure where
-(i) each pixel is being classified using the data in its surroundings, and
-(ii) the average score is computed to determine the class.
+We also observe that the FCN variant slightly outperforms the CNN. This may seem counterintuitive as the CNN is a generalization of the FCN and hence should provide, at least, equivalently good results.
+Nevertheless, one should not forget that in practice the complexity of the architecture trades with more data requirements and more training difficulties.
+Two interpretations explain why the FCN variant leads to better performance. First, the FCN is almost invariant to rotation on the SO(3) group and hence intrinsically augments the dataset.
+The convergence mass map dataset is invariant to rotation as the mass distribution is homogeneous and isotropic.
+Second, the FCN can be interpreted as a voting procedure where (i) each pixel is being classified using the data in its surroundings, and (ii) the average score is computed to determine the class.
 This procedure suits the data as we believe that each class of the dataset is stationary with a small-support radial autocorrelation function, again stemming from the homogeneity of the dataset.
 It implies that a pixel can be statistically classified using only its surroundings.
-For other datasets not having these two properties the CNN architecture may be better and one should always, when possible, adapt the architecture to the data.
+The CNN variant may however be better for data not having this property, and one should always adapt the architecture to the data and task.
 
-\nati{Michael: I am highly uncertain of what should be kept in the following paragraph. Maybe the full paragraph should be left out!}
-\TK{I have a similar impression!}
-While testing the FCN and CNN architectures, we made the following empirical observations.
-First, Chebyshev polynomial seems more stable than monomials ($\theta_k$ in \eqnref{graph_convolution_monomial}), in the sense that the training loss had a more monotone decrease.
-Nevertheless once the network is trained, we could not observe a significant accuracy difference.
-Second, using a statistical layer (FCN) to get equivariant features slightly improved the accuracy in our problem.
-We tried $4$ different layers `mean', `variance', `mean + variance' and `histogram'.
-The `mean', `histogram' and `mean + variance' were providing the same level of accuracy, with pure `variance' being slightly worse. Hence we chose to simply use the `mean' statistic.
-Third, adding fully connected layers after the statistical layer does not improve the performance, but lead to models requiring more training steps and regularization.
-Fourth, using $\ell_2$ regularization does not help either with the performance or the training of the models.
-Fifth, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F * (K + 0.5))}$, where $K$ is the Chebyshev order and $F$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less at the same level between the different layers.
+While testing the FCN and CNN variants, we made the following empirical observations.
+First, training was more stable (in the sense that the loss had a more monotone decrease) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
+Nevertheless, we could not observe a significant difference in accuracy after convergence.
+Second, using $\ell_2$ regularization does not help either with performance or training of the models, mostly because the models are not over-fitting.
+Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less constant across layers. \todo{Nath: cite the paper you read about that?}
 % Nati to Michael: The problem with the previous claim is that it depends on the non-linarity. Furthermore, does it make sense to make such a claim if we use batch norm?
-Eventually, we observe that rescaling the Laplacian eigenvalues between $[-a,a]$, where $1<a\leq1$ significantly helps to stabilize the optimization. For our experiment we use $a=0.75$.
+Finally, we observe that scaling the Laplacian's eigenvalues between $[-a, a]$, where $0 < a \leq 1$, significantly helps in stabilizing the optimization. We use $a = 0.75$ in our experiments.
 
 \subsection{Filter visualization}
 
-One common visualization for CNN is to observe the shape of the learned filters.
-Since our construction leads to almost (up to the sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the radial profile and a gnomonic projection on a plane of a random selection of learned filters.
-The filters are selected from the last layer of the network corresponding the experiment with order $o=2$ for a relative noise level of $2$.
-Nevertheless, all networks presented visually similar gnomonic and profile patterns.
-% The gnomonic projection clearly exibits the sampling issue of HEALPix.
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{section_filter_last}
+	\\
+	\includegraphics[width=\linewidth]{gnonomic_filter_last}
+	\caption{Random selection of 24 learned filters from the fifth spherical convolutional layer $L_5$. Top: section. Bottom: gnomonic view.}
+	\label{fig:learned_filter}
+\end{figure}
+
+A common visualization to introspect and try to understand how a CNN function is to look at the learned filters.
+Since our construction leads to almost (up to sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the radial profile and a gnomonic projection on a plane of a random selection of learned filters from the last layer of the network.
+While those particular filters were obtained from the experiment with order $o=2$ and a relative noise level of $2$, all trained networks presented visually similar gnomonic and profile patterns.
+% The gnomonic projection clearly exhibits the sampling issue of HEALPix.
 % \TK{what issue? Commenting out for now}
 Details of how the convolution kernels are plotted are described in \ref{sec:filter_visualization}.
-While it is usually difficult to interpret the shape of the filters in the context of the type of data, we can notice that they often have a ``peak'' like structures.
+While it is usually difficult to interpret the shape of the filters, especially given the type of data, we can notice that they often have a ``peak'' like structure.
 An example of filter interpretation was demonstrated in \citep{Ribli2018learningfrom}.
-% \todo{Tomek: can you say something about the filters.}
-% \TK{Done}
-% Nati: Note that filer are almost not evolving during the training process. It is not surprising as our architecture is likely to be overparametrized. If we want to have interpretable filters, we probably have to use a much smaller architecture.
-
-\begin{figure*}
-	\centering
-	\includegraphics[width=0.47\linewidth]{section_filter_last}
-	\hfill
-	\includegraphics[width=0.45\linewidth]{gnonomic_filter_last}
-	\caption{24 learned filters selected from the fifth spherical convolutional layer $L_5$. Left: section. Right: gnonomic view.}
-	\label{fig:learned_filter}
-\end{figure*}
-
-% \section{Discussion}
-
-% Because of the spherical domain, the method presented here restricts the shape of the filters learned by the network to be radial.
-% While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
-% The layered structure of the network can partially compensate for that.
-% Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
-
-% \nati{Should the discussion be merged with the result section?}
-% \TK{I think yes!}
+% Nati: Note that filter are almost not evolving during the training process. It is not surprising as our architecture is likely to be overparametrized. If we want to have interpretable filters, we probably have to use a much smaller architecture.
 
 \section{Conclusion}
 \label{sec:conclusion}
