@@ -195,8 +195,8 @@ Graphs are versatile data structures which can represent pairwise relationships 
 Using the graph-based representation, we define many of the standard CNN operations, such as convolution and pooling, with filters restricted to being radial.
 This way, HealpixNet is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
 % TBD if we include it
-% This approach is very efficient computationally than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
-An advantage of this representation is that the convolution operations with this approach are very efficient, which enables the algorithm to run very fast.
+% This approach is computationally more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
+An advantage of this representation is that the convolution operations with this approach are efficient, which enables the algorithm to run fast.
 We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
 Our experimental result shows that the performance of HealpixNet to always be better or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
@@ -279,7 +279,7 @@ Observables that cover large parts of the sky, such as the Cosmic Microwave Back
 Cosmological information contained in these maps is usually extracted using summary statistics, such as the power spectra or higher order correlation functions.
 Convolutional Neural Networks (CNN) have been proposed as an alternative analysis tool in cosmology thanks to its ability to automatically design relevant statistics to maximise the precision of the parameter estimation
 \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring,ravanbakhsh2017estimating}.
-This is possible as CNNs have the capacity to build very rich models and capture complicated, non-linear patterns, which are often present in the data.
+This is possible as CNNs have the capacity to build rich models and capture complicated, non-linear patterns, which are often present in the data.
 
 % \TK{I would move the discussion about this to a later place in the paper}
 % Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture.
@@ -879,7 +879,7 @@ In gravitational lensing, this kernel is dependent on the radial distances betwe
 We make full sky N-body simulations for two parameter sets of the $\Lambda\rm{CDM}$ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
 Other parameters are set to: Hubble constant $H_0=70 km/s/Mpc$, spectral index $n_s=0.96$, and Baryon density today $\Omega_b=0.05$.
 The parameters $\Omega_m$ and $\sigma_8$ were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
-That means that it is very difficult to distinguish between these cosmological models using these maps if this range of scales is used.
+That means that it is difficult to distinguish between these cosmological models using these maps if this range of scales is used.
 We found that the differences in power spectrum is $~5\%$ for $\ell>1000$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
 The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
@@ -1039,7 +1039,7 @@ The layered structure of the network can partially compensate for that.
 % Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
 
 We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps, designed similarly to \citep{schmelze2017cosmologicalmodel}.
-The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are very similar.
+The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are similar.
 We compared the performance of the HealpixNet CNN versus that of two SVM-based classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
 % Notably, HealpixNet maintains good classification accuracy even for high noise levels and part-sky areas.
 HealpixNet performs better than the angular power spectrum and the histogram classifiers for all considered cases.
