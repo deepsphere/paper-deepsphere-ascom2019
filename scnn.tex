@@ -1006,9 +1006,9 @@ The classification accuracy of HealpixNet and both baselines was checked as a fu
 
 As discussed in \secref{architecture}, the choice of a network architecture depends on the data and task at hand.
 For our problem, where we assume that each pixel carries the same quantity of information about the cosmological model, a rotation invariant FCN architecture should be best.
-The chosen network is defined as
+The selected network is defined as
 \begin{equation*}
-	FCN = SM \circ ST_{\text{mean}} \circ GC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1,
+	FCN = \underbrace{SM \circ AV \circ GC_2}_{\text{classifier}} \circ \underbrace{L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1}_{\text{feature extractor}},
 \end{equation*}
 \begin{center}
 with \hspace{0.5cm} \begin{tabular}{lll}
@@ -1072,8 +1072,12 @@ It also implies that this classification problem is invariant to rotation.
 Hence, a pixel can be statistically classified using only its surrounding, and those local predictions can be averaged to vote for a global consensus.
 The CNN variant may however be better for data not having this property, and one should always adapt the architecture to the data and task (see \secref{architecture}).
 
+In all our experiments, we saw no sign of over-fitting.
+With more data, HealpixNet can probably do even better.
+The fact that the CNN lags behind the FCN is another sign of lack of data.
+
 While testing the FCN and CNN variants, we made the following empirical observations.
-First, training was more stable (in the sense that the loss had a more monotone decrease) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
+First, training was more stable (in the sense that the loss decreased more smoothly) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
 Nevertheless, we could not observe a significant difference in accuracy after convergence.
 Second, using $\ell_2$ regularization does not help either with performance or training of the models, mostly because the models are not over-fitting.
 Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less constant across layers. \todo{Nath: cite the paper you read about that?}
@@ -1087,13 +1091,13 @@ Finally, we observe that scaling the Laplacian's eigenvalues between $[-a, a]$, 
 	\includegraphics[width=\linewidth]{section_filter_last}
 	\\
 	\includegraphics[width=\linewidth]{gnonomic_filter_last}
-	\caption{Random selection of 24 learned filters from the fifth spherical convolutional layer $L_5$. Top: section. Bottom: gnomonic view.}
+	\caption{Random selection of 24 learned filters from the fifth spherical convolutional layer $L_5$. Top: section. Bottom: gnomonic projection.}
 	\label{fig:learned_filter}
 \end{figure}
 
 A common visualization to introspect and try to understand how a CNN function is to look at the learned filters.
 Since our construction leads to almost (up to sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the radial profile and a gnomonic projection on a plane of a random selection of learned filters from the last layer of the network.
-While those particular filters were obtained from the experiment with order $o=2$ and a relative noise level of $2$, all trained networks presented visually similar gnomonic and profile patterns.
+While those particular filters were obtained from the experiment with order $o=2$ and a relative noise level of $2$, all trained networks presented visually similar patterns.
 % The gnomonic projection clearly exhibits the sampling issue of HEALPix.
 % \TK{what issue? Commenting out for now}
 Details of how the convolution kernels are plotted are described in \ref{sec:filter_visualization}.
