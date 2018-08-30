@@ -951,7 +951,7 @@ Convergence maps represent the dimensionless distribution of over- and underdens
 The 3D structures are projected using a geometric kernel, value of which depends on the radial distance.
 In gravitational lensing, this kernel is dependent on the radial distances between the observer, the mass plane, and the plane of source galaxies \citep[see][for a review of gravitational lensing]{bartelman2010gravitationallensing}.
 
-We make full sky N-body simulations for two parameter sets of the $\Lambda\rm{CDM}$ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
+We make whole sky N-body simulations for two parameter sets of the $\Lambda\rm{CDM}$ cosmological model: model 1 ($\Omega_m=0.31, \sigma_8=0.82$) and model 2 ($\Omega_m=0.26, \sigma_8=0.91$), where $\Omega_m$ is the matter density in the universe and $\sigma_8$ is the normalisation of the matter power spectrum.
 Other parameters are set to: Hubble constant $H_0=70 km/s/Mpc$, spectral index $n_s=0.96$, and Baryon density today $\Omega_b=0.05$.
 The parameters $\Omega_m$ and $\sigma_8$ were chosen to have the same spherical harmonic power spectrum for $\ell<1000$.
 That means that it is difficult to distinguish between these cosmological models using these maps if this range of scales is used.
@@ -965,13 +965,13 @@ We however use a single simulation box, as opposed to two used in that work, as 
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
 For each class, we generate $30$ simulations.
 Out of the $60$ simulations, $20$ are kept as the test set, and $20\%$ of the remaining training data is used as a validation set, to monitor the training process and select the hyper-parameters.
-\figref{map_sample} shows the full sky simulations and a zoom region for both models.
+\figref{map_sample} shows the whole sky simulations and a zoom region for both models.
 Initial conditions for these simulations are the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
 
 \subsection{Problem formulation}
 
 As the distribution of matter in the universe is homogeneous and isotropic, no pixel is more informative than any other.\footnote{Contrast that with images, where the subject of interest is most often around the center of the picture.}
-As such, we can control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from full sky maps.
+As such, we can control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from whole sky maps.
 Using the properties of HEALPix, we split maps into $12 \times o^2$ ($o=1,2,4,\dots$) independent samples of $(N_{pix} / o)^2$ pixels. The resulting partial maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\% ($\approx 1 \times 10^6$ pixels), 2.1\% ($\approx 260 \times 10^3$ pixels), and 0.5\% ($\approx 65 \times 10^3$ pixels) of the sphere for $o=1,2,4$, respectively.
 Corresponding areas can be seen in \figref{pooling}: the surface of pixels in the left, middle, and right spheres correspond to samples at order $o=4,2,1$, respectively.
 We report results for $o=1,2,4$ only, as full sphere classification is easy at such resolution (perfect classification accuracy is already attainable for $o=1$, see \figref{results}), and many cosmological applications will use datasets located on part-sphere only. Our code nonetheless includes an example demoing classification on full spheres of much lower resolution ($N_{side} = 64$).
