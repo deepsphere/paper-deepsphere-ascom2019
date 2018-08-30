@@ -65,6 +65,7 @@
 \usepackage{siunitx}
 \usepackage{bm}
 \usepackage{aasmacros}
+\usepackage{booktabs}
 \usepackage{enumitem} % to remove when done with todo list
 
 %% The lineno packages adds line numbers. Start line numbering with
@@ -679,8 +680,7 @@ Other statistical layers are also possible.
 In particular, we also implement a \emph{learned histogram} statistic \citep{wang2016learnhist}.
 Other approaches, which we did not implement, may include applying different diffusion on the final maps to obtain statistics at different scales, as proposed by \citep{khasanova2017tigranet}.
 
-\subsection{Graph convolutional neural network}
-\label{sec:architecture}
+\subsection{Layers}
 
 Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to a decision on the class label. Our architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by a softmax layer (SM). A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
 
@@ -719,22 +719,101 @@ The softmax layer is the last layer in a neural network engineered for classific
 \end{equation*}
 where $N_{classes}$ is the number of classes to discriminate. Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the probability that the input sample belongs to class $i$. This last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
 
-Given a map $\X \in \R^{N_{pix} \times F_{in}}$, a neural network for global prediction is computing $\y = NN_\theta(\X) \in R^{F_{out}}$, where $NN$ is a composition of the above layers and $\theta$ is the set of all trainable parameters.
-Two example networks for global classification, a CNN and a FCN, are
-\begin{align*}
-	NN &= SM \circ FC \circ \sigma \circ FC \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC, \\
-	NN &= \underbrace{SM \circ ST \circ \sigma \circ GC}_{\text{classifier}} \circ \underbrace{\sigma \circ GC \circ P \circ \sigma \circ BN \circ GC}_{\text{feature extractor}},
-\end{align*}
-where $\circ$ denotes composition, i.e., $(f \circ g)(x) = f(g(x))$.
-The number of features $F_{in}$ depends on the data at hand. For the CMB radiation temperature, $F_{in} = 1$. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction. The number of predictions $F_{out}$ is either equal to the number of classes $N_{classes}$ for a classification task, or the number of variables to be predicted for a regression task. A typical global classification task is to classify maps into cosmological model classes \citep{schmelze2017cosmologicalmodel}. A typical global regression task is to infer the parameters of a cosmological model  from maps \citep{fluri2018deep,gupta2018nongaussianinformation}.
-Dense prediction, i.e., predicting $F_{out}$ values per pixel, is obtained by omitting ST and FC layers (P layers, if used, have to be inverted via up-sampling in an encoder-decoder architecture). An example network for dense regression is
+\subsection{Network architectures}
+\label{sec:architecture}
+
+Given a map $\X \in \R^{N_{pix} \times F_{in}}$, a neural network computes $NN_\theta(\X)$, where $NN$ is a composition of the above layers and $\theta$ is the set of all trainable parameters.
+The number of input features $F_{in}$ depends on the data. For the CMB radiation temperature, $F_{in} = 1$. For observations in radio frequencies, $F_{in}$ would be equal to the number of surveyed frequencies. $F_{in}$ might also be the number of slices in the radial direction.
+
+\begin{table}
+	\centering
+	\begin{tabular}{@{ } l r@{ $\in$ }l @{\hspace{0.8em}} r@{ $\in$ }l @{ }}
+		\toprule
+		 & \multicolumn{2}{c}{Classification} & \multicolumn{2}{c}{Regression} \\
+		%\midrule
+		Global & $NN_\theta(\X)$ & $\R^{N_{classes}}$ & $NN_\theta(\X)$ & $\R^{F_{out}}$ \\
+		Dense & $NN_\theta(\X)$ & $\R^{N_{pix} \times N_{classes}}$ & $NN_\theta(\X)$ & $\R^{N_{pix} \times F_{out}}$ \\
+		\bottomrule
+	\end{tabular}
+	\caption{The output's size of the neural network $NN_\theta(\X)$ depends on the task to be solved. $N_{pix}$ is the number of pixels in a HEALPix map, $N_{classes}$ is the number of classes in a classification task, and $F_{out}$ is the number of variables to be predicted in a regression task. The output size of a global task does not depend on the input size, whereas a dense task asks for one prediction per pixel. A classification task asks for discrete (or probabilistic) predictions, whereas a regression task asks for continuous variables.}
+	\label{tab:tasks}
+\end{table}
+
+HealpixNet can perform dense or global predictions, for regression or classification.
+A typical global classification task is to classify maps into cosmological model classes \citep{schmelze2017cosmologicalmodel}. A typical global regression task is to infer the parameters of a cosmological model  from maps \citep{fluri2018deep,gupta2018nongaussianinformation}. Some dense regression tasks are denoising, interpolation of missing values, or inpainting parts of a map \citep{Inoue2008inpainting}. Segmentation and feature detection \citep{Amsel2007detecting} are examples of dense classification tasks.
+The output's size of the neural network depends on the task. See \tabref{tasks}.
+
+% FCN for dense
+
+Fully convolutional networks (FCNs) have been introduced by  \citep{long2015fcn} and are mostly used for the semantic segmentation of images, a dense classification task.
+An example FCN for dense regression is
 \begin{equation*}
-	\Y = NN(\X) = (GC \circ \sigma \circ BN \circ GC)(\X) \in \R^{N_{pix} \times F_{out}}.
+	\Y = NN_\theta(\X) = (GC \circ \sigma \circ BN \circ GC)(\X) \in \R^{N_{pix} \times F_{out}},
 \end{equation*}
-Such networks can be useful for
-(i) dense regression, such as denoising, interpolating missing values, or inpainting a parts of a map \citep{Inoue2008inpainting}, or
-(ii) dense classification, such as segmentation or feature detection \citep{Amsel2007detecting}.
-We emphasize that the use of FC and ST layers is the sole difference between a neural network engineered for global or dense prediction.
+where $\circ$ denotes composition, i.e., $(f \circ g)(\cdot) = f(g(\cdot))$.
+If P layers are used, they have to be inverted via up-sampling in an encoder-decoder architecture.
+
+The set of input pixels which influence the value of an output pixel forms a \textit{receptive field}.
+That field is isotropic and local, i.e., it forms a disk centered around the output pixel.
+Its radius is influenced by the polynomial order $K$ of GC layers (setting how far the convolution operation looks around), and the down-sampling factor of P layers if any.
+Its radius should be large enough to capture statistics of interest.
+For example, there is a limit on how small a partial sky observation can be to give any clue about cosmological parameters.
+On the other hand, looking at the whole sky is often superfluous and waste computations, as most interactions are local.
+% most data generating processes have a small-support autocorrelation function.
+A data and task dependent trade-off is to be found.
+Note here that while global predictions use, by definition, the whole sky, dense predictions are not necessarily local.
+
+By treating each output pixel independently and in parallel, this architecture is a principled way to perform rotation equivariant operations.
+Rotation equivariance means that the rotation operation commutes with the neural network, i.e., if the input is rotated, the output is rotated the same way.\footnote{Small errors will however appear as GC layers are not exactly equivariant due to the small discrepancy between the graph Fourier modes and the spherical harmonics. See \ref{sec:comparison_spherical_harmonics}.}
+
+% FCN for global
+
+Global tasks can be solved by averaging dense predictions \citep{lin2013globalavgpooling, springenberg2014allconv}.
+Global averaging is computed by the layer $AV: \R^{N_{pix} \times F} \rightarrow \R^F$.
+% good performance was demonstrated for object recognition in images \citep{springenberg2014allconv}.
+Doing so assumes the data is locally independent, and form different observations of an unknown process.
+Averaging over independent observations is a common trick to reduce variance.\footnote{The variance of the averaged prediction is $\sigma^2 / n$, where $\sigma$ is the variance over one observation and $n$ is the number of independent observations.}
+An example FCN for global regression is
+\begin{equation*}
+	NN = AV \circ GC \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC.
+\end{equation*}
+Here, the FCN predicts parameters for many overlapping parts of the sky in parallel, then average those predictions to get one set of parameters for the whole sky.
+Global predictions are made invariant to rotation on the SO(3) group by averaging dense equivariant predictions.
+Rotation invariance means that rotating the input does not impact the prediction.
+
+% CNN for global
+
+By replacing the average by a FC layer, one gets the standard convolutional neural network (CNN), which is a generalization of the FCN.
+Indeed, the AV layer is a FC layer where all the entries of $\W$ in \eqnref{fc_layer} are equal to $1/N_{pix}$ and $\b b = \b 0$.
+By dropping rotation invariance, CNNs learn where to put attention on the domain. 
+That is useful when pixels are not of the same importance, with respect to the task.
+For example, on images, the subject of interest is most often around the center of the picture.
+Hence, those pixels are more predictive than the ones in the periphery when considering image classification.
+On the sphere, location is important when analyzing weather data on the Earth for example, as oceans and mountains play different roles.
+An example of such an architecture is
+\begin{equation*}
+	NN = FC \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC.
+\end{equation*}
+
+For tasks that are rotation invariant, FCNs need less training data as the rotation symmetry is backed in the architecture and need not be learned.
+Than can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
+% Contrast the number of parameters to be learned in a FC layer versus the static AV layer.
+% FCNs are more sample efficient.
+Moreover, FCNs can accommodate maps with a varying number of pixels.
+As such, CNNs should only be used if rotation invariance is undesired.
+
+% classification
+
+All the above architectures can be used for classification (instead of regression) by appending a SM layer.
+An example FCN for global classification is therefore
+\begin{equation*}
+	NN = SM \circ AV \circ GC \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC.
+\end{equation*}
+Similarly, we emphasize that the use of FC and AV layers is the sole difference between a neural network engineered for global or dense prediction.
+
+%\subsection{Learning}
+\subsection{Training}
+%\subsection{Optimization}
 
 The cost (or loss) function $C(\Y, \bar \Y) = C(NN_\theta(\X), \bar \Y)$ measures how good the prediction $\Y$ is for sample $\X$, given the ground truth $\bar \Y$. For a classification task, the cost is usually taken to be the cross-entropy
 \begin{equation*}
@@ -756,7 +835,6 @@ The optimization is performed by computing an error gradient w.r.t.\ all the par
 	\theta \leftarrow \theta - \frac{\eta}{|\B|} \sum_{i \in \B} \frac{\partial C \left( NN_\theta(\X_i), \bar \Y_i \right)}{\partial \theta} ,
 \end{equation*}
 where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples to gain speed by exploiting the parallelism afforded by modern computing platforms.
-
 
 \section{Related work}
 \label{sec:related}
@@ -926,7 +1004,7 @@ The classification accuracy of HealpixNet and both baselines was checked as a fu
 %\subsection{Methods} % baselines and HealpixNet together
 \label{sec:selected_architecture}
 
-As discussed in \secref{variants}, the choice of an HealpixNet variant depends on the data and task at hand.
+As discussed in \secref{architecture}, the choice of a network architecture depends on the data and task at hand.
 For our problem, where we assume that each pixel carries the same quantity of information about the cosmological model, a rotation invariant FCN architecture should be best.
 The chosen network is defined as
 \begin{equation*}
@@ -939,14 +1017,15 @@ with \hspace{0.5cm} \begin{tabular}{lll}
    $L_3,L_4,L_5$ & $=$ &$ P_4 \circ \sigma \circ BN \circ GC_{64}$, \\
 \end{tabular}
 \end{center}
-where $GC_k$ indicates a graph convolutional layer with $k$ output feature maps, $P_4$ is a pooling layer which divides the number of pixels by 4, $\sigma$ is a ReLU, and the Chebyshev polynomials are of degree $K=5$.
+where $GC_F$ indicates a graph convolutional layer with $F$ output feature maps, $P_4$ is a pooling layer that divides the number of pixels by 4, $\sigma$ is a ReLU, and the Chebyshev polynomials in \eqnref{graph_convolution_cheby} are of degree $K=5$.
+The layers $L_1$ to $L_5$ build the statistical evidence to classify each pixel of a down-sampled sphere. The last GC layer acts as a linear classifier and outputs two (non-normalized) predictions. The AV layer averages these predictions. Probabilities are computed by the SM layer.
 
-For comparison, we tried the more conventional CNN variant, where the classification is performed by a fully connected layer from the last feature maps instead of the average of local classifications. This architecture is not invariant to rotation. The network is defined as
+For comparison, we tried the more conventional CNN architecture, where the classification is performed by a fully connected layer from the last feature maps instead of the average of local classifications. This architecture is not invariant to rotation. The selected network is defined as
 \begin{equation*}
-	CNN = SM \circ FC_2 \circ L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1,
+	CNN = \underbrace{SM \circ FC_2}_{\text{classifier}} \circ \underbrace{L_5 \circ L_4 \circ L_3 \circ L_2 \circ L_1}_{\text{feature extractor}},
 \end{equation*}
-where $FC_2$ denotes a fully connected layer with two output neurons.
-Architectures were chosen over their performance on the validation set.
+where $FC_2$ denotes a fully connected layer with two outputs.
+Architectures were selected over their performance on the validation set.
 
 The Adam optimizer \citep{kingma2014adam} with $\beta_1=0.9$, $\beta_2=0.999$ was used with an initial learning rate of $2 \times 10^{-4}$ that is exponentially decreased by a multiplication with $0.999$ at each step.
 All models were trained for $80$ epochs, which corresponds to $1920$ steps. The batch size is set to $16 \times  o^2$ to keep the amount of supervision used to estimate the gradient identical, irrespective of the chosen order $o$ (the learning rate would otherwise need to be adapted). By this choice, HealpixNet is trained with the same amount of information, i.e., the number of pixels, across all variants of the problem.
@@ -985,14 +1064,13 @@ The gap even widens as the problem becomes more difficult.
 This is likely due to HealpixNet learning features that are adapted to the problem instead of relying on hand-designed features.
 The accuracy of HealpixNet is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 
-We also observe that the FCN variant slightly outperforms the CNN. This may seem counterintuitive as the CNN is a generalization of the FCN and hence should provide, at least, equivalently good results.
-Nevertheless, one should not forget that in practice the complexity of the architecture trades with more data requirements and more training difficulties.
-Two interpretations explain why the FCN variant leads to better performance. First, the FCN is almost invariant to rotation on the SO(3) group and hence intrinsically augments the dataset.
-The convergence mass map dataset is invariant to rotation as the mass distribution is homogeneous and isotropic.
-Second, the FCN can be interpreted as a voting procedure where (i) each pixel is being classified using the data in its surroundings, and (ii) the average score is computed to determine the class.
-This procedure suits the data as we believe that each class of the dataset is stationary with a small-support radial autocorrelation function, again stemming from the homogeneity of the dataset.
-It implies that a pixel can be statistically classified using only its surroundings.
-The CNN variant may however be better for data not having this property, and one should always adapt the architecture to the data and task.
+As expected, we observe that the FCN slightly outperforms the CNN.
+This may seem counterintuitive as the CNN is a generalization of the FCN and hence should be able to learn the same function and provide at least equivalently good results.
+Nevertheless, as discussed in \secref{architecture}, the larger number of parameters incurred by the increased flexibility requires more training data to learn the rotation symmetry.
+The superior performance of the FCN is an empirical validation that these maps are stationary with a small-support radial autocorrelation function, stemming from the fact that the mass distribution is homogeneous and isotropic.
+It also implies that this classification problem is invariant to rotation.
+Hence, a pixel can be statistically classified using only its surrounding, and those local predictions can be averaged to vote for a global consensus.
+The CNN variant may however be better for data not having this property, and one should always adapt the architecture to the data and task (see \secref{architecture}).
 
 While testing the FCN and CNN variants, we made the following empirical observations.
 First, training was more stable (in the sense that the loss had a more monotone decrease) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
