@@ -232,28 +232,18 @@ Mass mapping
 
 \section*{TODO list}
 \begin{itemize}[noitemsep,topsep=0pt,parsep=0pt,partopsep=0pt]
-    \item (MD) distinction between CNN and FCN
 	\item (TK) Can we use HEALPix in the name? Check with the main author of HEALPix. MD: what about DeepCosmo or CosmoNet? NP: cosmological data is not necessarily spherical.
 	\item (TK) Check use of British vs American English. Check use of tense.
-	\item (MD) remove statistical layer
-	\item (MD) distinction between CNN and FCN => Variants subsection
-    \item (MD) check vertex interpretation in Efficient convolutions. Powers of L are weights of paths.
+	\item (TK) Larger text on figure 2. I (MD) made it one column wide instead of two as it's more an illustration than a central figure to our exposition.
+    \item (MD) check vertex interpretation in Efficient convolutions. Powers of L are weights of paths. We deal with neighborhoods rather than individual nodes.
+	\item (MD) Figure 4: speed for multiple lmax.
     \item (TK) check part sphere notebook and whole sphere
     \item (NP) Put Raphael in the dataset author.
     \item (Probably OK) Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
     \item (I think it is OK) (NP) Check the wording. Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
     \item (Everyone should check this) Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices. Keep indices.
     \item Check links in footnotes.
-    \item (done!) (NP) Change equation after (2) and check all kroneker
-    \item (done!) (TK) check text figure 1
-    \item (done!) (TK) Related work in cosmo. The only cosmological applications of spherical CNNs in the related work are about projection on the tangent plane \citep{schmelze2017cosmologicalmodel, fluri2018deep, gupta2018nongaussianinformation}. Aren't there applications in cosmology for the other (c.f. related work section) approaches? Most of them are illustrated in omnidirectional imagery. If none, say it and mention some alternatives, e.g., wavelets?
-    \item (done!) (TK) check if papers which appear as arxiv were not published in a conference or journal
-    \item (done!) (TK) read everything
-    \item (fail - I checked few fonts here: \url{de.sharelatex.com/learn/Font_typefaces}, but none looked better) (TK) Font: do we have to use times (set in the documentclass)? I (MD) find the rendering of math a bit ugly.
-    \item (done!) (TK) fix the bibliography
-    \item (done!) (TK) add small description of maps\_downsampled\_64.npz in the whole\_sphere notebook. \nati{We need to talk about that.}
-    \item (done!) (TK) Example applications for dense prediction (classification and regression) for cosmology (color text in 2.8)
-	\item (done!) (MD) check paragraph on our chosen architecture in the Experiments sections
+	\item (fail - I checked few fonts here: \url{de.sharelatex.com/learn/Font_typefaces}, but none looked better) (TK) Font: do we have to use times (set in the documentclass)? I (MD) find the rendering of math a bit ugly. MD: lmodern is better, but can we use it (w.r.t.\ journal policy)? If equations split out, we can try to arrange them. We should also check which font size we can / have to use.
 \end{itemize}
 
 \begin{figure*}
