@@ -710,10 +710,10 @@ where $\gamma_{j}$ and $\beta_{j}$ are parameters to be learned and $\epsilon$ i
 
 % The statistical layer, defined in \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y = ST(\X) \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citep{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F = N_{classes}$ is the number of classes to discriminate (i.e., the last GC layer outputs as many feature maps as there is classes).
 
-A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs
-\begin{equation*}
-	\y = FC(\x) = \b W \x + \b b \in \R^{F_{out}} ,
-\end{equation*}
+The layer $FC: \R^{F_{in}} \rightarrow \R^{F_{out}}$ is defined as
+\begin{equation} \label{eqn:fc_layer}
+	\y = FC(\x) = \b W \x + \b b ,
+\end{equation}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
 Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the ST), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
 
