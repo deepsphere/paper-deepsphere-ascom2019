@@ -661,28 +661,32 @@ That operation is often taken to be the maximum value, but it can be any permuta
 	\label{fig:pooling}
 \end{figure}
 
-\subsection{Statistical layer}
-\label{sec:stat_layer}
+% The statistical layer was used in the end. The FCN is a more principled approach.
+
+% \subsection{Statistical layer}
 % Or Global pooling?
 
-Following \citep{khasanova2017tigranet}, we implement an optional statistical layer between the last graph convolutional layer and the first fully connected layer for the neural network.
-This introduces the invariance of the output to isometric transformations, such as rotation of maps on the sphere.
-The role of the layer is to compute global and location independent statistics from feature maps.
-Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map $N_{pix}$. That compression results in much smaller fully connected layers, which usually contain a significant fraction of trainable parameters of a neural network.
-The invariance and reduced representation should help the network to learn from fewer samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
-
-Given a feature map $\x \in \R^{N_{pix}}$, the statistical layer is defined as
-\begin{equation} \label{eqn:stat_layer}
-	\y = f(\x) \in \R^{N_{stat}},
-\end{equation}
-where $f$ computes $N_{stat}$ statistics which are independent from the size of the map, $N_{pix}$. An example is the global average pooling $f(\x) = \esp(\x)$, introduced by \citep{lin2013globalavgpooling}, where $\esp(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} x_i$ is the empirical mean. Another example is $f(\x) = [\esp(\x), \var(\x)]\trans$, where $\var(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} (x_i - \esp(\x))^2$ is the empirical variance.
-Other statistical layers are also possible.
-In particular, we also implement a \emph{learned histogram} statistic \citep{wang2016learnhist}.
-Other approaches, which we did not implement, may include applying different diffusion on the final maps to obtain statistics at different scales, as proposed by \citep{khasanova2017tigranet}.
+% Following \citep{khasanova2017tigranet}, we implement an optional statistical layer between the last graph convolutional layer and the first fully connected layer for the neural network.
+% This introduces the invariance of the output to isometric transformations, such as rotation of maps on the sphere.
+% The role of the layer is to compute global and location independent statistics from feature maps.
+% Besides providing invariance, the layer drastically compresses the representation of the data as the number of computed statistics $N_{stat}$ is usually much smaller than the size of the map $N_{pix}$. That compression results in much smaller fully connected layers, which usually contain a significant fraction of trainable parameters of a neural network.
+% The invariance and reduced representation should help the network to learn from fewer samples and to generalize better to unseen data. Yet another advantage is that a network built with such a statistical layer is agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels. Indeed, such global summarization is invariant to node permutation and is commonly used along graph convolutions to classify graphs of varying sizes \citep{duvenaud2015gcn, li2015gatedgnn}.
+%
+% Given a feature map $\x \in \R^{N_{pix}}$, the statistical layer is defined as
+% \begin{equation} \label{eqn:stat_layer}
+% 	\y = f(\x) \in \R^{N_{stat}},
+% \end{equation}
+% where $f$ computes $N_{stat}$ statistics which are independent from the size of the map, $N_{pix}$. An example is the global average pooling $f(\x) = \esp(\x)$, introduced by \citep{lin2013globalavgpooling}, where $\esp(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} x_i$ is the empirical mean. Another example is $f(\x) = [\esp(\x), \var(\x)]\trans$, where $\var(\x) = \frac{1}{N_{pix}} \sum_{i=1}^{N_{pix}} (x_i - \esp(\x))^2$ is the empirical variance.
+% Other statistical layers are also possible.
+% In particular, we also implement a \emph{learned histogram} statistic \citep{wang2016learnhist}.
+% Other approaches, which we did not implement, may include applying different diffusion on the final maps to obtain statistics at different scales, as proposed by \citep{khasanova2017tigranet}.
 
 \subsection{Layers}
 
-Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to a decision on the class label. Our architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by a softmax layer (SM). A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
+Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to some predictions.
+% decision on the class label
+The general HealpixNet architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
+% A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
 
 % As such, we will not mention the non-linearity in the description of our architectures.
 A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer where it is set to the identity. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
@@ -704,7 +708,7 @@ The batch normalization layer \citep{ioffe2015batchnorm} computes $\Y = BN(\X)$ 
 where $\gamma_{j}$ and $\beta_{j}$ are parameters to be learned and $\epsilon$ is a constant added for numerical stability. The empirical expectation $\esp(\x_i) \in \R$ and variance $\var(\x_i) \in \R$ are taken across training examples and pixels.
 % the action of gamma can be done by the filters of the next layer
 
-The statistical layer, defined in \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y = ST(\X) \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citep{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F = N_{classes}$ is the number of classes to discriminate (i.e., the last GC layer outputs as many feature maps as there is classes).
+% The statistical layer, defined in \eqnref{stat_layer}, independently transforms each of the $F$ feature maps of the input $\X \in \R^{N_{pix} \times F}$ into $\Y = ST(\X) \in \R^{N_{stat} \times F}$, where $N_{stat}$ is the number of statistics. One may even omit the FC layers and directly fed the output of the ST layer into the softmax layer, as proposed by \citep{lin2013globalavgpooling}. In this regime, $N_{stat} = 1$ and $F = N_{classes}$ is the number of classes to discriminate (i.e., the last GC layer outputs as many feature maps as there is classes).
 
 A FC layer takes as input $\x \in \R^{F_{in}}$ and outputs
 \begin{equation*}
@@ -800,6 +804,8 @@ Than can be seen as intrinsic data augmentation, as a CNN would need to see many
 % Contrast the number of parameters to be learned in a FC layer versus the static AV layer.
 % FCNs are more sample efficient.
 Moreover, FCNs can accommodate maps with a varying number of pixels.
+% agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels.
+Such global summarization as the AV layer is commonly used along graph convolutions to classify graphs of varying sizes (as it is invariant to node permutation) \citep{duvenaud2015gcn, li2015gatedgnn}.
 As such, CNNs should only be used if rotation invariance is undesired.
 
 % classification
@@ -892,7 +898,7 @@ The use of a graph to model the discretised sphere was also considered by \citep
 % First, similarly to~\citep{boomsma2017spherical}, they use an equirectangular grid sampling.
 This work is the closest to our method, with three differences. First, they parametrize their convolution kernel with \eqnref{graph_convolution_monomial} instead of \eqnref{graph_convolution_cheby} (see \secref{efficient_convolution} for a discussion and comparison).
 Second, they did not take advantage of a hierarchical pixelization of the sphere and resorted to dynamic pooling \citep{kalchbrenner2014dcnn}. While that operation is useful for sequences of varying length, such as sentences in language models, it could be impractical in our context, as it is not local and destroys spatial coherence.
-Third, they introduced a statistical layer --- an operation that computes a set of statistics from the last feature maps --- to provide full rotation invariance. We propose to use the idea of fully convolutional networks (FCNs) instead (see \secref{selected_architecture}). While statistics have to be hand-chosen to capture relevant information for the task, the filters in a FCN are trained end-to-end to capture relevant information.
+Third, they introduced a statistical layer --- an operation that computes a set of statistics from the last feature maps --- to provide full rotation invariance. We propose to use the idea of fully convolutional networks (FCNs) instead (see \secref{architecture}). While statistics have to be hand-chosen to capture relevant information for the task, the filters in a FCN are trained end-to-end to capture relevant information.
 
 The connection has been made between graph CNNs and group equivariant CNNs by \citep{kondor2018equivariance}, justifying the use of graphs to gain rotation equivariance on the sphere.
 \todo{More here.}
@@ -1002,7 +1008,6 @@ The classification accuracy of HealpixNet and both baselines was checked as a fu
 \subsection{Network architecture and hyper-parameters}
 %\subsection{Selected network architecture}
 %\subsection{Methods} % baselines and HealpixNet together
-\label{sec:selected_architecture}
 
 As discussed in \secref{architecture}, the choice of a network architecture depends on the data and task at hand.
 For our problem, where we assume that each pixel carries the same quantity of information about the cosmological model, a rotation invariant FCN architecture should be best.
