@@ -1077,9 +1077,10 @@ It also implies that this classification problem is invariant to rotation.
 Hence, a pixel can be statistically classified using only its surrounding, and those local predictions can be averaged to vote for a global consensus.
 The CNN variant may however be better for data not having this property, and one should always adapt the architecture to the data and task (see \secref{architecture}).
 
-In all our experiments, we saw no sign of over-fitting.
+We saw no sign of over-fitting in any of our experiments.
 With more data, HealpixNet can probably do even better.
 The fact that the CNN lags behind the FCN is another sign of lack of data.
+ImageNet, the largest dataset for visual object recognition, features about 900 billion pixels ($14 \times 10^6 \times 256^2$), to be compared with the 750 millions pixels ($60 \times 12 \times 1024^2$) of our dataset.
 
 While testing the FCN and CNN variants, we made the following empirical observations.
 First, training was more stable (in the sense that the loss decreased more smoothly) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
