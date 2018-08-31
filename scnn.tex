@@ -842,7 +842,7 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
     \includegraphics[height=7em]{sphere_grid_cubedsphere}
     \hfill
     \includegraphics[height=7em]{half_graph_4}
-    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citep{ronchi1996cubed}. Right: graph built from an HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citep{boomsma2017spherical}.}
+    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citep{ronchi1996cubed}. Right: graph built from a HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has 8 neighbors, except the highlighted ones which have only 7.\footnotemark[7] Left and middle figures are taken from \citep{boomsma2017spherical}.}
     \label{fig:sphere_grids}
     \label{fig:healpix_graph_4}
 \end{figure}
@@ -910,7 +910,7 @@ The performance of HealpixNet is demonstrated on a discrimination problem: the c
 The experiment presented here is similar to the one by \citep{schmelze2017cosmologicalmodel}.
 These maps are similar to those created with gravitational lensing techniques \citep{chang2017curvedsky}.
 The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
-The classification methods were trained to predict a label from an HEALPix map.
+The classification methods were trained to predict a label from a HEALPix map.
 Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
 
 While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible (see \secref{architecture}).
