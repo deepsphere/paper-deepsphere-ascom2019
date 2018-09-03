@@ -241,7 +241,6 @@ Mass mapping
     \item (Probably OK) Beware to not confuse reader with synonyms, e.g. pixelization and sampling.
     \item (I think it is OK) (NP) Check the wording. Be sure that the convolution on SO(3) is clear: we want to say (a) is the one associated with the SO(3) rotation group (b) can be performed  in the spectral domain by a multiplication (c) is equivariant to rotation (d) is described well in Section 2 of \citep{kondor2018clebsch}.
     \item (Everyone should check this) Notation: write element $i$ of vector $y$ as $y_i$, $y(i)$, or $y[i]$? Be consistent. Same for matrices. Keep indices.
-    \item Check links in footnotes.
 	\item (fail - I checked few fonts here: \url{de.sharelatex.com/learn/Font_typefaces}, but none looked better) (TK) Font: do we have to use times (set in the documentclass)? I (MD) find the rendering of math a bit ugly. MD: lmodern is better, but can we use it (w.r.t.\ journal policy)? If equations split out, we can try to arrange them. We should also check which font size we can / have to use.
 \end{itemize}
 
@@ -941,7 +940,7 @@ The experiment presented here is similar to the one by \citep{schmelze2017cosmol
 These maps are similar to those created with gravitational lensing techniques \citep{chang2017curvedsky}.
 The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
 The classification methods were trained to predict a label from a HEALPix map.
-Both our Python implementation\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
+Both our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
 
 While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible (see \secref{architecture}).
 The regression task will most likely be the most practical cosmological application, as described in \citep{gupta2018nongaussianinformation} and \citep{fluri2018deep}.
@@ -1157,7 +1156,7 @@ For example, a machine learning based cosmological inference algorithm can in pr
 This way, imperfections in representation will affect the simulations and real data in the same way, and will not cause biases in the analysis result.
 
 The main product of this contribution is HealpixNet: a small and easy-to-use python package for spherical analysis of cosmological data.
-The code and data used in this work are publicly available\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
+The code and data used in this work are publicly available{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}}.
 The code was designed in a way to enable straightforward modifications of the architectures, so that HealpixNet can easily be used for a number of typical machine learning tasks, such as classification, regression, or segmentation.
 Notably, for a problem of cosmological parameter estimation \citep{fluri2018deep,gupta2018nongaussianinformation}, it is easy to replace the classification loss task with a regression loss.
 It should also be possible use dense layer for an output and perform segmentation tasks, such as masking, flagging, or object detection.
