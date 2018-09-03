@@ -235,7 +235,6 @@ Mass mapping
 	\item (TK) Can we use HEALPix in the name? Check with the main author of HEALPix. MD: what about DeepCosmo or CosmoNet? NP: cosmological data is not necessarily spherical.
 	\item (TK) Check use of British vs American English. Check use of tense.
 	\item (TK) Larger text on figure 2. I (MD) made it one column wide instead of two as it's more an illustration than a central figure to our exposition.
-    \item (MD) check vertex interpretation in Efficient convolutions. Powers of L are weights of paths. We deal with neighborhoods rather than individual nodes.
 	\item (MD) Figure 4: speed for multiple lmax.
     \item (TK) check part sphere notebook and whole sphere
     \item (NP) Put Raphael in the dataset author.
@@ -575,53 +574,60 @@ In \ref{sec:heat_diffusion}, we show that the diffusion of heat on a graph can b
 \end{figure}
 
 While \eqnref{graph_convolution_fourier} is a theoretically well justified definition of the convolution of a graph signal $\f$ by a kernel $h$, it is computationally cumbersome.
-As no general Fast Fourier Transform (FFT) exist for graphs, the execution of the Fourier transform by multiplication of the signal $\f$ by the dense matrix $\U$ costs $\bO(N_{pix}^2)$ operations.
+As no efficient and general fast Fourier transform (FFT) exists for graphs \citep{le2018fgft}, the execution of the Fourier transform by multiplication of the signal $\f$ by the dense matrix $\U$ costs $\bO(N_{pix}^2)$ operations.
 % \footnote{See \citep{le2018fgft} for a comparison between the polynomial definition of filters presented here and a class of fast graph Fourier transforms based on the approximation of the Fourier basis $\U$ by a product of sparse matrices.}
-%\TK{I would just cite the paper, we have not introduced the polynomials at this stage yet.}
-In a CNN, this operation has to be performed for each training step: forward and backward.
-% As current training procedures are not data-efficient and require a lot of samples, a quadratic computational cost in the sample size is a .
-%\TK{what does "data-efficient mean"? removing for now}
+% TK: I would just cite the paper, we have not introduced the polynomials at this stage yet.
+In a neural network, this operation has to be performed for each forward and backward pass.
 As current training procedures require processing of many samples, it would be very slow to perform them for a quadratic computational cost in the sample size.
 Moreover, the eigen-decomposition of the Laplacian $\L$ is needed to obtain the Fourier basis $\U$ in the first place.
 That has a unique cost of $\bO(N_{pix}^3)$ operations.
 
-Fortunately, both of these computational issues can be overcome by defining the convolution kernel $h$ as a polynomial $h_\theta(\lambda) = \sum_{k=0}^K \theta_k \lambda^k$ of degree $K$ parametrised by $K+1$ coefficients $\theta$.
-In that specific case, the filtering operation \eqnref{graph_convolution_fourier} becomes
+Fortunately, both of these computational issues are overcome by defining the convolution kernel $h$ as a polynomial $h_\theta(\lambda) = \sum_{k=0}^K \theta_k \lambda^k$ of degree $K$ parametrised by $K+1$ coefficients $\theta$.
+The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_monomial}
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
-an operation requiring $k$ multiplications of the graph Laplacian matrix $\L$.
-In our case, the Laplacian is extremely sparse, with $8-9$ entries per line, making the filtering operation for a fixed $K$ linear in the number of pixel $N_{pix}$.
-% Moreover, here happens the transition from filtering in the spectral domain to filtering in the vertex domain.
-This operation is performed in the vertex domain.
-The matrix $\L^k$ captures $k$-neighborhoods of each pixel, i.e., $(\L^k)_{ij}$ is non-zero if and only if nodes $v_i$ and $v_j$ are connected by a path of length $k$.
-As such, filtering with a polynomial convolution kernel can be interpreted in the pixel (vertex) domain as a weighted linear combination of the pixels neighbors values. The weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$.
-We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical Euclidean signal-domain convolution to a patch. In the classical setting, the convolution with a patch is simply a weighted sum of the neighbors with the weights defined by the patch. Similarly, each lines of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an "irregular patch of radius $K$" for our irregular domain.
-% \todo{Better vertex domain explanation.
-% \nati{I gave it a try. Should we take a single vertex and explain what heppens to it? Note that I suppressed the following paragraph. }}
-% \TK{For me it's understandable:)}
+% NP: Should we take a single vertex and explain what happens to it?
+where $\L^k$ captures $k$-neighborhoods.\footnote{The 1-neighborhood of a node is the set of nodes that are directly connected to it. The $k$-neighborhood of a node is the set of nodes that are connected to it through paths of length $k$.}
+The entry $(\L^k)_{ij}$ is the sum of all weighted paths of length $k$ between nodes $v_i$ and $v_j$, where the weight of a path is the multiplication of all the edge weights on the path.
+Hence, it is non-zero if and only if nodes $v_i$ and $v_j$ are connected by at least one path of length $k$.
+Filtering with a polynomial convolution kernel can thus be interpreted in the pixel (vertex) domain as a weighted linear combination of neighboring pixel values.
+In the classical setting, convolutions are also weighted local sums.
+The weights are however given by the filter coefficients only, and there is one coefficient per pixel in the patch.
+In the graph setting, the weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$, and there is one coefficient per neighborhood, not node.
+That defines radial filters, which value only depends on the distance to the center, not the direction.
+It is required as there is no way to order and match nodes from the same neighborhood in a general graph.
+The number of nodes in a neighborhood most often even vary from node to node.
+While it may seem odd to restrict filters to be 1D while the sphere is 2D, radial filters are direction-less and result in rotation equivariant convolutions.
+We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical euclidean convolution to a fixed-size patch.
+Similarly, each line of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an irregular patch of radius $K$.
 
-% To make the parallel with classical Euclidean signal-domain convolution, i.e., filtering by multiplying the signal with translated versions of a patch, we here match our filter at the level of neighborhoods\footnote{The 1-neighborhood of a node is the set of nodes which are directly connected to it. The 2-neighborhood is the set of nodes which are connected through paths of length 2.} rather than individual nodes. That is required as there is no notion of ordering in a general graph. For example, in a classical convolution on the grid, the relative ordering of vertices is up, down, left, and right. There is no such ordering on the sphere either, especially if irregularly sampled.
-
-Following \citep{defferrard2016convolutional}, we define our filters as Chebyshev polynomials such as the convolution operation becomes
+Following \citep{defferrard2016convolutional}, we define our filters as Chebyshev polynomials.
+The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_cheby}
 	h_\theta\left(\tL\right) \f = \U \left(\sum_{k=0}^K \theta_k T_k\left(\tilde{\bLambda}\right) \right) \U\trans \f = \sum_{k=0}^K \theta_k T_k\left(\tL\right) \f,
 \end{equation}
-where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}$ is the rescaled Laplacian with eigenvalues $\tilde{\b \Lambda}$ in $[-1, 1]$ and $T_k(\cdot)$ is the Chebyshev polynomial of degree $k$, defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$. While definitions \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby} both allow the representation of the same set of filters, Chebyshev polynomials are preferred as they form an orthogonal basis on the interval $[-1, 1]$. Moreover, they factor out $\tL^{k-2}$ from $T_k(\tL)$, e.g., the 3-neighborhood is not mixed with the 5-neighborhood. That results in easier learning when optimizing the parameters $\theta$.
-Finally, the coefficients can be computed such as the truncated Chebyshev expansions gives an approximate minimax polynomial of a given filter \citep{hammond2011wavelets}. While that is irrelevant when learning filters, it is useful when smoothing a signal on the sphere by filtering it with an approximated low-pass filter.
-In practice, we found out in our experiment that Chebyshev polynomials are slightly more stable than the monomials used in~\cite{khasanova2017graphomni} (i.e. optimizing directly the $\theta_k$ in \eqnref{graph_convolution_monomial}).
-We believe that this is due to their orthogonality (as explained above) and uniformity\footnote{The amplitude of Chebyshev polynomials is more or less constant over the domain $[-1, 1]$ independently of the order $k$. On the contrary the amplitude of $x^k$ is very different for $|x|\approx 0$ and $|x| \approx 1$.}.
-% \nati{I added a sentence and I think we should not give much more details here. If we do an experiment, we can comment in the experiment section.}
-% \todo{(i) scale of $\theta_k$: they are mostly uniform for Chebyshev polynomials, end exploding for monomials. Though SGD implicitly imposes a uniform prior on the learned parameters.}
-% \todo{(ii) numerical stability of $\L^k \f$ v.s. $T_k(\L) \f$}
-% \todo{(iii) in the code, initialize $\theta_k$ with stdev adapted to $F_{in}$ and $K$}
+where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}$ is the rescaled Laplacian with eigenvalues $\tilde{\b \Lambda}$ in $[-1, 1]$.
+$T_k(\cdot)$ is the Chebyshev polynomial of degree $k$ defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$.
+While definitions \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby} both allow the representation of the same filters, we found in our experiments that optimizing $\theta$ in \eqnref{graph_convolution_cheby} is slightly more stable than $\theta$ in \eqnref{graph_convolution_monomial}.
+We believe that this is due to (i) their almost orthogonality in the spectral and spatial domains, and (ii) their uniformity.\footnote{The amplitude of the Chebyshev polynomials $T_k(x)$ is mostly constant over the domain $[-1, 1]$, independently of the order $k$. On the contrary, the amplitude of the monomials $x^k$ is very different for $|x|\approx 0$ and $|x| \approx 1$.}
+% MD: SGD implicitly imposes a uniform prior on the learned parameters.
+% Moreover, they factor out $\tL^{k-2}$ from $T_k(\tL)$, e.g., the 3-neighborhood is not mixed with the 5-neighborhood.
+% That results in an easier optimization of the parameters $\theta$.
+Moreover, the coefficients can be computed such as the truncated Chebyshev expansions is an approximate minimax polynomial of a given filter \citep{hammond2011wavelets}.
+While that is irrelevant when learning filters, it is useful for example when smoothing a signal on the sphere by filtering it with an approximated low-pass filter.
+% \todo{numerical stability of $\L^k \f$ v.s. $T_k(\L) \f$}
+% NP: we should not give much more details here. If we do an experiment, we can comment in the experiment section.}
+Finally, note that while the graph convolution \eqnref{graph_convolution_fourier} is motivated in the spectral domain, definitions \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby} are implementations in the vertex domain.
 
-Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the dense vector $\f$ with the sparse matrix $\tL$.
-The cost of one such multiplication is $\bO(|\E|)$. By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution is thus reduced to $\bO(N_{pix})$ operations.
-That is much more efficient than filtering with spherical harmonics, even though the HEALPix was designed as an iso-latitude sampling to leverage a fast spherical transform.
+Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the vector $\f$ with the sparse matrix $\tL$.
+% In our case, the Laplacian is extremely sparse, with 8 to 9 entries per line (out of $N_{pix}$).
+The cost of one such multiplication is $\bO(|\E| + |\V|)$.
+By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution reduces to $\bO(N_{pix})$ operations.
+That is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
 That is especially true for smooth kernels which require a low polynomial degree $K$.
 \figref{filtering_speed} compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
-A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform implemented by the highly optimized library used by HEALPix, \pkg{libsharp} \citep{reinecke2013libsharp}.
+A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
 
 \subsection{Coarsening and Pooling}
 
