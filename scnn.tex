@@ -248,101 +248,93 @@ Mass mapping
 	\centering
     % \includegraphics[width=\linewidth]{architecture}
 	\includegraphics[width=\linewidth]{figure_architecture_v3}
-	\caption{Overall network architecture, showing here two convolutional layers acting as feature extractors followed by a fully connected layer with softmax acting as the classifier.
-    %\nati{add the stat layer?}
-    %\TK{added stats layer to figure text, hope that's OK}
-    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling. While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted. In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph. Graphs are versatile data structures which can model any sampling, even irregular or partial. Second, we propose to exploit a hierarchical pixelization of the sphere for the pooling operation. It allows the network to analyze the data at multiple scales while preserving the spatial localization of features. This figure shows a network which operates on the whole sphere. The process is, however, the same when working with parts of sphere, except that the graph is only built for the part of interest.}
+	\caption{Overall network architecture, showing here three convolutional layers acting as feature extractors followed by three fully connected layers with softmax acting as the classifier.
+    A convolutional layer is based on five operations: convolution, non-linearity, batch normalization, down-sampling, and pooling.
+	While most operations are agnostic to the data domain, the convolution and the down-sampling have to be adapted.
+	In this paper, we propose first to model the sphere with a graph and to perform the convolution on the graph.
+	Graphs are versatile data structures which can model any sampling, even irregular or partial.
+	Second, we propose to exploit a hierarchical pixelization of the sphere for the down-sampling operation.
+	It allows the network to analyze the data at multiple scales while preserving the spatial localization of features.
+	This figure shows a network that operates on the whole sphere.
+	The process is the same when working with partial observations, except that the graph is only built for the region of interest.}
 	\label{fig:architecture}
 \end{figure*}
 
 \section{Introduction}
 \label{sec:intro}
 
-%\subsection{Motivation}
+% Structure:
+  % High-level intro
+  % Desiderata for a method
+  % Related methods / previous work
+  % Our method
+  % Experiments
 
 Cosmological and astrophysical data often come in the form of spherical sky maps.
 Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models.
 Cosmological information contained in these maps is usually extracted using summary statistics, such as the power spectra or higher order correlation functions.
 Convolutional Neural Networks (CNN) have been proposed as an alternative analysis tool in cosmology thanks to its ability to automatically design relevant statistics to maximise the precision of the parameter estimation
 \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring,ravanbakhsh2017estimating}.
-This is possible as CNNs have the capacity to build rich models and capture complicated, non-linear patterns, which are often present in the data.
+This is possible as neural networks have the capacity to build rich models and capture complicated, non-linear patterns, which are often present in the data.
+CNNs are particularly well suited for analysis of cosmological data as their trainable weights are shared across the domain, i.e., the network does not have to relearn to detect objects or features at every spatial location.
 
-% \TK{I would move the discussion about this to a later place in the paper}
-% Convolutional Neural Networks (CNNs) are particularly well suited for analysis of cosmological data due to the translation invariance built into their architecture.
-% Indeed, sky maps are rotation invariant, which means that rotating maps on the sphere doesn't change their interpretation.
-% Only the statistics of the maps is relevant.
-% The location of the map on the sky is always fixed (by where the telescope was looking), and most of the models tested are homogeneous and isotropic (the cosmological principle).
-% As such, learned weights can be shared across the sphere: the network does not have to relearn to detect objects or features at every spatial location.
-
-% \todo{@Tomek: can you explain why we care about parts of the sphere? (that is an advantage of the graph model over the spherical harmonics)}
-% \todo{@Tomek: How is the data acquired? Do telescopes and satellites take measurements according to the HEALPix sampling? (it is also an advantage of our method to be agnostic to the sampling, which might be useful to researchers working with missing data or different models)}
-% \nati{@Tomek: I think what Michael has in mind is that the graph approach is very versatile and extendable. It can be used with other samplings (even irregular ones) or only part of the sphere. This flexibility might be an advantage to mention. In particular, compared to~\citep{cohen2018sphericalcnn} it allows us to do only do the required computation when only a part of the sphere is considered.}
-
-So far these algorithms have mostly been demonstrated on Euclidean domains, such as flat images.
-Perhaps the most straightforward approach to the analysis of spherical data is to divide it into small chunks and project those on flat 2D surfaces.
-% \todo{Tune according to the story in the related work.}
-While this approach has been demonstrated to work \citep{fluri2018deep,gupta2018nongaussianinformation,schmelze2017cosmologicalmodel,gillet2018deeplearning}, it may be more natural for some applications and accurate to work directly on the sphere.
+So far these algorithms have mostly been demonstrated on Euclidean domains, such as images.
 The main challenge in designing a CNN on the sphere is to define a convolution operation that is suitable for this domain, while taking care of the necessary irregular sampling.
-Furthermore, to be able to train the network efficiently, the convolution has to be performed fast.
-Another important feature is for a CNN to be able to work on subpart of the sphere, as for many cosmological observations cover only a part of the sky.
+Moreover, the designed convolution, and resulting neural network, should possess the following three key characteristics.
+First, the convolution should be equivariant to rotation, meaning that a rotation of the input implies the same rotation of the output.
+Sky maps are rotation invariant: rotating maps on the sphere doesn't change their interpretation.
+Only the statistics of the maps are relevant.
+Depending on the task, we want the CNN to be either equivariant or invariant to rotation.
+Second, to be able to train the network in reasonable time, the convolution has to be computationally efficient.
+Third, a CNN should work well on parts of the sphere, as many cosmological observations cover only a part of the sky.
 For ground-based observations this can be due to limited visibility of the sky from a particular telescope location, and for space-based instruments due to masking of the galactic plane area (see for example \figref{example_maps}).
 
 % cohen2017convolutional (ICML workshop) and cohen2018sphericalcnn (ICLR best paper) are redundant
-A first direction to generalize CNNs to spherical data was to apply a standard 2D CNN to a grid discretisation of the sphere~\citep{boomsma2017spherical,su2017sphericalconv,coors2018spherenet}.
-While this approach uses the well-developed 2D convolution and hierarchical pooling, it is restricted to specific grid sampling schemes that are highly irregular, and hence inherently deform the domain where the data is supported.
-A second direction attempted by~\citep{cohen2018sphericalcnn} was to leverage the spherical Fourier transform and to perform the convolution associated to the SO(3) rotation group in the spectral domain, thanks to the convolution theorem.
-Contrarily to the first direction, the resulting convolution is rotational equivariant, meaning that a rotation of the input implies the same rotation of the output.
-This is an important property as translation invariance is probably one of the main reasons why classic CNNs are successful in the first place.
-Nevertheless, this approach is computationally expensive even if a fast spherical Fourier transforms is used.
-%(They exist for particular samplings.)
-Finally, the use of a graph to model the discretised sphere was considered by~\citep{khasanova2017graphomni}, towards the goal of designing a network that is invariant to rotations.
-While its architecture accommodates these invariances on the sphere and remains fairly efficient, it did not take advantage of a hierarchical pixelisation and use a simple grid discretisation of the sphere.
-Moreover, the statistical layer, which introduces the invariance, needs to be hand-crafted to capture statistics of interest.
+One direction to generalize CNNs to spherical data is to apply a standard 2D CNN to a grid discretisation of the sphere~\citep{boomsma2017spherical,su2017sphericalconv,coors2018spherenet}.
+An alternative is to divide the sphere into small chunks and project those on flat 2D surfaces \citep{fluri2018deep,gupta2018nongaussianinformation,schmelze2017cosmologicalmodel,gillet2018deeplearning}.
+While these approaches use the well-developed 2D convolution and hierarchical pooling, they are not equivariant to rotation.
+Another direction is to leverage the spherical Fourier transform and to perform the convolution associated to the SO(3) rotation group in the spectral domain, thanks to the convolution theorem \citep{cohen2018sphericalcnn, esteves2017sphericalcnn}.
+While the resulting convolution is equivariant to rotation, this approach is computationally expensive, even if a fast spherical Fourier transform is used.
+Moreover, all those methods cannot be much accelerated when maps only span a part of the sky.
 
-This work is the first to design a spherical convolutional neural network for cosmological applications.
-Previously, several other machine learning algorithms were extended to the sphere, often also including the third, radial direction.
-Most notably, sparsity-based methods were developed, such as wavelets \citep{Leistedt2013flaglets,Leistedt2015spinwavelets}, ridgelets \citep{McEwen2015ridgelet} and curvelets \citep{Chan2017curvelets,Starck2009polarized}.
+% MD: I don't see what the following brings to the paper.
+% This work is the first to design a spherical convolutional neural network for cosmological applications.
+% Previously, several other machine learning algorithms were extended to the sphere, often also including the third, radial direction.
+% Most notably, sparsity-based methods were developed, such as wavelets \citep{Leistedt2013flaglets,Leistedt2015spinwavelets}, ridgelets \citep{McEwen2015ridgelet} and curvelets \citep{Chan2017curvelets,Starck2009polarized}.
 
-%\todo{better identify the shortcomings: (i) part of sphere / missing data, (ii) computational efficiency, (iii) equivarience}
-% \nati{The part of the sphere/missing data is not really there, but I still do not know how to include it!}
-
-We introduce an efficient spherical CNN formulation which uses (i) convolutions on graphs and (ii) hierarchical pooling, while working with the Hierarchical Equal Area isoLatitude Pixelisation (HEALPix) sampling.
-The main idea is to represent the sphere $S^2$, a 2-dimensional manifold embedded in $\mathbb{R}^3$, as a graph of connected pixels.
-The length (or weight) of the shortest path between two pixels is an approximation of the geodesic distance between them on the manifold.
-The use of this approach is enabled by recent developments in graph signal processing, where fundamental tools, such as for example the Fourier transform, were defined for graphs \citep{shuman2013emerging}.
-Our approach uses the graph CNN formulation introduced by \citep{defferrard2016convolutional}, which can accommodate any sampling of the sphere.
-Using a $k$-nearest neighbours graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
-This is the lowest possible complexity for a convolution operation without approximations (e.g., by sketching).
+Our spherical CNN leverages convolutions on graphs and hierarchical pooling to address all three identified shortcomings: (i) rotation equivariance, (ii) computational efficiency, and (iii) partial sky observations.
+The main idea is to model the discretised sphere as a graph of connected pixels: the length of the shortest path between two pixels is an approximation of the geodesic distance between them.
+This approach is enabled by recent developments in graph signal processing, where fundamental tools, such as the Fourier transform, were defined for graphs \citep{shuman2013emerging}.
+The graph convolution has been explored previously for omnidirectional imaging \citep{khasanova2017graphomni}, with a different down-sampling operation.
+Our pooling strategy exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
+% Compared with~\citep{khasanova2017graphomni}, our work does not need hand-chosen statistics nor dynamic pooling.
+We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, which can accommodate any sampling of the sphere.
+As the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored the method to that particular sampling and call it HealpixNet.
+HealpixNet is however easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
 The flexibility of modeling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
-Our hierarchical pooling strategy exploits a hierarchical pixelisation of the manifold to analyse the data at multiple scales.
-% Such hierarchical pixelisations of the sphere have been well studied.
-
-In this work we present and release HealpixNet\footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}, an algorithm and software package which implements an efficient CNN on HEALPix maps. It is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the-box for cosmological applications.
+Using a $k$-nearest neighbours graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
+This is the lowest possible complexity for a convolution without approximations.
 HealpixNet is readily apt to solve four tasks: (i) global classification (i.e., predict a class from a map), (ii) global regression (i.e., predict a set of parameters from a map), (iii) dense classification (i.e., predict a class for each pixel of a map), and (iv) dense regression, (i.e., predict a set of maps from a map).
-As HEALPix~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored our method to that particular sampling.
-The elements of the graph that depend on the sampling are:
-(i) the choice of neighboring pixels when building the graph, and
-(ii) the choice of parent pixels when building the hierarchy of layers.
-% It is also possible to use multiple HEALPix maps within our framework and use datasets in form of ``shells''.
-% These shells can span the radial direction, so that a tomographic analysis can be performed, or different frequencies, in case of data from observations in radio frequencies.
-% \nati{I do not know about that last point. Yes we can do it. But a) we did not do it and b) the filter will be spherical in all directions includeding the radial one... I am not sure this is a disirable features.}
-% \todo{I think you got it wrong there. I guess the idea is that each shell would be a feature map, i.e., the graph signal would be multi-dimensional.}
-% \TK{OK, let's talk about it.}
+Input data are spherical maps with a single value per pixel, such as the CMB temperature, or multiple values per pixel, such as surveys at multiple radio frequencies.
+
 %\nati{I am not sure this goes there...} Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
 
-We give a practical demonstration of the application of our package to cosmological model discrimination using maps of projected mass distribution on the sky \citep{chang2017curvedsky}.
+We give a practical demonstration of HealpixNet on cosmological model discrimination using maps of projected mass distribution on the sky \citep{chang2017curvedsky}.
 This kind of maps can be created using the gravitational lensing technique \citep[see][for review]{BartelmannSchneider2001weak}.
 Our maps are similar to the ones used by \citep{schmelze2017cosmologicalmodel}.
-In a simplified scenario, we classify convergence maps on parts of a sphere into two cosmological models.
-These models were designed to have very similar angular power spectrum for the angular wavenumbers $\ell < 1000$.
-We compare the performance of our spherical CNN to a baseline algorithm, an SVM classifier which takes pixel histograms or power spectrum densities (PSDs) of these maps as input.
+In a simplified scenario, we classify partial convergence maps into two cosmological models.
+These models were designed to have very similar angular power spectrum.
+We compare the performance of HealpixNet to a baseline algorithm: an SVM classifier that takes pixel histograms or power spectrum densities (PSDs) of these maps as input.
 The comparison is made as a function of the additive noise level and the area of the sphere used in the analysis.
-% Results show that our model is better at discriminating the maps and is more resilient to noise.
+Results show that our model is always better at discriminating the maps, especially in the presence of noise.
+HealpixNet is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the-box for cosmological applications.
+Code and examples are available online.{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}}
 
-The paper is organized as follows.
-In \secref{related}, we describe existing approaches to convolutions on spheres, graphs, and manifolds.
-\secref{method} exposes the construction of a graph given the HEALPix sampling of a sphere and defines the convolution operation.
-Finally, \secref{experiments} presents our experimental results on the weak lensing mass map classification problem. There we compare our method to two standard benchmarks and show its superiority.
+% MD: I usually find those paragraphs boring and skip them when reading. Our intro is long enough already. Feel free to add it back if you think it's necessary.
+%The paper is organized as follows.
+%In \secref{related_work}, we describe existing approaches to convolutions on spheres, graphs, and manifolds.
+%\secref{method} exposes the construction of a graph given the HEALPix sampling of a sphere and defines the convolution operation.
+%Finally, \secref{experiments} presents our experimental results on the weak lensing mass map classification problem. There we compare our method to two standard benchmarks and show its superiority.
 %We conclude in \secref{conclusion}.
 
 % Cite the following papers:
@@ -401,15 +393,11 @@ A CNN is composed of the following main building blocks~\citep{lecun1998cnn}:
 (v), optionally,  normalization.\footnote{\citep{ioffe2015batchnorm} have shown that batch normalization helps training. We verified this experimentally in our setting as well.}
 Our architecture is depicted in~\figref{architecture} and discussed in greater details in \secref{architecture}. As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations, however, need to be generalized from Euclidean domains to the sphere.
 
-On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of 5x5 pixels) in the signal domain.
+On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of $5 \times 5$ pixels) in the signal domain.
 Likewise, down-sampling can be achieved by taking one pixel out of $n$.
 Because of the irregular sampling, there is no straightforward way to define a convolution on the sphere directly in the pixel domain; convolutions are most often performed using spherical harmonics.
 In our method we also use the spectral domain to define the convolution.
 The implementation, however, does not need a direct access to the spectrum, which is computationally more efficient (see \secref{efficient_convolution}).
-% We will therefore use the spectral domain to define the convolutions
-% \footnote{Note that we only use the spectrum to define the convolution.
-% The implementation however does not need a direct access to the spectrum, which is computationally much more efficient. See \secref{efficient_convolution}.}
-% \TK{moving footnote to the main text }
 The gist of our method is to define the convolution operation on a sphere using a graph, and the down-sampling operation using a hierarchical pixelisation of the sphere.
 
 
@@ -464,7 +452,7 @@ High-resolutions HEALPix maps easily reach millions of pixels.
 
 \subsection{Graph construction}
 
-Our graph is constructed as an approximation of the continuous 2D manifold that is the surface of the sphere.
+Our graph is constructed as an approximation of sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$,
 Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity.
 While our construction will not exactly respect the setting defined by \citep{belkin2007convergence}, we observe empirically strong evidence of convergence.
 
@@ -600,6 +588,7 @@ The number of nodes in a neighborhood most often even vary from node to node.
 While it may seem odd to restrict filters to be 1D while the sphere is 2D, radial filters are direction-less and result in rotation equivariant convolutions.
 We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical euclidean convolution to a fixed-size patch.
 Similarly, each line of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an irregular patch of radius $K$.
+Hence, filters designed as polynomials of the Laplacian have local support in the vertex domain.
 
 Following \citep{defferrard2016convolutional}, we define our filters as Chebyshev polynomials.
 The filtering operation \eqnref{graph_convolution_fourier} becomes
@@ -838,7 +827,7 @@ The optimization is performed by computing an error gradient w.r.t.\ all the par
 where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batch. Batches are used instead of single samples to gain speed by exploiting the parallelism afforded by modern computing platforms.
 
 \section{Related work}
-\label{sec:related}
+\label{sec:related_work}
 
 \begin{figure}
     \centering
@@ -918,7 +907,7 @@ Second, they did not take advantage of a hierarchical pixelization of the sphere
 While that operation has proved its worth to pool sequences of varying length, such as sentences in language models, it is undesired in our context as it is not local and destroys spatial coherence.
 Third, they introduced a statistical layer --- an operation that computes a set of statistics from the last feature maps --- to provide invariance to rotation.
 We propose to use the idea of fully convolutional networks (FCNs) instead (see \secref{architecture}).
-While statistics have to be hand-chosen to capture relevant information for the task, the filters in a FCN are trained end-to-end to capture relevant information.
+While statistics have to be hand-chosen to capture relevant information for the task, the filters in a FCN are trained end-to-end to capture it.
 
 Many formulations of graph neural networks, reviewed by \citep{bronstein2017review} and \citep{hamilton2017review}, have been proposed.
 For this contribution, we chose the formulation of \citep{defferrard2016convolutional} as its root on strong graph signal processing theory makes the concept of convolutions and filters explicit \citep{shuman2013emerging}.
