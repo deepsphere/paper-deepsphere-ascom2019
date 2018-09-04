@@ -389,7 +389,7 @@ A CNN is composed of the following main building blocks~\citep{lecun1998cnn}:
 (ii) a non-linearity,
 (iii) a down-sampling operation,
 (iv) a pooling operation, and
-(v), optionally,  normalization.\footnote{\citep{ioffe2015batchnorm} have shown that batch normalization helps training. We verified this experimentally in our setting as well.}
+(v), optionally,  normalization.\footnote{Batch normalization has been shown to help training \citep{ioffe2015batchnorm}. We verified this experimentally in our setting as well.}
 Our architecture is depicted in~\figref{architecture} and discussed in greater details in \secref{architecture}. As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations, however, need to be generalized from Euclidean domains to the sphere.
 
 On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of $5 \times 5$ pixels) in the signal domain.
