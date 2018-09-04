@@ -1122,45 +1122,39 @@ An example of filter interpretation was demonstrated in \citep{Ribli2018learning
 \section{Conclusion}
 \label{sec:conclusion}
 
-In this contribution we presented HealpixNet: a spherical convolutional neural network for the HEALPix sampling.
-The core of our method is the use of a graph to represent the pixel grid on the sphere.
-This allows us to leverage the advantages of the graph convolution; it is both efficient, with a complexity of $\mathcal{O}(N_{pix})$, and flexible, which allows to work only on a part of the sphere.
-Spherical properties of the domain are still captured well.
-The method presented here restricts the shape of the filters learned by the network to be radial.
-While this may be a less general design compared to the one used by conventional CNNs on flat images, we found it to still work efficiently for our test cases.
-The layered structure of the network can partially compensate for that.
-% Further generalizations to non-radial filters may be possible [cite?]\TK{update here}, but we leave it to future work.
+The main product of this contribution is HealpixNet, a small and easy-to-use python package for the spherical analysis of cosmological data.
+The code was designed so that HealpixNet can easily be used for typical machine learning tasks, such as classification and regression, both dense and global.
+% dense: segmentation tasks, such as masking, flagging, or object detection
+The core of our method is the use of a graph to represent the discretised sphere.
+This allows us to leverage the advantages of the graph convolution.
+It is both efficient, with a complexity of $\bO(N_{pix})$, and flexible, which allows HealpixNet to efficiently work on parts of the sphere.
+The spherical properties of the domain are well captured: the graph Fourier modes are close to the spherical harmonics.
+Filters are restricted to be radial for the convolution operation to be equivariant to rotation.
+HealpixNet can then be made either equivariant or invariant to rotation.
+Equivariance is not perfect as small imprecisions due to the sampling cause the action of a graph filter to slightly depend on the location.
+That is however not an issue in practice.
 
 We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps, designed similarly to \citep{schmelze2017cosmologicalmodel}.
 The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are similar.
-We compared the performance of the HealpixNet CNN versus that of two SVM-based classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
-% Notably, HealpixNet maintains good classification accuracy even for high noise levels and part-sky areas.
-HealpixNet performs better than the angular power spectrum and the histogram classifiers for all considered cases.
+We compared the performance of HealpixNet versus that of two SVM classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
+HealpixNet performs better than the two baselines for all considered cases.
 The advantage is small for large, noise-free maps, and grows up to 10\% for smaller, noisier data.
 
-We show that modeling the discretised sphere by a graph enables an efficient convolution operation on HEALPix sampling.
-Graph-based representation of the sphere can display small imprecisions in rotation invariance, the result of which is that an action of a graph filter slightly depends on the location.
-For applications that can tolerate this property, a graph-based representation may be a worthwhile alternative.
-For example, a machine learning based cosmological inference algorithm can in principle tolerate this property, as it requires the simulations to be represented the same way as observations anyway.
-This way, imperfections in representation will affect the simulations and real data in the same way, and will not cause biases in the analysis result.
+Spherical CNNs are so far mostly used for omnidirectional imaging.
+Many scientific fields, such as weather or climate modelling, would however benefit from an efficient and versatile spherical CNN.
+With this work, we hope to demonstrate and help democratize the use of those tools for spherical data analysis.
+% Fields: planets, molecules?, atoms.
 
-The main product of this contribution is HealpixNet: a small and easy-to-use python package for spherical analysis of cosmological data.
-The code and data used in this work are publicly available{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}}.
-The code was designed in a way to enable straightforward modifications of the architectures, so that HealpixNet can easily be used for a number of typical machine learning tasks, such as classification, regression, or segmentation.
-Notably, for a problem of cosmological parameter estimation \citep{fluri2018deep,gupta2018nongaussianinformation}, it is easy to replace the classification loss task with a regression loss.
-It should also be possible use dense layer for an output and perform segmentation tasks, such as masking, flagging, or object detection.
+As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
+Furthermore, the influence of irregular sampling on the convolution's equivariance to rotation should be empirically quantified and ideally theoretically bounded.
+Further comparison of HealpixNet to other spherical CNN formulations, with different sampling schemes, would also be worthwhile.
 
-As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics. Furthermore, the influence of the irregular sampling on the rotational equivariance should be quantified empirically and ideally bounded theoretically.
-Further comparison of HealpixNet to other spherical CNN algorithms, with different sampling schemes, would also be worthwhile.
-
-% Hence, it relaxes the iso-latitude constraint on sampling schemes who aim to enable fast convolutions.
-% \TK{I would move the info about possible relaxation of the iso-latitude thing to a separate paragraph at the end on conclusions - future prospects?}
-% this relaxation might enable researchers to consider sampling sets with different properties.
-% \TK{this I don't understand}
+The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
+In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
 
 \section*{Acknowledgements}
 
-This work was supported by a grant from the Swiss Data Science Centre (SDCS) under project ID \textit{sd01 - DLOC:  Deep Learning for Observational Cosmology} and grant number 200021\_169130 from the Swiss National Science Foundation.
+This work was supported by a grant from the Swiss Data Science Centre (SDCS) under project \textit{DLOC:  Deep Learning for Observational Cosmology} and grant number 200021\_169130 from the Swiss National Science Foundation.
 We thank Jean-François Cardoso for helpful discussions about the spherical harmonics.
 We thank Alexandre Refregier, Adam Amara, Thomas Hofmann and Fernando Perez-Cruz for advice and helpful discussions.
 We thank Hamsa Padmanabhan for testing use cases of the code.
