@@ -165,7 +165,6 @@
 \author[EPFL]{Michaël Defferrard}
 \author[ETHZ]{Tomasz Kacprzak}
 \author[ETHZ]{Raphael Sgier(?)}
-% \author{TBD}
 
 \address[SDSC]{Swiss Data Science Center (SDSC), Zurich, Switzerland}
 \address[EPFL]{Institute of Electrical Engineering, EPFL, Lausanne, Switzerland}
@@ -174,30 +173,31 @@
 \begin{abstract}
 
 %Convolutional Neural Networks (CNNs) are becoming an important analysis tool in cosmology and astrophysics.
-% Michaël: useful info? To me this is not an argument for our approach. Maybe we have to expand it?
+% MD: useful info? To me this is not an argument for our approach. Maybe we have to expand it?
 
 % Architectures are then designed similarly to the classical CNNs used for image analysis.
-% HealpixCNN (???) uses Tensorflow as the underlying engine and can utilize most of it functionalities.
-% Michaël: not relevant for the abstract in my opinion
+% HealpixNet uses Tensorflow as the underlying engine and can utilize most of it functionalities.
+% MD: not relevant for the abstract in my opinion
 
-Convolutional Neural Networks (CNNs) are now a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence.
+Convolutional Neural Networks (CNNs) are a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence.
 So far, these networks have mostly been developed for regular Euclidean domains such as those supporting images, audio, or video.
 Because of their success, CNN-based methods are becoming increasingly popular in Cosmology.
-Cosmological data often comes in a form of spherical maps, which makes the use of traditional CNNs more complicated.
-The commonly used pixelzation scheme for spherical maps is Hierarchical Equal Area isoLatitude Pixelisation (HEALPix).
+Cosmological data often comes as spherical maps, which make the use of traditional CNNs more complicated.
+The commonly used pixelization scheme for spherical maps is the Hierarchical Equal Area isoLatitude Pixelisation (HEALPix).
 We present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
-We construct a spherical CNNs by representing the sphere as a graph.
+The spherical CNN is constructed by representing the sphere as a graph.
 Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
-Using the graph-based representation, we define many of the standard CNN operations, such as convolution and pooling, with filters restricted to being radial.
+Using the graph-based representation, we define many of the standard CNN operations, such as convolution and pooling.
+With filters restricted to being radial, our convolutions are equivariant to rotation on the sphere, and HealpixNet can be made invariant or equivariant to rotation.
 This way, HealpixNet is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
 % TBD if we include it
-% This approach is computationally more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
-An advantage of this representation is that the convolution operations with this approach are efficient, which enables the algorithm to run fast.
+This approach is computationally more efficient than using spherical harmonics to perform convolutions.
+% An advantage of the graph representation is that the convolution operations are efficient, which enables the CNN to run fast.
 We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
-Our experimental result shows that the performance of HealpixNet to always be better or equal to both of these baselines.
+Our experimental results show that the performance of HealpixNet is always superior or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
-Finally, we propose a visualization of filters learned by the HealpixNet from the mass maps as some analysis tool for the neural network.
-Code and examples are available at \todo{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}.
+Finally, we show how learned filters can be visualized to introspect the neural network.
+Code, data, and examples are available at \url{https://github.com/SwissDataScienceCenter/HealpixNet}.
 
 %As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs.
 % Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
