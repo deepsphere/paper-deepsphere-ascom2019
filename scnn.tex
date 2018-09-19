@@ -978,8 +978,8 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
 We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
 
-The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}.
-We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=1$, instead of $z=1.5$.
+The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}. A brief overview about the map making procedure used in \pkg{UFalcon} is given in \recref{convergence_mass_maps} and the specific simulation setup is given in \recref{simulation_setup}.
+We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=0.8$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
 For each class, we generate $30$ simulations.
 Out of the $60$ simulations, $20$ are kept as the test set, and $20\%$ of the remaining training data is used as a validation set, to monitor the training process and select the hyper-parameters.
@@ -1304,6 +1304,31 @@ For a fair comparison between HealpixNet and the baselines, we have to ensure th
 	\caption{Error w.r.t.\ the number of training samples for histogram features and the linear SVM (setting: order $o=2$, relative noise level 1.5). The error clearly converged and adding more samples will not help. The validation error might be slightly below the training error as it is used to select hyper-parameters.}
 	\label{fig:hist_error_evolution}
 \end{figure}
+
+\section{Convergence Mass Maps}
+\label{sec:convergence_mass_maps}
+
+In the following we describe the weak lensing map-making pipeline \pkg{UFalcon} (ultra fast lightcone) developed in \citep{sgier2018fastgeneration} and how it has been used to generate data used in the present work. The data consist of two-dimensional convergence maps on the full sphere, which represent the dimensionless, weighted and projected mass along the light of sight and determines the lensing of source galaxies an observer located on earth would see.
+
+The matter content of the universe consists mostly of dark matter and is therefore mainly responsible for the large scale structure evolution of the universe. The effect of weak gravitational lensing, in which the light from distant galaxies is lensed by the matter distribution between the observer and the sources, is therefore dominated by dark matter \citep[see][for a review of gravitational lensing]{bartelman2010gravitationallensing}. In order to obtain a convergence map characterising the gravitational lensing of distance sources, one has to start with accurate simulations of the dark matter distribution. This is achieved through cosmological N-Body simulations, which evolve a chosen number of dark matter particles $N_\mathrm{part}^\mathrm{sim}$ within a specific simulation volume $V_\mathrm{sim}$ under the influence of gravity across cosmic time-scales. The simulation outputs the positions of the particles at user-specific time-steps. These time-steps correspond to redshifts $z$, by which the spectrum is shifted the observer would measure. A redshift of $z=0$ correspond to the present time and higher redshifts to earlier times.
+
+Since the convergence map characterises the dark matter lenses at different redshifts, one has to first construct a lightcone. The lightcone represents the volume of the universe around the observer, where the radius represents the distance the light from distant galaxies at different times and locations has to travel to the observer. Therefore, the particles outputted at different redshifts (time-steps) of the simulation are concentrically arranged in shells of constant redshift around the observer (each redshift $z$ corresponds to a comoving distance away from the observer $\chi(z)$), which is located at redshift $z=0$ (see Figure \ref{sketch_lightcone_simulation}). The shells are then weighted by a weak lensing specific weight $W_b$ and projected onto the sphere for each pixel $\theta_\mathrm{pix}$, resulting in a convergence map
+\begin{equation}
+\kappa (\theta_\mathrm{pix}) \sim \sum_b W_b \frac{V_\mathrm{sim}}{N_\mathrm{part}^\mathrm{sim}} \frac{n_p (\theta_\mathrm{pix}, \Delta \chi_b)}{\mathcal{D}^2 (z_b)}  \, ,
+\end{equation}
+where $n_p$ represents the number of particles in a specific pixel on the shell $\Delta \chi_b$. The convergence map depends on the cosmological parameters.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=\linewidth]{sketch_lightcone_simulation}
+	\caption{Left: Dark matter density field simulated using L-PICOLA for specific cosmological parameters. Right: Sketch of the lightcone constructed by arranging particles at different redshifts in concentric shells around the observer located at $z=0$.}
+	\label{fig:sketch_lightcone_simulation}
+\end{figure}
+
+\section{Simulation Setup}
+\label{sec:simulation_setup}
+
+The data is generated for the present analysis is based on the fast approximate N-Body simulation code \pkg{L-PICOLA} \citep{howlett2015lpicola}. For our purposes, we chose a simulation volume $V_\mathrm{sim} = (4200 \, h^{-1}\, \mathrm{Mpc})^3$, a total number of particles $N_\mathrm{part}^\mathrm{sim} = 1024^3$ placed on a mesh of size $N_\mathrm{mesh}^\mathrm{sim} = 2048^3$. The simulation was then performed 30 times with different seeds for each of the two $\Lambda$CDM cosmological models described in section \secref{data} covering a redshift range from $z = 0.1$ to $z = 0.8$. The \pkg{L-PICOLA} were performed in lightcone mode, where the simulation output is already arranged as a lightcone. Here we chose a redshift-shell thickness of $\Delta z = 0.01$. 
 
 \section*{Bibliography}
 % \bibliographystyle{elsarticle-harv}
