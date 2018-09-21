@@ -978,7 +978,7 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
 We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
 
-The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}. A brief overview about the map making procedure used in \pkg{UFalcon} is given in \recref{convergence_mass_maps} and the specific simulation setup is given in \recref{simulation_setup}.
+The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}. A brief overview about the map making procedure used in \pkg{UFalcon} is given in \ref{sec:convergence_mass_maps} and the specific simulation setup is given in \ref{sec:simulation_setup}.
 We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=0.8$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
 For each class, we generate $30$ simulations.
