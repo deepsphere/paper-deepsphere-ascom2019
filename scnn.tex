@@ -377,7 +377,7 @@ Code and examples are available online.{\interfootnotelinepenalty=10000 \footnot
 % 	\item Show the limits of the approach and explain why we cannot have a perfect spherical convolution with this technique
 % \end{itemize}
 
-\begin{figure}
+\begin{figure*}
 \includegraphics[width=\linewidth]{figure_example_maps}
 \caption{Example maps on the sphere:
 (left) the CMB temperature (K) map from Planck \citep{planck2015overview}, with galactic plane masked,
@@ -387,7 +387,7 @@ These maps were pixelised using $N_{side} = 512$.
 The CMB and weak lensing mass maps were smoothed with Gaussian kernels with FWHM=1 deg, and the galaxy count map with FWHM=0.5 deg.
 }
 \label{fig:example_maps}
-\end{figure}
+\end{figure*}
 
 A CNN is composed of the following main building blocks~\citep{lecun1998cnn}:
 (i) a convolution,
@@ -777,7 +777,7 @@ Rotation invariance means that rotating the input does not impact the prediction
 
 By replacing the average by a FC layer, one gets the standard convolutional neural network (CNN), which is a generalization of the FCN.
 Indeed, the AV layer is a FC layer where all the entries of $\W$ in \eqnref{fc_layer} are equal to $1/N_{pix}$ and $\b b = \b 0$.
-By dropping rotation invariance, CNNs learn where to put attention on the domain. 
+By dropping rotation invariance, CNNs learn where to put attention on the domain.
 That is useful when pixels are not of the same importance, with respect to the task.
 For example, on images, the subject of interest is most often around the center of the picture.
 Hence, those pixels are more predictive than the ones in the periphery when considering image classification.
@@ -933,7 +933,12 @@ The experiment presented here is similar to the one by \citep{schmelze2017cosmol
 These maps are similar to those created with gravitational lensing techniques \citep{chang2017curvedsky}.
 The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
 The classification methods were trained to predict a label from a HEALPix map.
-Both our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
+% Both our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
+Our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}} to reproduce those experiments are openly available online.
+The data is available upon request from the cosmology group\footnote{\url{www.cosmology.ethz.ch}}.
+Furthermore, Jupyter notebooks demos can be run from your browser without installing anything.
+
+
 
 While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible (see \secref{architecture}).
 The regression task will most likely be the most practical cosmological application, as described in \citep{gupta2018nongaussianinformation} and \citep{fluri2018deep}.
@@ -1328,7 +1333,7 @@ where $n_p$ represents the number of particles in a specific pixel on the shell 
 \section{Simulation Setup}
 \label{sec:simulation_setup}
 
-The data is generated for the present analysis is based on the fast approximate N-Body simulation code \pkg{L-PICOLA} \citep{howlett2015lpicola}. For our purposes, we chose a simulation volume $V_\mathrm{sim} = (4200 \, h^{-1}\, \mathrm{Mpc})^3$, a total number of particles $N_\mathrm{part}^\mathrm{sim} = 1024^3$ placed on a mesh of size $N_\mathrm{mesh}^\mathrm{sim} = 2048^3$. The simulation was then performed 30 times with different seeds for each of the two $\Lambda$CDM cosmological models described in section \secref{data} covering a redshift range from $z = 0.1$ to $z = 0.8$. The \pkg{L-PICOLA} were performed in lightcone mode, where the simulation output is already arranged as a lightcone. Here we chose a redshift-shell thickness of $\Delta z = 0.01$. 
+The data is generated for the present analysis is based on the fast approximate N-Body simulation code \pkg{L-PICOLA} \citep{howlett2015lpicola}. For our purposes, we chose a simulation volume $V_\mathrm{sim} = (4200 \, h^{-1}\, \mathrm{Mpc})^3$, a total number of particles $N_\mathrm{part}^\mathrm{sim} = 1024^3$ placed on a mesh of size $N_\mathrm{mesh}^\mathrm{sim} = 2048^3$. The simulation was then performed 30 times with different seeds for each of the two $\Lambda$CDM cosmological models described in section \secref{data} covering a redshift range from $z = 0.1$ to $z = 0.8$. The \pkg{L-PICOLA} were performed in lightcone mode, where the simulation output is already arranged as a lightcone. Here we chose a redshift-shell thickness of $\Delta z = 0.01$.
 
 \section*{Bibliography}
 % \bibliographystyle{elsarticle-harv}
