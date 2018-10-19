@@ -189,43 +189,43 @@ So far, these networks have mostly been developed for regular Euclidean domains 
 Because of their success, CNN-based methods are becoming increasingly popular in Cosmology.
 Cosmological data often comes as spherical maps, which make the use of traditional CNNs more complicated.
 The commonly used pixelization scheme for spherical maps is the Hierarchical Equal Area isoLatitude Pixelisation (HEALPix).
-We present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
+We present a spherical CNN for analysis of full and partial HEALPix maps, which we call DeepSphere.
 The spherical CNN is constructed by representing the sphere as a graph.
 Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
 Using the graph-based representation, we define many of the standard CNN operations, such as convolution and pooling.
-With filters restricted to being radial, our convolutions are equivariant to rotation on the sphere, and HealpixNet can be made invariant or equivariant to rotation.
-This way, HealpixNet is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
+With filters restricted to being radial, our convolutions are equivariant to rotation on the sphere, and DeepSphere can be made invariant or equivariant to rotation.
+This way, DeepSphere is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
 % TBD if we include it
 This approach is computationally more efficient than using spherical harmonics to perform convolutions.
 % An advantage of the graph representation is that the convolution operations are efficient, which enables the CNN to run fast.
 We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
-Our experimental results show that the performance of HealpixNet is always superior or equal to both of these baselines.
-For high noise levels and for data covering only a smaller fraction of the sphere, HealpixNet achieves typically 10\% better classification accuracy than those baselines.
+Our experimental results show that the performance of DeepSphere is always superior or equal to both of these baselines.
+For high noise levels and for data covering only a smaller fraction of the sphere, DeepSphere achieves typically 10\% better classification accuracy than those baselines.
 Finally, we show how learned filters can be visualized to introspect the neural network.
-Code, data, and examples are available at \url{https://github.com/SwissDataScienceCenter/HealpixNet}.
+Code, data, and examples are available at \url{https://github.com/SwissDataScienceCenter/DeepSphere}.
 
 %As a response to that fact, we are witnessing an increasing interest in the generalization of CNNs to graphs.
 % Graphs are versatile data structures which can represent pairwise relationships between objects or act as a discrete representation of a continuous manifold.
 % In this paper we take the latter view and represent a sampled sphere as a graph, for which we define the convolution and pooling operations.
 % Spherical maps appear in many applications, such as the study of phenomena on the Earth for meteorologists or on the sky for cosmologists.
 % A popular format for spherical maps is HEALPix, which uses an equal-area, isolatitude sampling.
-% Hence, we present a spherical CNN for analysis of full and partial HEALPix maps, which we call HealpixNet.
+% Hence, we present a spherical CNN for analysis of full and partial HEALPix maps, which we call DeepSphere.
 % \nati{I am not that we should talk about pooling in the abstract. Another angle would be to say that HEALPix sampling is well suited for spherical CNN with graphs as a) it is very regular => the graph capture well the spherical structure of the Manifold and b) pooling is natural.}
 % While the convolution on arbitrary graphs has mostly been sorted out, a general pooling operation has not been discovered so far.
-% As such, while HealpixNet is a special case of a graph CNN, it is tailored to the HEALPix sampling of the sphere.
+% As such, while DeepSphere is a special case of a graph CNN, it is tailored to the HEALPix sampling of the sphere.
 % This approach is computationally much more efficient than using spherical harmonics to perform convolutions, an alternative that has been explored previously.
-% The filters learned by the HealpixNet are restricted to being radial.
+% The filters learned by the DeepSphere are restricted to being radial.
 % Michaël: not necessary in the abstract?
 % We demonstrate the method on a classification problem of mass maps from two cosmological models.
 % \nati{Should we specify what are the baselines? I think not.}
 % A standard benchmark for that problem is to train an SVM on the histograms of map pixel values. Another is to use the power spectral density instead.
-% HealpixNet achieves \todo{xx\%} better accuracy than those baselines, is more robust to noise, and is \todo{faster?}.
+% DeepSphere achieves \todo{xx\%} better accuracy than those baselines, is more robust to noise, and is \todo{faster?}.
 % Code and examples are available at \todo{\url{https://github.com/xxx}}.
 \end{abstract}
 
 \begin{keyword}
 Spherical Convolutional Neural Network \sep
-HealpixNet \sep
+DeepSphere \sep
 Graph CNN \sep
 Cosmological data analysis \sep
 Mass mapping
@@ -310,26 +310,26 @@ The graph convolution has been explored previously for omnidirectional imaging \
 Our pooling strategy exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
 % Compared with~\citep{khasanova2017graphomni}, our work does not need hand-chosen statistics nor dynamic pooling.
 We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, which can accommodate any sampling of the sphere.
-As the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored the method to that particular sampling and call it HealpixNet.
-HealpixNet is however easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
+As the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix} is the most popular sampling used in cosmology and astrophysics, we tailored the method to that particular sampling and call it DeepSphere.
+DeepSphere is however easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
 The flexibility of modeling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
 Using a $k$-nearest neighbours graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
 This is the lowest possible complexity for a convolution without approximations.
-HealpixNet is readily apt to solve four tasks: (i) global classification (i.e., predict a class from a map), (ii) global regression (i.e., predict a set of parameters from a map), (iii) dense classification (i.e., predict a class for each pixel of a map), and (iv) dense regression, (i.e., predict a set of maps from a map).
+DeepSphere is readily apt to solve four tasks: (i) global classification (i.e., predict a class from a map), (ii) global regression (i.e., predict a set of parameters from a map), (iii) dense classification (i.e., predict a class for each pixel of a map), and (iv) dense regression, (i.e., predict a set of maps from a map).
 Input data are spherical maps with a single value per pixel, such as the CMB temperature, or multiple values per pixel, such as surveys at multiple radio frequencies.
 
 %\nati{I am not sure this goes there...} Other recently developed sampling methods include \citep{mcewen2011novelsampling}, where exact sampling theorem for equiangular MW sampling was presented.
 
-We give a practical demonstration of HealpixNet on cosmological model discrimination using maps of projected mass distribution on the sky \citep{chang2017curvedsky}.
+We give a practical demonstration of DeepSphere on cosmological model discrimination using maps of projected mass distribution on the sky \citep{chang2017curvedsky}.
 This kind of maps can be created using the gravitational lensing technique \citep[see][for review]{BartelmannSchneider2001weak}.
 Our maps are similar to the ones used by \citep{schmelze2017cosmologicalmodel}.
 In a simplified scenario, we classify partial convergence maps into two cosmological models.
 These models were designed to have very similar angular power spectrum.
-We compare the performance of HealpixNet to a baseline algorithm: an SVM classifier that takes pixel histograms or power spectrum densities (PSDs) of these maps as input.
+We compare the performance of DeepSphere to a baseline algorithm: an SVM classifier that takes pixel histograms or power spectrum densities (PSDs) of these maps as input.
 The comparison is made as a function of the additive noise level and the area of the sphere used in the analysis.
 Results show that our model is always better at discriminating the maps, especially in the presence of noise.
-HealpixNet is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the-box for cosmological applications.
-Code and examples are available online.{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}}
+DeepSphere is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the-box for cosmological applications.
+Code and examples are available online.{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/DeepSphere}}}
 
 % MD: I usually find those paragraphs boring and skip them when reading. Our intro is long enough already. Feel free to add it back if you think it's necessary.
 %The paper is organized as follows.
@@ -670,7 +670,7 @@ That operation is often taken to be the maximum value, but it can be any permuta
 
 Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to some predictions.
 % decision on the class label
-The general HealpixNet architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
+The general DeepSphere architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
 % A statistical layer (ST) is optionally inserted between the convolutional head and the fully connected tail.
 
 % As such, we will not mention the non-linearity in the description of our architectures.
@@ -728,7 +728,7 @@ The number of input features $F_{in}$ depends on the data. For the CMB radiation
 	\label{tab:tasks}
 \end{table}
 
-HealpixNet can perform dense or global predictions, for regression or classification.
+DeepSphere can perform dense or global predictions, for regression or classification.
 A typical global classification task is to classify maps into cosmological model classes \citep{schmelze2017cosmologicalmodel}. A typical global regression task is to infer the parameters of a cosmological model  from maps \citep{fluri2018deep,gupta2018nongaussianinformation}. Some dense regression tasks are denoising, interpolation of missing values, or inpainting parts of a map \citep{Inoue2008inpainting}. Segmentation and feature detection \citep{Amsel2007detecting} are examples of dense classification tasks.
 The output's size of the neural network depends on the task. See \tabref{tasks}.
 
@@ -879,7 +879,7 @@ The Clebsh-Gordan transform can be used to perform the non-linear transformation
 As such, the SHT is only performed once on the input (no back and forth SHT between each layer).
 While this clever trick lowers the complexity of the convolution to $\bO(N_{pix})$, the non-linearity is $\bO(N_{pix}^{3/2})$.
 This work is another indication that there might be a $\bO(N_{pix}^{3/2})$ computational lower bound for the proper treatment of rotation equivariance with the spherical harmonics.
-In comparison, HealpixNet scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}), at the expense of not being exactly equivariant (see \ref{sec:comparison_spherical_harmonics}).
+In comparison, DeepSphere scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}), at the expense of not being exactly equivariant (see \ref{sec:comparison_spherical_harmonics}).
 Being a mathematically well-defined rotation equivariant network is the main advantage of methods based on spherical harmonics.
 See \citep{kondor2018equivariance} for a rigorous treatment of convolution and equivariance in neural networks.
 
@@ -919,19 +919,19 @@ As the convolution is motivated by a multiplication in the graph Fourier spectru
 
 Thanks to their versatility, graph neural networks have been used in a variety of tasks, such as identifying diseases from brain connectivity networks \citep{ktena2018metriclearning} or population graphs \citep{parisot2017disease}, designing drugs using molecular graphs \citep{hop2018drugdesign}, segmenting 3D point clouds \citep{qi2017pointcloudsegmentation}, optimizing shapes to be aerodynamic \citep{baque2018shape}, and many more.
 By interwinding graph convolutional layers and recurrent layers \citep{seo2016gcrn}, they can for example model structured time series such as traffic on road networks \citep{li2018traffic}, or recursively complete matrices for recommendation \citep{monti2017recommendation}.
-Another trend, parallel to the modeling of structured data, is the use of graph neural networks for relational reasoning \citep{battaglia2018review}.
+Another trend, parallel to the modelling of structured data, is the use of graph neural networks for relational reasoning \citep{battaglia2018review}.
 % scientifically and industrially motivated applications
 
 \section{Experiments}
 \label{sec:experiments}
 
-The performance of HealpixNet is demonstrated on a discrimination problem: the classification of convergence maps into two cosmological model classes.
+The performance of DeepSphere is demonstrated on a discrimination problem: the classification of convergence maps into two cosmological model classes.
 The experiment presented here is similar to the one by \citep{schmelze2017cosmologicalmodel}.
 These maps are similar to those created with gravitational lensing techniques \citep{chang2017curvedsky}.
 The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
 The classification methods were trained to predict a label from a HEALPix map.
-% Both our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
-Our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/HealpixNet}}} to reproduce those experiments are openly available online.
+% Both our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/DeepSphere}}} and the data\footnote{\url{https://doi.org/10.5281/zenodo.1303272}} to reproduce those experiments are openly available online. Furthermore, Jupyter notebooks demoing the method and problem can be run from your browser without installing anything.
+Our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/DeepSphere}}} to reproduce those experiments are openly available online.
 The data is available upon request from the cosmology group\footnote{\url{www.cosmology.ethz.ch}}.
 Furthermore, Jupyter notebooks demos can be run from your browser without installing anything.
 
@@ -980,7 +980,8 @@ To remove this information, we additionally smooth the spherical maps with a Gau
 The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
 We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
 
-The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}. A brief overview about the map making procedure used in \pkg{UFalcon} is given in \ref{sec:convergence_mass_maps} and the specific simulation setup is given in \ref{sec:simulation_setup}.
+The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}.
+A brief overview about the map making procedure used in \pkg{UFalcon} as well as the simulation parameters are given in Appendix~\ref{sec:convergence_mass_maps}.
 We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=0.8$, instead of $z=1.5$.
 As a simulator we use \pkg{L-PICOLA} \citep{howlett2015lpicola}, a fast and approximate code for N-body simulations.
 For each class, we generate $30$ simulations.
@@ -1011,17 +1012,17 @@ That is a data augmentation scheme, as it creates more training examples than we
 % Nati: Not done anymore
 % To improve the stability of the spherical CNN, we slowly increase the amount of noise added to the training data over the iterations.
 
-HealpixNet is compared against two simple yet powerful benchmarks.
+DeepSphere is compared against two simple yet powerful benchmarks.
 The two baselines are based on features that are (i) the power spectral densities (PSD) of maps, and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
 After normalization, those features are used by a linear support vector machine (SVM) trained for classification.
 A linear kernel is used as other kernels did not provide better results, while having significantly worse scaling properties.
-For fairness, the training set was augmented in a similar way as for HealpixNet: we created samples by adding new random realizations of the noise. We stopped adding new samples to the training data once the validation error converged. This process is detailed in \ref{sec:dataset_augmentation}.
-As for HealpixNet, the SVM regularization hyper-parameter was tuned based on the performance over the validation set.
-The classification accuracy of HealpixNet and both baselines was checked as a function of the used area (the order $o$), and the relative level of additive noise.
+For fairness, the training set was augmented in a similar way as for DeepSphere: we created samples by adding new random realizations of the noise. We stopped adding new samples to the training data once the validation error converged. This process is detailed in \ref{sec:dataset_augmentation}.
+As for DeepSphere, the SVM regularization hyper-parameter was tuned based on the performance over the validation set.
+The classification accuracy of DeepSphere and both baselines was checked as a function of the used area (the order $o$), and the relative level of additive noise.
 
 \subsection{Network architecture and hyper-parameters}
 %\subsection{Selected network architecture}
-%\subsection{Methods} % baselines and HealpixNet together
+%\subsection{Methods} % baselines and DeepSphere together
 
 As discussed in \secref{architecture}, the choice of a network architecture depends on the data and task at hand.
 For our problem, where we assume that each pixel carries the same quantity of information about the cosmological model, a rotation invariant FCN architecture should be best.
@@ -1047,7 +1048,7 @@ where $FC_2$ denotes a fully connected layer with two outputs.
 Architectures were selected over their performance on the validation set.
 
 The Adam optimizer \citep{kingma2014adam} with $\beta_1=0.9$, $\beta_2=0.999$ was used with an initial learning rate of $2 \times 10^{-4}$ that is exponentially decreased by a multiplication with $0.999$ at each step.
-All models were trained for $80$ epochs, which corresponds to $1920$ steps. The batch size is set to $16 \times  o^2$ to keep the amount of supervision used to estimate the gradient identical, irrespective of the chosen order $o$ (the learning rate would otherwise need to be adapted). By this choice, HealpixNet is trained with the same amount of information, i.e., the number of pixels, across all variants of the problem.
+All models were trained for $80$ epochs, which corresponds to $1920$ steps. The batch size is set to $16 \times  o^2$ to keep the amount of supervision used to estimate the gradient identical, irrespective of the chosen order $o$ (the learning rate would otherwise need to be adapted). By this choice, DeepSphere is trained with the same amount of information, i.e., the number of pixels, across all variants of the problem.
 Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti ($5$ hours with a Tesla K20).
 % Could probably be faster with a better input pipeline.
 
@@ -1061,14 +1062,14 @@ Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti
 	\hfill
 	\includegraphics[width=0.32\linewidth]{result_order4}
 	\caption{
-		Classification accuracy of the fully convolutional (FCN) variant of HealpixNet, the standard convolutional (CNN) variant of HealpixNet, the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
+		Classification accuracy of the fully convolutional (FCN) variant of DeepSphere, the standard convolutional (CNN) variant of DeepSphere, the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
 		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere, order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$, and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$. The standard deviation of the added Gaussian noise varies from zero to $2\times$ the standard deviation of pixel's values in the noiseless maps.
-		It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). The FCN variant of HealpixNet beats the CNN variant by being invariant to rotation. Both variants largely beat the two SVM baselines.
+		It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). The FCN variant of DeepSphere beats the CNN variant by being invariant to rotation. Both variants largely beat the two SVM baselines.
 	}
 	\label{fig:results}
 \end{figure*}
 
-\figref{results} compares the classification accuracy of HealpixNet (FCN and CNN variants) and the two baselines across five noise levels and three sample sizes.
+\figref{results} compares the classification accuracy of DeepSphere (FCN and CNN variants) and the two baselines across five noise levels and three sample sizes.
 We indeed observe that the problem is made more difficult as the sample size decreases, and the noise increases.
 As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
 As the noise increases, the useful information gets diluted in irrelevant data, i.e., the signal-to-noise ratio (SNR) diminishes.
@@ -1078,10 +1079,10 @@ Other statistics are therefor needed to solve the problem. Using histograms as f
 Performance is very good for larger maps and deteriorates for the smaller cases with increased noise level, reaching 80\% at the highest noise level for $o=4$.
 The histogram features contain information about the distribution of pixels, which clearly varies for the two classes.
 They do not, however, include any spatial information.
-HealpixNet (both the FCN and CNN variants) shows superior performance over all configurations.
+DeepSphere (both the FCN and CNN variants) shows superior performance over all configurations.
 The gap even widens as the problem becomes more difficult.
-This is likely due to HealpixNet learning features that are adapted to the problem instead of relying on hand-designed features.
-The accuracy of HealpixNet is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
+This is likely due to DeepSphere learning features that are adapted to the problem instead of relying on hand-designed features.
+The accuracy of DeepSphere is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 
 As expected, we observe that the FCN slightly outperforms the CNN.
 This may seem counterintuitive as the CNN is a generalization of the FCN and hence should be able to learn the same function and provide at least equivalently good results.
@@ -1092,7 +1093,7 @@ Hence, a pixel can be statistically classified using only its surrounding, and t
 The CNN variant may however be better for data not having this property, and one should always adapt the architecture to the data and task (see \secref{architecture}).
 
 We saw no sign of over-fitting in any of our experiments.
-With more data, HealpixNet can probably do even better.
+With more data, DeepSphere can probably do even better.
 The fact that the CNN lags behind the FCN is another sign of lack of data.
 ImageNet, the largest dataset for visual object recognition, features about 900 billion pixels ($14 \times 10^6 \times 256^2$), to be compared with the 750 millions pixels ($60 \times 12 \times 1024^2$) of our dataset.
 
@@ -1128,22 +1129,22 @@ An example of filter interpretation was demonstrated in \citep{Ribli2018learning
 \section{Conclusion}
 \label{sec:conclusion}
 
-The main product of this contribution is HealpixNet, a small and easy-to-use python package for the spherical analysis of cosmological data.
-The code was designed so that HealpixNet can easily be used for typical machine learning tasks, such as classification and regression, both dense and global.
+The main product of this contribution is DeepSphere, a small and easy-to-use python package for the spherical analysis of cosmological data.
+The code was designed so that DeepSphere can easily be used for typical machine learning tasks, such as classification and regression, both dense and global.
 % dense: segmentation tasks, such as masking, flagging, or object detection
 The core of our method is the use of a graph to represent the discretised sphere.
 This allows us to leverage the advantages of the graph convolution.
-It is both efficient, with a complexity of $\bO(N_{pix})$, and flexible, which allows HealpixNet to efficiently work on parts of the sphere.
+It is both efficient, with a complexity of $\bO(N_{pix})$, and flexible, which allows DeepSphere to efficiently work on parts of the sphere.
 The spherical properties of the domain are well captured: the graph Fourier modes are close to the spherical harmonics.
 Filters are restricted to be radial for the convolution operation to be equivariant to rotation.
-HealpixNet can then be made either equivariant or invariant to rotation.
+DeepSphere can then be made either equivariant or invariant to rotation.
 Equivariance is not perfect as small imprecisions due to the sampling cause the action of a graph filter to slightly depend on the location.
 That is however not an issue in practice.
 
 We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps, designed similarly to \citep{schmelze2017cosmologicalmodel}.
 The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are similar.
-We compared the performance of HealpixNet versus that of two SVM classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
-HealpixNet performs better than the two baselines for all considered cases.
+We compared the performance of DeepSphere versus that of two SVM classifiers: one trained on the spherical harmonics power spectrum, and the other on the pixel density histogram.
+DeepSphere performs better than the two baselines for all considered cases.
 The advantage is small for large, noise-free maps, and grows up to 10\% for smaller, noisier data.
 
 Spherical CNNs are so far mostly used for omnidirectional imaging.
@@ -1153,7 +1154,7 @@ With this work, we hope to demonstrate and help democratize the use of those too
 
 As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
 Furthermore, the influence of irregular sampling on the convolution's equivariance to rotation should be empirically quantified and ideally theoretically bounded.
-Further comparison of HealpixNet to other spherical CNN formulations, with different sampling schemes, would also be worthwhile.
+Further comparison of DeepSphere to other spherical CNN formulations, with different sampling schemes, would also be worthwhile.
 
 The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
 In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
@@ -1295,7 +1296,7 @@ realization of Gaussian noise. The effect is twofold. First, the network never
 ends up seeing the same sample and is less likely to over-fit the training set.
 Second the trained network will be robust to Gaussian noise.
 
-For a fair comparison between HealpixNet and the baselines, we have to ensure that the SVM classifier has access to the same amount of training data as HealpixNet. That is potentially an infinite number of samples. Hence, we fit different linear SVM classifiers using various training set sizes until we experimentally observe that increasing the amount of training data does not improve performance. An example convergence of the training and validation errors is shown in \figref{hist_error_evolution}.
+For a fair comparison between DeepSphere and the baselines, we have to ensure that the SVM classifier has access to the same amount of training data as DeepSphere. That is potentially an infinite number of samples. Hence, we fit different linear SVM classifiers using various training set sizes until we experimentally observe that increasing the amount of training data does not improve performance. An example convergence of the training and validation errors is shown in \figref{hist_error_evolution}.
 
 % The validation set remain the same and is used for cross-validation to tune the L2 penalization parameter of SVM.
 % Eventually, we evaluate the final classifier on the test set.
@@ -1310,11 +1311,18 @@ For a fair comparison between HealpixNet and the baselines, we have to ensure th
 \section{Convergence Mass Maps}
 \label{sec:convergence_mass_maps}
 
-In the following we describe the weak lensing map-making pipeline \pkg{UFalcon} (ultra fast lightcone) developed in \citep{sgier2018fastgeneration} and how it has been used to generate data used in the present work. The data consist of two-dimensional convergence maps on the full sphere, which represent the dimensionless, weighted and projected mass along the light of sight and determines the lensing of source galaxies an observer located on earth would see.
+In the following we describe the weak lensing map-making pipeline \pkg{UFalcon} (ultra fast lightcone) developed in \citep{sgier2018fastgeneration} and the way it was used to generate data for this work.
+The data consist of two-dimensional mass maps on the full sphere, which represent the dimensionless, weighted and projected mass along the light of sight.
+The matter content of the universe consists mostly of dark matter.
+This kind of projected mass maps are typically measured using the weak gravitational lensing technique.
+Gravitational lensing occurs when images of distant galaxies are distorted by the matter clumps between the galaxy and the observer, which act as lenses.
+Measurements of the small, spatially coherent distortions of galaxy images can be used to infer the matter density between the observer and the background galaxies.
+\citep[see][for a review of gravitational lensing]{bartelman2010gravitationallensing}.
 
-The matter content of the universe consists mostly of dark matter and is therefore mainly responsible for the large scale structure evolution of the universe. The effect of weak gravitational lensing, in which the light from distant galaxies is lensed by the matter distribution between the observer and the sources, is therefore dominated by dark matter \citep[see][for a review of gravitational lensing]{bartelman2010gravitationallensing}. In order to obtain a convergence map characterising the gravitational lensing of distance sources, one has to start with accurate simulations of the dark matter distribution. This is achieved through cosmological N-Body simulations, which evolve a chosen number of dark matter particles $N_\mathrm{part}^\mathrm{sim}$ within a specific simulation volume $V_\mathrm{sim}$ under the influence of gravity across cosmic time-scales. The simulation outputs the positions of the particles at user-specific time-steps. These time-steps correspond to redshifts $z$, by which the spectrum is shifted the observer would measure. A redshift of $z=0$ correspond to the present time and higher redshifts to earlier times.
+In order to obtain a convergence map characterising the gravitational lensing of distance sources, one has to start with simulations of the dark matter distribution.
+This is achieved through cosmological N-Body simulations, which evolve a chosen number of dark matter particles $N_\mathrm{part}^\mathrm{sim}$ within a specific simulation volume $V_\mathrm{sim}$ under the influence of gravity across cosmic time-scales. The simulation outputs the positions of the particles at user-specific time-steps. These time-steps correspond to redshifts $z$, by which the spectrum is shifted the observer would measure. A redshift of $z=0$ correspond to the present time and higher redshifts to earlier times.
 
-Since the convergence map characterises the dark matter lenses at different redshifts, one has to first construct a lightcone. The lightcone represents the volume of the universe around the observer, where the radius represents the distance the light from distant galaxies at different times and locations has to travel to the observer. Therefore, the particles outputted at different redshifts (time-steps) of the simulation are concentrically arranged in shells of constant redshift around the observer (each redshift $z$ corresponds to a comoving distance away from the observer $\chi(z)$), which is located at redshift $z=0$ (see Figure \ref{sketch_lightcone_simulation}). The shells are then weighted by a weak lensing specific weight $W_b$ and projected onto the sphere for each pixel $\theta_\mathrm{pix}$, resulting in a convergence map
+Since the convergence map characterises the dark matter lenses at different redshifts, one has to first construct a lightcone. The lightcone represents the volume of the universe around the observer, where the radius represents the distance the light from distant galaxies at different times and locations has to travel to the observer. Therefore, the particles outputted at different redshifts (time-steps) of the simulation are concentrically arranged in shells of constant redshift around the observer (each redshift $z$ corresponds to a comoving distance away from the observer $\chi(z)$), which is located at redshift $z=0$ (see Figure \ref{fig:sketch_lightcone_simulation}). The shells are then weighted by a weak lensing specific weight $W_b$ and projected onto the sphere for each pixel $\theta_\mathrm{pix}$, resulting in a convergence map
 \begin{equation}
 \kappa (\theta_\mathrm{pix}) \sim \sum_b W_b \frac{V_\mathrm{sim}}{N_\mathrm{part}^\mathrm{sim}} \frac{n_p (\theta_\mathrm{pix}, \Delta \chi_b)}{\mathcal{D}^2 (z_b)}  \, ,
 \end{equation}
@@ -1326,9 +1334,6 @@ where $n_p$ represents the number of particles in a specific pixel on the shell 
 	\caption{Left: Dark matter density field simulated using L-PICOLA for specific cosmological parameters. Right: Sketch of the lightcone constructed by arranging particles at different redshifts in concentric shells around the observer located at $z=0$.}
 	\label{fig:sketch_lightcone_simulation}
 \end{figure}
-
-\section{Simulation Setup}
-\label{sec:simulation_setup}
 
 The data is generated for the present analysis is based on the fast approximate N-Body simulation code \pkg{L-PICOLA} \citep{howlett2015lpicola}. For our purposes, we chose a simulation volume $V_\mathrm{sim} = (4200 \, h^{-1}\, \mathrm{Mpc})^3$, a total number of particles $N_\mathrm{part}^\mathrm{sim} = 1024^3$ placed on a mesh of size $N_\mathrm{mesh}^\mathrm{sim} = 2048^3$. The simulation was then performed 30 times with different seeds for each of the two $\Lambda$CDM cosmological models described in section \secref{data} covering a redshift range from $z = 0.1$ to $z = 0.8$. The \pkg{L-PICOLA} were performed in lightcone mode, where the simulation output is already arranged as a lightcone. Here we chose a redshift-shell thickness of $\Delta z = 0.01$.
 
