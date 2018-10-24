@@ -1030,9 +1030,7 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 Furthermore, this result is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. In some applications, where the
 exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
-The fact that the graph convolution is not exactly rotational equivariant is probably compensated by the fact that in a neural network setting the convolution kernels are learned.
-\todo{not ideal tho as the graph convolution depends on the localization}
-
+In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
 
 \begin{figure}
 \centering
@@ -1058,17 +1056,12 @@ Note that, because of the small irregularities in the HEALPix sampling, the seco
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation}
 
-\todo{better formulation}
-The original number of samples $480$, $1920$,
-$7680$ respectively for order $o=1,2,4$ is considered small to train a deep architecture,
-especially when one desire to build a classifier that is robust to noise.
-As a result, we use a classical dataset augmentation technique.
-Before entering the network for training each sample is added a random
-realization of Gaussian noise. The effect is twofold. First, the network never
-ends up seeing the same sample and is less likely to over-fit the training set.
-Second the trained network will be robust to Gaussian noise.
+% The original number of samples $480$, $1920$, $7680$ respectively for order $o=1,2,4$ is considered small to train a deep architecture.
 
-For a fair comparison between DeepSphere and the baselines, we have to ensure that the SVM classifier has access to the same amount of training data as DeepSphere. That is potentially an infinite number of samples. Hence, we fit different linear SVM classifiers using various training set sizes until we experimentally observe that increasing the amount of training data does not improve performance. An example convergence of the training and validation errors is shown in \figref{hist_error_evolution}.
+For the trained network to be robust to noise, we employ the following data augmentation technique: a random realization of Gaussian noise is added to each sample before it is fed to the neural network.
+Besides robustness to noise, the network is less likely to over-fit the training set as it never sees the same sample twice.
+
+For a fair comparison between DeepSphere and the baselines, we have to ensure that the SVM classifier has access to the same amount of training data as DeepSphere. That is potentially an infinite number of samples. Hence, we fit different classifiers using various training set sizes until we experimentally observe that increasing the amount of training data does not improve performance. An example convergence of the training and validation errors is shown in \figref{hist_error_evolution}.
 
 \begin{figure}
 	\centering
