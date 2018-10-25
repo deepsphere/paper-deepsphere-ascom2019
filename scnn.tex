@@ -430,7 +430,7 @@ To shed some light on the meaning of the convolution on a graph, we show in \ref
     \centering
     \includegraphics[width=\linewidth]{filtering_speed}
     \caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes.
-    The fast spherical harmonic transform (SHT) is implemented by the \texttt{healpy} Python package (via the \texttt{healpy.sphtfunc.smoothing} function with $\ell_{max} = 3 N_{side} - 1$, the default).
+    The fast spherical harmonic transform (SHT) is implemented by the \texttt{healpy} Python package (via the \texttt{healpy.sphtfunc.smoothing} function).
     The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the \texttt{numpy} and \texttt{scipy} Python packages.
     Both are executed on a single core.
 	The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3) = \bO(N_{pix}^{3/2})$ for the spherical harmonics, where $\ell_{max}$ is the largest angular frequency.}
@@ -481,7 +481,7 @@ By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational c
 That is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
 That is especially true for smooth kernels which require a low polynomial degree $K$.
 \figref{filtering_speed} compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
-A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
+A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform at $\ell_{max} = 3 N_{side}$ implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
 
 \subsection{Coarsening and Pooling}
 
