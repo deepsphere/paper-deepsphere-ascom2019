@@ -382,7 +382,7 @@ The graph Fourier modes resemble the spherical harmonics.
 That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling.
 This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
 
-\begin{figure}
+\begin{figure}[t!]
 	\centering
 	\includegraphics[width=\linewidth]{eigenvectors}
 	\caption{The first 16 eigenvectors of the graph Laplacian, an equivalent of Fourier modes, of a graph constructed from the HEALPix sampling of the sphere.
@@ -426,7 +426,7 @@ To shed some light on the meaning of the convolution on a graph, we show in \ref
 \subsection{Efficient convolutions}
 \label{sec:efficient_convolution}
 
-\begin{figure}
+\begin{figure}[t!]
     \centering
     \includegraphics[width=\linewidth]{filtering_speed}
     \caption{Comparison of filtering speed for Gaussian smoothing of maps of various sizes.
@@ -501,7 +501,7 @@ That operation is often taken to be the maximum value, but it can be any permuta
 \figref{pooling} illustrates the process.
 
 
-\begin{figure}
+\begin{figure}[t!]
 	\centering
     % \includegraphics[width=\linewidth]{pooling}
 	\includegraphics[width=\linewidth]{figure_pooling_svg}
@@ -653,7 +653,7 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 
 \subsection{2D convolutional neural networks}
 
-\begin{figure}
+\begin{figure}[t!]
     \centering
     \includegraphics[height=7em]{sphere_grid_equirectangular}
     \hfill
@@ -754,7 +754,7 @@ For these reasons we decided to use the classification problem in this work, and
 \subsection{Data}
 \label{sec:data}
 
-\begin{figure}
+\begin{figure}[t!]
 	\centering
 	\includegraphics[width=\linewidth]{psd_sigma3}
 	\caption{Power spectrum densities of the noiseless maps.
@@ -889,21 +889,21 @@ While testing the FCN and CNN variants, we made the following empirical observat
 First, training was more stable (in the sense that the loss decreased more smoothly) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
 Nevertheless, we could not observe a significant difference in accuracy after convergence.
 Second, using $\ell_2$ regularization does not help either with performance or training of the models, mostly because the models are not over-fitting.
-Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less constant across layers.
-\todo{Nath: cite the paper you read about that?}
+Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less constant across layers\footnote{We derived this rule from the Chebyshev polynomial equations and some empirical experiments.}.
 % Nati to Michael: The problem with the previous claim is that it depends on the non-linarity. Furthermore, does it make sense to make such a claim if we use batch norm?
 Finally, we observe that scaling the Laplacian's eigenvalues between $[-a, a]$, where $0 < a \leq 1$, significantly helps in stabilizing the optimization. We use $a = 0.75$ in our experiments.
 
-\subsection{Filter visualization}
-
 \begin{figure}
 	\centering
-	\includegraphics[width=\linewidth]{section_filter_last}
-	\\
-	\includegraphics[width=\linewidth]{gnonomic_filter_last}
+	\includegraphics[width=0.85\linewidth]{section_filter_last}
+	\vspace{0.5cm}\\
+	\includegraphics[width=0.85\linewidth]{gnonomic_filter_last}
 	\caption{Random selection of 24 learned filters from the fifth spherical convolutional layer $L_5$. Top: section. Bottom: gnomonic projection.}
 	\label{fig:learned_filter}
 \end{figure}
+
+\subsection{Filter visualization}
+
 
 A common visualization to introspect and try to understand how a CNN function is to look at the learned filters.
 Since our construction leads to almost (up to sampling irregularities) spherical filters, we plot in \figref{learned_filter} both the radial profile and a gnomonic projection on a plane of a random selection of learned filters from the last layer of the network.
@@ -969,14 +969,14 @@ Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin
 Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
 Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
 
-\begin{figure}
+\begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{graph_eigenvalues}
 	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. See also \figref{graph_harmonics}.}
 	\label{fig:graph_eigenvalues}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors}
 	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics that correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics that correspond to the same degree $\ell$ are linearly dependent. There are $2 \ell + 1$ orders per degree $\ell$. Moreover, we see that the Fourier modes have the correct symmetries, indicated by the perfect orthogonality between even and odd functions. For example, the modes corresponding to $\ell=7$ are perfectly orthogonal to the harmonics corresponding to $\ell=0,2,4,6,8$.}
@@ -992,7 +992,7 @@ It is irrelevant when working on the complete sphere as this surface has no bord
 As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile.
 These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
 
-\begin{figure}
+\begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{border_effects}
 	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
@@ -1016,7 +1016,7 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, the graph convolution can approximate the spherical convolution. For additional insights about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization}.
 % and~\ref{sec:filter_visualization}.
 
-\begin{figure}
+\begin{figure}[ht!]
   \centering
   \includegraphics[width=\linewidth]{gaussian_filters_sphere}
   \caption{Comparison of convolution with the graph and the spherical harmonics ($N_{side} = 16$).
@@ -1032,7 +1032,7 @@ structure of the HEALPix sampling. In some applications, where the
 exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
 In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
 
-\begin{figure}
+\begin{figure}[ht!]
 \centering
 \includegraphics[width=\linewidth]{gaussian_filters_spectral}
 \caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$ in spectral domain.}
@@ -1063,7 +1063,7 @@ Besides robustness to noise, the network is less likely to over-fit the training
 
 For a fair comparison between DeepSphere and the baselines, we have to ensure that the SVM classifier has access to the same amount of training data as DeepSphere. That is potentially an infinite number of samples. Hence, we fit different classifiers using various training set sizes until we experimentally observe that increasing the amount of training data does not improve performance. An example convergence of the training and validation errors is shown in \figref{hist_error_evolution}.
 
-\begin{figure}
+\begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{hist_error_order2_noise1_5}
 	\caption{Error w.r.t.\ the number of training samples for histogram features and the linear SVM (setting: order $o=2$, relative noise level 1.5). The error clearly converged and adding more samples will not help. The validation error might be slightly below the training error as it is used to select hyper-parameters.}
@@ -1090,7 +1090,7 @@ Since the convergence map characterises the dark matter lenses at different reds
 \end{equation}
 where $n_p$ represents the number of particles in a specific pixel on the shell $\Delta \chi_b$. The convergence map depends on the cosmological parameters.
 
-\begin{figure}
+\begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{sketch_lightcone_simulation}
 	\caption{Left: Dark matter density field simulated using L-PICOLA for specific cosmological parameters. Right: Sketch of the lightcone constructed by arranging particles at different redshifts in concentric shells around the observer located at $z=0$.}
