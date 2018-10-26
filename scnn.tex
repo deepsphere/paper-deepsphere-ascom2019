@@ -180,7 +180,7 @@
 Convolutional Neural Networks (CNNs) are a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence.
 So far, these networks have mostly been developed for regular Euclidean domains such as those supporting images, audio, or video.
 Because of their success, CNN-based methods are becoming increasingly popular in Cosmology.
-Cosmological data often comes as spherical maps, which make the use of traditional CNNs more complicated.
+Cosmological data often comes as spherical maps, which make the use of the traditional CNNs more complicated.
 The commonly used pixelization scheme for spherical maps is the Hierarchical Equal Area isoLatitude Pixelisation (HEALPix).
 We present a spherical CNN for analysis of full and partial HEALPix maps, which we call DeepSphere.
 The spherical CNN is constructed by representing the sphere as a graph.
@@ -189,7 +189,7 @@ Using the graph-based representation, we define many of the standard CNN operati
 With filters restricted to being radial, our convolutions are equivariant to rotation on the sphere, and DeepSphere can be made invariant or equivariant to rotation.
 This way, DeepSphere is a special case of a graph CNN, tailored to the HEALPix sampling of the sphere.
 This approach is computationally more efficient than using spherical harmonics to perform convolutions.
-We demonstrate the method on a classification problem of mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
+We demonstrate the method on a classification problem of weak lensing mass maps from two cosmological models and compare the performance of the CNN with that of two baseline classifiers, based on the power spectrum and pixel density histogram.
 Our experimental results show that the performance of DeepSphere is always superior or equal to both of these baselines.
 For high noise levels and for data covering only a smaller fraction of the sphere, DeepSphere achieves typically 10\% better classification accuracy than those baselines.
 Finally, we show how learned filters can be visualized to introspect the neural network.
@@ -242,7 +242,7 @@ Sky maps are rotation invariant: rotating maps on the sphere doesn't change thei
 Depending on the task, we want the CNN to be either equivariant or invariant to rotation.
 Second, to be able to train the network in reasonable time, the convolution has to be computationally efficient.
 Third, a CNN should work well on parts of the sphere, as many cosmological observations cover only a part of the sky.
-For ground-based observations this can be due to limited visibility of the sky from a particular telescope location, and for space-based instruments due to masking of the galactic plane area (see for example \figref{example_maps}).
+For ground-based observations this can be due to limited visibility of the sky from a particular telescope location, and for space-based instruments due to masking of the galactic plane area (see \figref{example_maps} for example maps).
 
 \begin{figure*}
 \includegraphics[width=\linewidth]{figure_example_maps}
@@ -264,13 +264,13 @@ Another way is to leverage the spherical Fourier transform and to perform the co
 While the resulting convolution is equivariant to rotation, this approach is computationally expensive, even if a fast spherical Fourier transform is used.
 Moreover, all those methods cannot be much accelerated when maps only span a part of the sky.
 
-Our spherical CNN leverages convolutions on graphs and hierarchical pooling to address all three identified shortcomings: (i) rotation equivariance, (ii) computational efficiency, and (iii) partial sky observations.
+Our spherical CNN leverages convolutions on graphs and hierarchical pooling to achieve the following properties: (i) rotation equivariance, (ii) computational efficiency, and (iii) partial sky observations.
 The main idea is to model the discretised sphere as a graph of connected pixels: the length of the shortest path between two pixels is an approximation of the geodesic distance between them.
 % This approach is enabled by recent developments in graph signal processing, where fundamental tools, such as the Fourier transform, were defined for graphs \citep{shuman2013emerging}.
 % The graph convolution has been explored previously for omnidirectional imaging \citep{khasanova2017graphomni}, with a different down-sampling operation.
 We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, and a pooling strategy that exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
 As the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix} is a popular sampling used in cosmology and astrophysics, we tailored the method to that particular sampling.
-DeepSphere is however easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
+DeepSphere is, however, easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
 The flexibility of modeling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
 Using a $k$-nearest neighbours graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
 This is the lowest possible complexity for a convolution without approximations.
@@ -925,7 +925,7 @@ The spherical properties of the domain are well captured: the graph Fourier mode
 Filters are restricted to be radial for the convolution operation to be equivariant to rotation.
 DeepSphere can then be made either equivariant or invariant to rotation.
 Equivariance is not perfect as small imprecisions due to the sampling cause the action of a graph filter to slightly depend on the location.
-That is however not an issue in practice.
+However, we do not expect that to cause problems for practical application
 
 We demonstrate that the neural network systematically and significantly outperforms our benchmark methods on an example problem of cosmological model discrimination with weak lensing mass maps, designed similarly to \citep{schmelze2017cosmologicalmodel}.
 The maps were produced from two cosmological models with varying $\sigma_8$ and $\Omega_m$, chosen to follow the typical weak lensing degeneracy in these parameters, so that the power spectra for these models are similar.
@@ -991,6 +991,7 @@ In this case, the graph setting used through this contribution correspond to ass
 It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
 As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile.
 These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
+Moreover, as long as the training data comes from simulations with the same applied mask, we do not expect these effects to cause problems for the analysis.
 
 \begin{figure}[ht!]
 	\centering
