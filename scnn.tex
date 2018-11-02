@@ -374,10 +374,10 @@ Indeed,
 \begin{equation*}
 	\bLambda_{ii} = \b u_i\trans \L \b u_i = \sum_{(v_j, v_k) \in \E} \frac{\W_{jk}}{\sqrt{\b d_j \b d_k}} (\U_{ji} - \U_{ki})^2
 \end{equation*}
-is a measure of the variation of the eigenvector $\b u_i$ is on the graph defined by the Laplacian $\L$.
+is a measure of the variation of the eigenvector $\b u_i$ on the graph defined by the Laplacian $\L$.
 
 
-Figure \figref{graph_harmonics} shows the Fourier modes of a HEALPix graph, created using the graph construction described above.
+\figref{graph_harmonics} shows the Fourier modes of a HEALPix graph, created using the graph construction described above.
 The graph Fourier modes resemble the spherical harmonics.
 That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling.
 This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
@@ -1085,7 +1085,7 @@ Measurements of the small, spatially coherent distortions of galaxy images can b
 In order to obtain a convergence map characterising the gravitational lensing of distance sources, one has to start with simulations of the dark matter distribution.
 This is achieved through cosmological N-Body simulations, which evolve a chosen number of dark matter particles $N_\mathrm{part}^\mathrm{sim}$ within a specific simulation volume $V_\mathrm{sim}$ under the influence of gravity across cosmic time-scales. The simulation outputs the positions of the particles at user-specific time-steps. These time-steps correspond to redshifts $z$, by which the spectrum is shifted the observer would measure. A redshift of $z=0$ correspond to the present time and higher redshifts to earlier times.
 
-Since the convergence map characterises the dark matter lenses at different redshifts, one has to first construct a lightcone. The lightcone represents the volume of the universe around the observer, where the radius represents the distance the light from distant galaxies at different times and locations has to travel to the observer. Therefore, the particles outputted at different redshifts (time-steps) of the simulation are concentrically arranged in shells of constant redshift around the observer (each redshift $z$ corresponds to a comoving distance away from the observer $\chi(z)$), which is located at redshift $z=0$ (see Figure \ref{fig:sketch_lightcone_simulation}). The shells are then weighted by a weak lensing specific weight $W_b$ and projected onto the sphere for each pixel $\theta_\mathrm{pix}$, resulting in a convergence map
+Since the convergence map characterises the dark matter lenses at different redshifts, one has to first construct a lightcone. The lightcone represents the volume of the universe around the observer, where the radius represents the distance the light from distant galaxies at different times and locations has to travel to the observer. Therefore, the particles outputted at different redshifts (time-steps) of the simulation are concentrically arranged in shells of constant redshift around the observer (each redshift $z$ corresponds to a comoving distance away from the observer $\chi(z)$), which is located at redshift $z=0$ (see \figref{sketch_lightcone_simulation}). The shells are then weighted by a weak lensing specific weight $W_b$ and projected onto the sphere for each pixel $\theta_\mathrm{pix}$, resulting in a convergence map
 \begin{equation}
 \kappa (\theta_\mathrm{pix}) \sim \sum_b W_b \frac{V_\mathrm{sim}}{N_\mathrm{part}^\mathrm{sim}} \frac{n_p (\theta_\mathrm{pix}, \Delta \chi_b)}{\mathcal{D}^2 (z_b)}  \, ,
 \end{equation}
