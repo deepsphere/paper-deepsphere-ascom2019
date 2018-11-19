@@ -1006,13 +1006,13 @@ Moreover, as long as the training data comes from simulations with the same appl
 
 Let us consider the heat diffusion problem
 \begin{equation}
-  \L \b{f}(t) = \tau \partial_t \b{f}(t),
+  \tau \L \b{f}(t) = - \partial_t \b{f}(t),
   \label{eqn:heat_equation}
 \end{equation}
 where $\b{f}: \R_+ \rightarrow \R^{N_{pix}}$. Given the initial condition
 $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation*}
-  \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda t \tau} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
+  \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda \tau t} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation*}
 which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, the graph convolution can approximate the spherical convolution. For additional insights about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization}.
 % and~\ref{sec:filter_visualization}.
