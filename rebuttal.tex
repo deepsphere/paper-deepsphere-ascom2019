@@ -290,357 +290,516 @@ For example, on images, the subject of interest is most often around the center 
 \todo{Answer}
 
 \subsection{}
-% Than can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
+\begin{mdframed}[style=comment] 
+Than can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
 
-%  - I think you mean "This" rather than "Than". I think, however, you are making a more important point here than you realise. It is not really "intrinsic data augmentation" but rather building a NN to suit your purposes. This should be done by the entire community as, at the moment, too many people blindly build their networks without considering their data and then struggle to get the best results out. The symmetries of the data should be the first thing to influence architecture of a network, exactly as you have reasoned. You might want to add a statement about how you know what your symmetries are and thus, you know how to build a well reasoned network which is more likely to work (and that other should do the same).
+- I think you mean "This" rather than "Than". I think, however, you are making a more important point here than you realise. It is not really "intrinsic data augmentation" but rather building a NN to suit your purposes. This should be done by the entire community as, at the moment, too many people blindly build their networks without considering their data and then struggle to get the best results out. The symmetries of the data should be the first thing to influence architecture of a network, exactly as you have reasoned. You might want to add a statement about how you know what your symmetries are and thus, you know how to build a well reasoned network which is more likely to work (and that other should do the same).
+\end{mdframed}
+\todo{Answer}
 
+\subsection{}
+\begin{mdframed}[style=comment] 
+As such, the SHT is only performed once on the input (no back and forth SHT between each layer). While this clever trick lowers the complexity of the convolution to $\mathcal{O}(N_{pix})$, the non-linearity is $\mathcal{O}(N^{3/2}_{pix})$.
 
-% As such, the SHT is only performed once on the input (no back and forth SHT between each layer). While this clever trick lowers the complexity of the convolution to $\mathcal{O}(N_{pix})$, the non-linearity is $\mathcal{O}(N^{3/2}_{pix})$.
+- I don't understand what the difference is between the convolution and the "non-linearity". I think this sentence either needs explaining further. Is the process $\mathcal{O}(N_{pix})$ or $\mathcal{O}(N^{3/2}_{pix})$?
+\end{mdframed}
+\todo{Answer}
 
-%  - I don't understand what the difference is between the convolution and the "non-linearity". I think this sentence either needs explaining further. Is the process $\mathcal{O}(N_{pix})$ or $\mathcal{O}(N^{3/2}_{pix})$?
 
+\subsection{}
+\begin{mdframed}[style=comment] 
+When mentioning that you are 10 to 20 times faster than the SHT it should be noted that libsharp has amazing distributed mpi functionality which helps, although of course your method is genuinely lower order computationally (and can be distributed simply on a GPU).
+\end{mdframed}
+\todo{Answer}
 
-% When mentioning that you are 10 to 20 times faster than the SHT it should be noted that libsharp has amazing distributed mpi functionality which helps, although of course your method is genuinely lower order computationally (and can be distributed simply on a GPU).
+\subsection{}
+\begin{mdframed}[style=comment] 
+In Appendix A. (my personal favourite part) could you measure the percent difference that different eigenvectors differ from the spherical harmonics due to incomplete discretisation of the sphere, perhaps plotting side by side plots like Figure 3, but with SH too (or their differences). By the way, Figure A.12 is placed in the wrong section.
+\end{mdframed}
+\todo{Answer + compute the ratio of outside block energy (see Fig. A.12)}
 
 
-% In Appendix A. (my personal favourite part) could you measure the percent difference that different eigenvectors differ from the spherical harmonics due to incomplete discretisation of the sphere, perhaps plotting side by side plots like Figure 3, but with SH too (or their differences). By the way, Figure A.12 is placed in the wrong section.
+\subsection{}
+\begin{mdframed}[style=comment] 
+In Appendix C. is there a connection between $t$ and $\sigma$ that you can make, or do you just fit them to be similar? If you just fit them to be similar I'm not sure where the relative differences come from. If they are related, however, then the relative differences make sense, but I can't see what the connection is.
+\end{mdframed}
+\todo{Answer + probably}
 
+\subsection{}
+\begin{mdframed}[style=comment] 
+A question that I would like to know personally, are you thinking about a future upgrade to non-radial kernels?
+\end{mdframed}
+\todo{Yes, but it is complicated with graphs}
 
-% In Appendix C. is there a connection between $t$ and $\sigma$ that you can make, or do you just fit them to be similar? If you just fit them to be similar I'm not sure where the relative differences come from. If they are related, however, then the relative differences make sense, but I can't see what the connection is.
 
 
-% A question that I would like to know personally, are you thinking about a future upgrade to non-radial kernels?
+\subsection{Details}
+\begin{mdframed}[style=comment] 
+Finally, I noticed a few points in the text where there were typos or things which were difficult to follow and I have put a note of them below and tried to correct them as much as I can so that you don't have to put too much effort in - I can't wait to see this paper published. Sorry that the list is so extensive (I'm a bit of a stickler for details and trying to write papers concisely):
+\end{mdframed}
 
+\begin{mdframed}[style=comment] 
+Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation [9–16].
 
+- There are many of us in the community who are not overly keen on "precision" of parameter estimation being the target for machine learning. Rather, we would prefer robustness of parameter estimation. It might be worth changing this sentence a bit so as not to upset some of the referenced authors ;)
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
+\end{mdframed}
+\todo{Answer}
 
-% Finally, I noticed a few points in the text where there were typos or things which were difficult to follow and I have put a note of them below and tried to correct them as much as I can so that you don't have to put too much effort in - I can't wait to see this paper published. Sorry that the list is so extensive (I'm a bit of a stickler for details and trying to write papers concisely):
+\begin{mdframed}[style=comment] 
+You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+You change between math font and text font for the names of your layers when inside and outside of equations. It would look a lot neater sticking with one choice. (Sorry, that seems quite petty and I don't mean it to be).
+\end{mdframed}
+\todo{Answer}
 
-% Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation [9–16].
+\begin{mdframed}[style=comment] 
+In Appendix C. you talk about Kroneker a lot, but earlier you talk about Kroneker $\delta$ (which is it's correct name). It's probably worth sticking with the full name.
+\end{mdframed}
+\todo{Answer}
 
-%  - There are many of us in the community who are not overly keen on "precision" of parameter estimation being the target for machine learning. Rather, we would prefer robustness of parameter estimation. It might be worth changing this sentence a bit so as not to upset some of the referenced authors ;)
+\begin{mdframed}[style=comment] 
+Sky maps are rotation invariant: rotating maps on the sphere doesn’t change their interpretation, as only the statistics of the maps are relevant.
+- I think that you mean that rotating maps on the sphere doesn't change their interpretation *when* only the statistics of the maps are relevant. Say you wanted to compare the NGC against the SGC, then rotating the map would obviously change the results.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+The flexibility of modelling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
 
-% When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
+- I think you're missing a "one" after allows. "The flexibility of modelling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled."
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+This kind of maps can be created using the gravitational lensing technique [see 29, for review]
 
-% You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
+- It should be "These" and not "This". "These kind of maps can be created using the gravitational lensing technique [see 29, for review]"
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+A CNN is composed of the following main building blocks [31]: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, normalization.
 
-% You change between math font and text font for the names of your layers when inside and outside of equations. It would look a lot neater sticking with one choice. (Sorry, that seems quite petty and I don't mean it to be).
+- I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
+\end{mdframed}
+\todo{Answer}
 
 
-% In Appendix C. you talk about Kroneker a lot, but earlier you talk about Kroneker $\delta$ (which is it's correct name). It's probably worth sticking with the full name.
+\begin{mdframed}[style=comment] 
+Likewise, down-sampling can be achieved by taking one pixel out of n.
 
+- I'm afraid I don't understand what this means at all, could you rephrase it?
+\end{mdframed}
+\todo{Answer}
 
-% Sky maps are rotation invariant: rotating maps on the sphere doesn’t change their interpretation, as only the statistics of the maps are relevant.
 
-%  - I think that you mean that rotating maps on the sphere doesn't change their interpretation *when* only the statistics of the maps are relevant. Say you wanted to compare the NGC against the SGC, then rotating the map would obviously change the results.
+\begin{mdframed}[style=comment] 
+A rhombus is a quadrilateral whose four sides all have the same length.
 
+- I'm not sure that this really needs to be said.
+\end{mdframed}
+\todo{Answer}
 
-% The flexibility of modelling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
+\begin{mdframed}[style=comment] 
+As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2\times12=2^2\times12=48$ pixels (middle sphere in Figure 5), the third is $N_{pix} = N_{side}^2\times12=42\times12=192$ pixels, etc., where $N_side =1,2,4,8,\dots$ is the grid resolution parameter.
 
-%  - I think you're missing a "one" after allows. "The flexibility of modelling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled."
+- Might it be more concise to write "The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$."
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+... is a measure of the variation of the eigenvector $\bf{u}_i$ is on the graph defined by the Laplacian L.
 
-% This kind of maps can be created using the gravitational lensing technique [see 29, for review]
+ - I don't think the "is" after $\bf{u}_i$ should be there.
+\end{mdframed}
+\todo{Answer}
 
-%  - It should be "These" and not "This". "These kind of maps can be created using the gravitational lensing technique [see 29, for review]"
+\begin{mdframed}[style=comment] 
+Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$,a signal $f\in\mathbb{R}^{N_{pix}}$ on the graph is filtered as
 
+- You don't mention what $\mathbb{R}_+$ is or why $h$ defines that map.
+\end{mdframed}
+\todo{Answer}
 
-% A CNN is composed of the following main building blocks [31]: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, normalization.
+\begin{mdframed}[style=comment] 
+This localization of the kernel $h$ can be useful to visualize kernels, as explained in Appendix C.
 
-%  - I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
+ - Most of Appendix C is not involved with the localisation of the kernel so it might be worth expanding this sentence to "This localisation of the kernel $h$ can be useful to visualise kernels, as shown in an example of heat diffusion presented Appendix C. " Also, it is a little odd that Appendix C is mentioned before Appendix B in the text.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+However, when considering only parts of the sphere, one can observe important border effects (see Figure B.13 and Appendix B).
 
-% Likewise, down-sampling can be achieved by taking one pixel out of n.
+- I would just refer the reader to the appendix rather than the figure and the appendix. It is a bit more concise. "However, when considering only parts of the sphere, one can observe important border effects (see Appendix B)."
+\end{mdframed}
+\todo{Answer}
 
-%  - I'm afraid I don't understand what this means at all, could you rephrase it?
+\begin{mdframed}[style=comment] 
+... where $T_ig[j] = g[i − j]$ is, up to a flip, a translation operator.
 
+ - I don't understand what you mean by a "flip", a change of sign, the inversion of the kernel?
+\end{mdframed}
+\todo{Answer}
 
-% A rhombus is a quadrilateral whose four sides all have the same length.
+\begin{mdframed}[style=comment] 
+Similarly as (2), the convolution of the signal $f$ by a kernel $g$ is the scalar product of $f$ with translated versions $T_ig$ of the kernel $g$.
 
-%  - I'm not sure that this really needs to be said.
+- I think this should be "As with equation (2)" or "Similarly, as in equation (2)" but I can't tell which. Also, it would be really useful if you referred to equations by "equation (x)" rather than just "(x)" throughout - much easier to read that way.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+The 1-neighborhood of a node is the set of nodes that are directly connected to it. The k-neighborhood of a node is the set of nodes that are connected to it through paths of length k.
 
-% As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2\times12=2^2\times12=48$ pixels (middle sphere in Figure 5), the third is $N_{pix} = N_{side}^2\times12=42\times12=192$ pixels, etc., where $N_side =1,2,4,8,\dots$ is the grid resolution parameter.
+- I'm a little confused here, I think the neighbourhood is every pixel which is closer than the distance of some pixel. The value of k would then be the length of the set of ordered distances for all pixels up to this pixel. Is that correct? For example, take a 3x3 square (on Euclidean space for simplicity), if the central pixel has coordinates (0, 0) then the 1-neighbourhood would be all pixels at a length of 1 pixel or less, i.e. (-1, 0), (+1, 0), (0, -1) and (0, +1) who are all at the same distance so the set of distances is {1} pixel and the length of the set is 1. The 2-neighbourhood would then be all pixels which were a distance $\sqrt{2}$ pixels or less away, i.e. (-1, 0), (+1, 0), (0, -1), (0, +1), (-1, -1), (-1, +1), (+1, -1), (+1, +1) so the set of distances would be {1, $\sqrt{2}$} pixels and the length of the set is 2. Is this correct? If so k is not a length. If this is not correct, I think I misunderstand something and so this should be updated in the text.
+\end{mdframed}
+\todo{Answer}
 
-%  - Might it be more concise to write "The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$."
+\begin{mdframed}[style=comment] 
+Similarly, each line of the matrix $\sum_{k=0}^K\theta_k\bf{L}^k$ defines an irregular patch of radius $K$.
 
+ - What do you mean by "line"? Is it a row or a column or something else which I've misunderstood?
+\end{mdframed}
+\todo{Answer}
 
-% ... is a measure of the variation of the eigenvector $\boldsymbol{u}_i$ is on the graph defined by the Laplacian L.
+\begin{mdframed}[style=comment] 
+... where $\tilde{\bf{L}}= \frac{2}{\lambda_{max}}\bf{L}−\bf{I}=−\frac{2}{\lambda_{max}}\bf{D}^{−1/2}\bf{W}\bf{D}^{−1/2}$ is the rescaled Laplacian with eigenvalues $\tilde{\Lambda}$ in [−1, 1].
 
-%  - I don't think the "is" after $\boldsymbol{u}_i$ should be there.
+ - Could you put the equation in its own 2 line align environment to make it easier to read?
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+By construction of our graph, $|\mathcal{E}| < 8N_{pix}$ and the overall computational cost of the convolution reduces to $\mathcal{O}(N_{pix})$ operations. That is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
 
-% Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$,a signal $f\in\mathbb{R}^{N_{pix}}$ on the graph is filtered as
+- This could be written as "By construction of our graph, $|\mathcal{E}| < 8N_{pix}$ and the overall computational cost of the convolution reduces to $\mathcal{O}(N_{pix})$ operations and as such is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform." to make it easier to read.
+\end{mdframed}
+\todo{Answer}
 
-%  - You don't mention what $\mathbb{R}_+$ is or why $h$ defines that map.
+\begin{mdframed}[style=comment] 
+That is especially true for smooth kernels which require a low polynomial degree K.
 
+- It is unclear what "That" refers to. If making the above change then "That" could be changed to "This" and it would make sense.
+\end{mdframed}
+\todo{Answer}
 
-% This localization of the kernel $h$ can be useful to visualize kernels, as explained in Appendix C.
+\begin{mdframed}[style=comment] 
+Coarsening can be naturally designed for hierarchical pixelisation schemes, as each subdivision divides a cell in an equal number of child sub-cells.
 
-%  - Most of Appendix C is not involved with the localisation of the kernel so it might be worth expanding this sentence to "This localisation of the kernel $h$ can be useful to visualise kernels, as shown in an example of heat diffusion presented Appendix C. " Also, it is a little odd that Appendix C is mentioned before Appendix B in the text.
+- I think you mean "where" instead of "as"
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
 
-% However, when considering only parts of the sphere, one can observe important border effects (see Figure B.13 and Appendix B).
+- This has an unusual syntax which makes it difficult to follow. I think you mean something like "To coarsen, the sub-cells are merged to summarise the data supported on them."
+\end{mdframed}
+\todo{Answer}
 
-%  - I would just refer the reader to the appendix rather than the figure and the appendix. It is a bit more concise. "However, when considering only parts of the sphere, one can observe important border effects (see Appendix B)."
+\begin{mdframed}[style=comment] 
+Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R}^{N'_{pix}}$ such as
 
+- It should be "such that" not "such as". "Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R}^{N'_{pix}}$ such that"
+\end{mdframed}
+\todo{Answer}
 
-% ... where $T_ig[j] = g[i − j]$ is, up to a flip, a translation operator.
+\begin{mdframed}[style=comment] 
+... where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix}/N'_{pix}$ is the down-sampling factor, which for HEALPix is $|\mathcal{C}(i)| = N_{pix}/N'_{pix} = (N_{side} / N'_{side})^2 = 4^p$.
 
-%  - I don't understand what you mean by a "flip", a change of sign, the inversion of the kernel?
+- Can you explain what $p$ is and it would probably be worth splitting this equation into a multi-line align environment for clarity.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
 
-% Similarly as (2), the convolution of the signal $f$ by a kernel $g$ is the scalar product of $f$ with translated versions $T_ig$ of the kernel $g$.
+- This needs to be expanded to state "The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM) if the network is used for discrete classification."
+\end{mdframed}
+\todo{Answer}
 
-%  - I think this should be "As with equation (2)" or "Similarly, as in equation (2)" but I can't tell which. Also, it would be really useful if you referred to equations by "equation (x)" rather than just "(x)" throughout - much easier to read that way.
+\begin{mdframed}[style=comment] 
+A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer where it is set to the identity.
 
+- Why specify this is identity? It could take any activation - you have already mentioned that it could be a softmax.
+\end{mdframed}
+\todo{Answer}
 
-% The 1-neighborhood of a node is the set of nodes that are directly connected to it. The k-neighborhood of a node is the set of nodes that are connected to it through paths of length k.
+\begin{mdframed}[style=comment] 
+The rectified linear unit (ReLU) $\sigma(\cdot) = \textrm{max}(\cdot, 0)$ is a common choice.
 
-%  - I'm a little confused here, I think the neighbourhood is every pixel which is closer than the distance of some pixel. The value of k would then be the length of the set of ordered distances for all pixels up to this pixel. Is that correct? For example, take a 3x3 square (on Euclidean space for simplicity), if the central pixel has coordinates (0, 0) then the 1-neighbourhood would be all pixels at a length of 1 pixel or less, i.e. (-1, 0), (+1, 0), (0, -1) and (0, +1) who are all at the same distance so the set of distances is {1} pixel and the length of the set is 1. The 2-neighbourhood would then be all pixels which were a distance $\sqrt{2}$ pixels or less away, i.e. (-1, 0), (+1, 0), (0, -1), (0, +1), (-1, -1), (-1, +1), (+1, -1), (+1, +1) so the set of distances would be {1, $\sqrt{2}$} pixels and the length of the set is 2. Is this correct? If so k is not a length. If this is not correct, I think I misunderstand something and so this should be updated in the text.
+- Is this the choice you adopt? You should mention that you do, if you indeed do.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+Note that the output $\bf{Y}\in\mathbb{R}^{N_{pix}\times F_{out}}$ of the last GC (or the output $\bf{Y}\in\mathbb{R}^{N_{stat}\times F_{out}}$ of the ST), ...
 
-% Similarly, each line of the matrix $\sum_{k=0}^&#x10fc04;K\theta_k\boldsymbol{L}^k$ defines an irregular patch of radius $K$.
+- What is ST, you don't mention it before and only once after?
+\end{mdframed}
+\todo{Answer}
 
-%  - What do you mean by "line"? Is it a row or a column or something else which I've misunderstood?
+\begin{mdframed}[style=comment] 
+The output’s size of the neural network depends on the task.
 
+- It would be more correct to write "The size of the output of the neural network depends on the task."
+\end{mdframed}
+\todo{Answer}
 
-% ... where $\tilde{\boldsymbol{L}}= \frac{2}{\lambda_{max}}\boldsymbol{L}−\boldsymbol{I}=−\frac{2}{\lambda_{max}}\boldsymbol{D}^{−1/2}\boldsymbol{W}\boldsymbol{D}^{−1/2}$ is the rescaled Laplacian with eigenvalues $\tilde{\Lambda}$ in [−1, 1].
+\begin{mdframed}[style=comment] 
+Its radius should be large enough to capture statistics of interest.
 
-%  - Could you put the equation in its own 2 line align environment to make it easier to read?
+- I think you mean the radius of the kernel. Perhaps this could be rewritten.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+For example, a small a partial sky observation can provide only limited information of cosmological relevance.
 
-% By construction of our graph, $|\mathcal{E}| < 8N_{pix}$ and the overall computational cost of the convolution reduces to $\mathcal{O}(N_{pix})$ operations. That is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
+- There is just a little mix up in this sentence, maybe a copy and paste accident.
+\end{mdframed}
+\todo{Answer}
 
-%  - This could be written as "By construction of our graph, $|\mathcal{E}| < 8N_{pix}$ and the overall computational cost of the convolution reduces to $\mathcal{O}(N_{pix})$ operations and as such is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform." to make it easier to read.
+\begin{mdframed}[style=comment] 
+The cost (or loss) function $C(\bf{Y},\bar{\bf{Y}}) = C(NN_\theta(\bf{X}),\bar{\bf{Y}})$ measures how good the prediction $\bf{Y}$ is for sample $\bf{X}$, given the ground truth $\bar{\bf{Y}}$.
 
+- This is true for supervised learning only and should be stated.
+\end{mdframed}
+\todo{Answer}
 
-% That is especially true for smooth kernels which require a low polynomial degree K.
+\begin{mdframed}[style=comment] 
+For global prediction, the cost is as if $N_{pix} = 1$.
 
-%  - It is unclear what "That" refers to. If making the above change then "That" could be changed to "This" and it would make sense.
+- I think this should be "For global prediction $N_{pix} = 1$."
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
 
-% Coarsening can be naturally designed for hierarchical pixelisation schemes, as each subdivision divides a cell in an equal number of child sub-cells.
+- This should be "We emphasise that the cost function and the SM layer are the sole differences between a neural network engineered for classification or regression."
+\end{mdframed}
+\todo{Answer}
 
-%  - I think you mean "where" instead of "as"
+\begin{mdframed}[style=comment] 
+The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = E\left[C\left(NN_\theta(\bf{X}),\bar{\bf{Y}}\right)\right]$.
 
+- It is the goal of training, not of learning (in common parlance anyway). Also, you should say that E[] is the expectation rather than leaving people to guess according to the next sentence.
+\end{mdframed}
+\todo{Answer}
 
-% Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
+\begin{mdframed}[style=comment] 
+The optimization is performed by computing an error gradient w.r.t. all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
 
-%  - This has an unusual syntax which makes it difficult to follow. I think you mean something like "To coarsen, the sub-cells are merged to summarise the data supported on them."
+- This sentence is just a bit turned upside-down, it should be "The optimisation is performed by computing an error gradient w.r.t. all the parameters and updating each parameter via back propagation using a form of stochastic gradient descent (SGD):"
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, what makes it computationally efficient.
 
-% Given a map $\boldsymbol{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\boldsymbol{y}\in\mathbb{R}^{N'_{pix}}$ such as
+- It should be "which makes it computationally efficient" instead of "what". (It's possibly "that" and not "which", but I'm never sure which ;))
+\end{mdframed}
+\todo{Answer}
 
-%  - It should be "such that" not "such as". "Given a map $\boldsymbol{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\boldsymbol{y}\in\mathbb{R}^{N'_{pix}}$ such that"
+\begin{mdframed}[style=comment] 
+A straightforward way to impose locality in the original domain is to impose smoothness in the spectral domain, by Heisenberg’s uncertainty principle.
 
+- What do you mean by "by Heisenberg’s uncertainty principle." That seemed to come out of nowhere. This needs explaining further.
+\end{mdframed}
+\todo{Answer}
 
-% ... where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix}/N'_{pix}$ is the down-sampling factor, which for HEALPix is $|\mathcal{C}(i)| = N_{pix}/N'_{pix} = (N_{side} / N'_{side})^2 = 4^p$.
+\begin{mdframed}[style=comment] 
+All the above methods cannot be easily accelerated when the data lies on a part of the sphere only.
 
-%  - Can you explain what $p$ is and it would probably be worth splitting this equation into a multi-line align environment for clarity.
+- You mention your method as part of the "above methods", but then you go on to say that using graphs does allow you to accelerate the method when data is only on part of the sphere.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+By interwinding graph convolutional layers and recurrent layers [65], they can for example model structured time series such as traffic on road networks [66], or recursively complete matrices for recommendation [67].
 
-% The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
+- I'm not sure what interwinding is, I guess you mean by making GC recurrent, or do you mean using GC and then RL separately? Either way there should be commas around "for example".
+\end{mdframed}
+\todo{Answer}
 
-%  - This needs to be expanded to state "The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM) if the network is used for discrete classification."
+\begin{mdframed}[style=comment] 
+To prevent the cosmological models to be distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell$ > 1000).
 
+- This should be "To prevent the cosmological models from being distinguished by their power spectra alone the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell$ > 1000).
+\end{mdframed}
+\todo{Answer}
 
-% A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer where it is set to the identity.
+\begin{mdframed}[style=comment] 
+The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
 
-%  - Why specify this is identity? It could take any activation - you have already mentioned that it could be a softmax.
+- Can you add that you are going to describe the details more thoroughly in section 4.1.
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+Implementation of full cosmological inference requires, however, many more simulations, building the likelihood function, and several other auxiliary tasks.
 
-% The rectified linear unit (ReLU) $\sigma(\cdot) = \textrm{max}(\cdot, 0)$ is a common choice.
+- Unless you have a cheap neural network based likelihood-free method ;)
+\end{mdframed}
+\todo{Answer}
 
-%  - Is this the choice you adopt? You should mention that you do, if you indeed do.
+\begin{mdframed}[style=comment] 
+For each class, we generate 30 simulations.
 
+- Just mention that there are two classes again, to make it clear that "class" means "cosmology".
+\end{mdframed}
+\todo{Answer}
 
-% Note that the output $\boldsymbol{Y}\in\mathbb{R}^{N_{pix}\times F_{out}}$ of the last GC (or the output $\boldsymbol{Y}\in\mathbb{R}^{N_{stat}\times F_{out}}$ of the ST), ...
+\begin{mdframed}[style=comment] 
+That is a data augmentation scheme, as it creates more training examples than we have simulations.
 
-%  - What is ST, you don't mention it before and only once after?
+- I think that you should introduce the Gaussian noise paragraph by stating that you perform data augmentation via the addition of randomly drawn Gaussian noise, rather than talking about the random noise first and then explaining that the reason is for data augmentation. ML specialists in particular will be happier with the addition of noise for DA (as will cosmologists I think).
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+Probabilities are computed by the SM layer.
 
-% The output’s size of the neural network depends on the task.
+- As explained above, these are not probabilities, they are class predictions from the network.
+\end{mdframed}
+\todo{Answer}
 
-%  - It would be more correct to write "The size of the output of the neural network depends on the task."
+\begin{mdframed}[style=comment] 
+As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
 
+- Should be "As fewer pixels...". Also, "makes more mistakes" kind of anthropomorphises the network too much. Perhaps "have access to less information and thus cannot classify as well".
+\end{mdframed}
+\todo{Answer}
 
-% Its radius should be large enough to capture statistics of interest.
+\begin{mdframed}[style=comment] 
+This standard deviation has the property to keep the energy of the signal more or less constant across layers
 
-%  - I think you mean the radius of the kernel. Perhaps this could be rewritten.
+- Should be "of keeping" instead of "to keep". "This standard deviation has the property of keeping the energy of the signal more or less constant across layers"
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+We derived this rule from the Chebyshev polynomial equations and some empirical experiments.
 
-% For example, a small a partial sky observation can provide only limited information of cosmological relevance.
+- This is a bit loose, can you explain further and add a citation if you didn't do the experiments yourself?
+\end{mdframed}
+\todo{Answer}
 
-%  - There is just a little mix up in this sentence, maybe a copy and paste accident.
+\begin{mdframed}[style=comment] 
+Figure 10: Random selection of 24 learned filters from the fifth spherical convolutional layer L5. Top: section. Bottom: gnomonic projection.
 
+- There is not enough information in this caption. Can you explain that there is some obvious peak structure. I think a colourbar on the gnomonic projection would be useful too.
+\end{mdframed}
+\todo{Answer}
 
-% The cost (or loss) function $C(\boldsymbol{Y},\bar{\boldsymbol{Y}}) = C(NN_\theta(\boldsymbol{X}),\bar{\boldsymbol{Y})$ measures how good the prediction $\boldsymbol{Y}$ is for sample $\boldsymbol{X}$, given the ground truth $\bar{\boldsymbol{Y}}$.
+\begin{mdframed}[style=comment] 
+The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
 
-%  - This is true for supervised learning only and should be stated.
+- It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
 
-% For global prediction, the cost is as if $N_{pix} = 1$.
+- What is "it" here? DeepSphere or graph networks or something else?
+\end{mdframed}
+\todo{Answer}
 
-%  - I think this should be "For global prediction $N_{pix} = 1$."
+\begin{mdframed}[style=comment] 
+We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of [33]. That is, however, out of the scope of this contribution. 
 
+- What makes you believe this? If you don't want to mention it in this paper, please don't speculate a "belief". I might just be reading the sentence incorrectly, but it makes me a little uncomfortable when there is no evidence backing that up. If you have some evidence then it's worth presenting it.
+\end{mdframed}
+\todo{Answer}
 
-% We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
+\begin{mdframed}[style=comment] 
+In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
 
-%  - This should be "We emphasise that the cost function and the SM layer are the sole differences between a neural network engineered for classification or regression."
+- It should be "assumed". "In this case, the graph setting used through this contribution correspond to assumed reflective border conditions."
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
 
-% The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = E\left[&#x10fc06;C\left(&#x10fc00;NN_\theta(\boldsymbol{X}),\bar{\boldsymbol{Y}}\right)\right]$&#x10fc01;&#x10fc07;.
+- There is a superfluous word (dealing/working). I think this would read better as "Nevertheless, when working with only a part of the sphere, the border slightly affects the convolution."
+\end{mdframed}
+\todo{Answer}
 
-%  - It is the goal of training, not of learning (in common parlance anyway). Also, you should say that E[] is the expectation rather than leaving people to guess according to the next sentence.
+\begin{mdframed}[style=comment] 
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
 
+- Are they really mitigated? Surely there are still effects but you are happy with the level?
+\end{mdframed}
+\todo{Answer}
 
-% The optimization is performed by computing an error gradient w.r.t. all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
+\begin{mdframed}[style=comment] 
+Furthermore, this result is another sign that the constructed graph is able to capture the spherical structure of the HEALPix sampling.
 
-%  - This sentence is just a bit turned upside-down, it should be "The optimisation is performed by computing an error gradient w.r.t. all the parameters and updating each parameter via back propagation using a form of stochastic gradient descent (SGD):"
+- What does "this" refer to?
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
 
-% As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, what makes it computationally efficient.
+- I think is might be another one of the most important points in the paper which allows you to justify why not being exact (like a spherical harmonic transform) is acceptable. If I were you I'd move this into the main body of the paper.
+\end{mdframed}
+\todo{Answer}
 
-%  - It should be "which makes it computationally efficient" instead of "what". (It's possibly "that" and not "which", but I'm never sure which ;))
+\begin{mdframed}[style=comment] 
+We then plot the result with a gnomonic projection.
 
+- Can you add in Figure C.16 here. "We then plot the result with a gnomonic projection, as shown in Figure C.16". Also, why do you choose a gnomonic projection? In fact, with plots C.16 and C.17 I would make them a single plot (as in Figure. 10),
+\end{mdframed}
+\todo{Answer}
 
-% A straightforward way to impose locality in the original domain is to impose smoothness in the spectral domain, by Heisenberg’s uncertainty principle.
+\begin{mdframed}[style=comment] 
+We plot the section of the convoluted Kroneker.
 
-%  - What do you mean by "by Heisenberg’s uncertainty principle." That seemed to come out of nowhere. This needs explaining further.
+- It should be "convolved" and probably stick with "Kroneker $\delta$". Also, why are you plotting this? What does it show? Can you go into a bit more detail?
+\end{mdframed}
+\todo{Answer}
 
+\begin{mdframed}[style=comment] 
+The error clearly converged and adding more samples will not help.
 
-% All the above methods cannot be easily accelerated when the data lies on a part of the sphere only.
+- I think this should be "converges such that" rather than "converged and". And rather than "help" I think "improve convergence further" is more descriptive.
+\end{mdframed}
+\todo{Answer}
 
-%  - You mention your method as part of the "above methods", but then you go on to say that using graphs does allow you to accelerate the method when data is only on part of the sphere.
+\begin{mdframed}[style=comment] 
+The validation error might be slightly below the training error as it is used to select hyper-parameters.
 
+- I don't understand this statement. It could be that there is accidentally more correlation in the validation set, but I'm not sure what you mean by "it is used to select hyper-parameters" or why that would explain why there is less error in the validation set. Can you think about this further (and perhaps check for the amount of information in that data set compared to the training set)?
+\end{mdframed}
+\todo{Answer}
 
-% By interwinding graph convolutional layers and recurrent layers [65], they can for example model structured time series such as traffic on road networks [66], or recursively complete matrices for recommendation [67].
+\begin{mdframed}[style=comment] 
+The data is generated for the present analysis is based on the fast approximate N-Body simulation code L-PICOLA [71].
 
-%  - I'm not sure what interwinding is, I guess you mean by making GC recurrent, or do you mean using GC and then RL separately? Either way there should be commas around "for example".
+- The first "is" is superfluous.
+\end{mdframed}
+\todo{Answer}
 
+\subsection{}
 
-% To prevent the cosmological models to be distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell$ > 1000).
+\begin{mdframed}[style=comment] 
 
-%  - This should be "To prevent the cosmological models from being distinguished by their power spectra alone the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell$ > 1000).
-
-
-% The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
-
-%  - Can you add that you are going to describe the details more thoroughly in section 4.1.
-
-
-% Implementation of full cosmological inference requires, however, many more simulations, building the likelihood function, and several other auxiliary tasks.
-
-%  - Unless you have a cheap neural network based likelihood-free method ;)
-
-
-% For each class, we generate 30 simulations.
-
-%  - Just mention that there are two classes again, to make it clear that "class" means "cosmology".
-
-
-% That is a data augmentation scheme, as it creates more training examples than we have simulations.
-
-%  - I think that you should introduce the Gaussian noise paragraph by stating that you perform data augmentation via the addition of randomly drawn Gaussian noise, rather than talking about the random noise first and then explaining that the reason is for data augmentation. ML specialists in particular will be happier with the addition of noise for DA (as will cosmologists I think).
-
-
-% Probabilities are computed by the SM layer.
-
-%  - As explained above, these are not probabilities, they are class predictions from the network.
-
-
-% As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
-
-%  - Should be "As fewer pixels...". Also, "makes more mistakes" kind of anthropomorphises the network too much. Perhaps "have access to less information and thus cannot classify as well".
-
-
-% This standard deviation has the property to keep the energy of the signal more or less constant across layers
-
-%  - Should be "of keeping" instead of "to keep". "This standard deviation has the property of keeping the energy of the signal more or less constant across layers"
-
-
-% We derived this rule from the Chebyshev polynomial equations and some empirical experiments.
-
-%  - This is a bit loose, can you explain further and add a citation if you didn't do the experiments yourself?
-
-
-% Figure 10: Random selection of 24 learned filters from the fifth spherical convolutional layer L5. Top: section. Bottom: gnomonic projection.
-
-%  - There is not enough information in this caption. Can you explain that there is some obvious peak structure. I think a colourbar on the gnomonic projection would be useful too.
-
-
-% The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
-
-%  - It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
-
-
-% In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
-
-%  - What is "it" here? DeepSphere or graph networks or something else?
-
-
-% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of [33]. That is, however, out of the scope of this contribution. 
-
-%  - What makes you believe this? If you don't want to mention it in this paper, please don't speculate a "belief". I might just be reading the sentence incorrectly, but it makes me a little uncomfortable when there is no evidence backing that up. If you have some evidence then it's worth presenting it.
-
-
-% In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
-
-%  - It should be "assumed". "In this case, the graph setting used through this contribution correspond to assumed reflective border conditions."
-
-
-% Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
-
-%  - There is a superfluous word (dealing/working). I think this would read better as "Nevertheless, when working with only a part of the sphere, the border slightly affects the convolution."
-
-
-% These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
-
-%  - Are they really mitigated? Surely there are still effects but you are happy with the level?
-
-
-% Furthermore, this result is another sign that the constructed graph is able to capture the spherical structure of the HEALPix sampling.
-
-%  - What does "this" refer to?
-
-
-% In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
-
-%  - I think is might be another one of the most important points in the paper which allows you to justify why not being exact (like a spherical harmonic transform) is acceptable. If I were you I'd move this into the main body of the paper.
-
-
-% We then plot the result with a gnomonic projection.
-
-%  - Can you add in Figure C.16 here. "We then plot the result with a gnomonic projection, as shown in Figure C.16". Also, why do you choose a gnomonic projection? In fact, with plots C.16 and C.17 I would make them a single plot (as in Figure. 10),
-
-
-% We plot the section of the convoluted Kroneker.
-
-%  - It should be "convolved" and probably stick with "Kroneker $\delta$". Also, why are you plotting this? What does it show? Can you go into a bit more detail?
-
-
-% The error clearly converged and adding more samples will not help.
-
-%  - I think this should be "converges such that" rather than "converged and". And rather than "help" I think "improve convergence further" is more descriptive.
-
-
-% The validation error might be slightly below the training error as it is used to select hyper-parameters.
-
-%  - I don't understand this statement. It could be that there is accidentally more correlation in the validation set, but I'm not sure what you mean by "it is used to select hyper-parameters" or why that would explain why there is less error in the validation set. Can you think about this further (and perhaps check for the amount of information in that data set compared to the training set)?
-
-
-% The data is generated for the present analysis is based on the fast approximate N-Body simulation code L-PICOLA [71].
-
-%  - The first "is" is superfluous.
-
-
-% Finally, after all these little points, I just want to congratulate the authors again on a great paper. It was a pleasure reading it. I will be sure to be using this method in the near future!
-
+Finally, after all these little points, I just want to congratulate the authors again on a great paper. It was a pleasure reading it. I will be sure to be using this method in the near future!
+\end{mdframed}
+\todo{Final thanks + contact us?}
 
 
 
