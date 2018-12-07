@@ -169,11 +169,13 @@ The paper is well-written, and the results are clearly presented. The litteratur
 One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguising from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real comsological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
 \end{mdframed}
 
-\todo{General answer:
+\todo{Assigned: @nati, @michael
+General answer:
 \begin{itemize}
   \item `An SVM or even a standard fully connected neural network (NN) would perform a lot better.'
-  a) I think that SVM fails (I think this this an overfitting problem. This is the case at least for the noiseless case, TO CHECK)
+  a) I think that SVM fails (I think this this an overfitting problem. This is the case at least for the noiseless case, TO CHECK) I was able to run SVM, it works, but the result is pretty bad. TODO: do a full experiment.
   b) NN is computationally not even possible, or it would have to be a very striped down version of the network... We can actually try...
+  The input number of pixel for our order $1$ is $1024^2$ which severly limits the number of neurons that can be used in a fully connected architecture. For the first layer, we were only able to $128$ neurons before hitting an out of memory errors. In this setting, with an relative amount of noise of 0.5, we were unable to find regularization setting for the network such that it would actually classify the validation set. Note that all calssifiers performed well in this particular setting. Similar conclusion were observed with other setting, even when increasing the number of neurons for order $2$ and $4$.
   \item The reviewer is correct with respect of the number of parameters
 \end{itemize}
 We should probably add to comparing curves SVM and fully connected
@@ -185,8 +187,7 @@ We should probably add to comparing curves SVM and fully connected
 Page 4: "There is no known point set that achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions." This is ambigious. There exists multiple schemes for performing exact SHT on band-limited signals. Those sampling are more efficient than healpix - often in terms of number of pixels, and sometimes in terms of performance of the spherical harmonic transforms - and more accurate since the transform is exact (at least numerically - so typical errors are machine precision). Healpix transforms are only exact to 1e-7 when using iterative schemes, and that depends on Nside and lmax. Please clarify this paragraph. Obviously healpix is very advantageous for the pooling and other operations that take advantage of its hierarchical nature. This is well discussed in the paper - in particular how the fast graph algorithms could accomodate other sampling schemes.
 \end{mdframed}
 
-\todo{We have updated the manuscript to
-
+\todo{Assigned to: @all whoever can answer this question. I just do not know the answer.
 \begin{mdframed}[style=manuscript] 
 blabla
 \end{mdframed}
@@ -197,8 +198,8 @@ blabla
 "Our graph is constructed as an approximation of sphere S2, a 2D manifold embedded in R3, Indeed, [33] showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity. While our construction will not exactly respect the setting defined by [33], we observe empirically strong evidence of convergence." This paragraph is unclear. Could you please add a few words to clarify what the approach of 33 is? 
 \end{mdframed}
 
-\todo{We added
-
+\todo{Assigned: @nati 
+We added
 \begin{mdframed}[style=manuscript] 
 blabla
 \end{mdframed}}
@@ -209,13 +210,21 @@ blabla
 Figure 3: What was resolution used for those maps? Does the projection of the eigenvectors depend on the resolution and band-limit? 
 \end{mdframed}
 
-\todo{Answer}
+\todo{@nati
+We were actually limited in resolution when computing the graph Fourier eigenvectors as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$. Hence we used a resolution of $N_{side}=16$. The information has been added to the paper. We believe that, with the correct weighting scheme the graph eigenvectors may converge toward the spherical harmonics as the resolution increases. We also believe that the eigenvector associated with the lowest $\ell$ "converges first". }
 
 \subsection{}
 \begin{mdframed}[style=comment] 
 Page 7: "That is much more efficient than filtering with spherical harmonics, even though HEALPix was de- signed as an iso-latitude sampling that has a fast spherical transform. That is especially true for smooth kernels which require a low polynomial degree K. Figure 4 compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here. A naive implementation of our method is ten to twenty times faster for Nside = 2048, with K = 20 and K = 5, respectively, than using the spherical harmonic transform at lmax = 3Nside implemented by the highly optimized libsharp [38] library used by HEALPix." This is not so clear. Is the graph method also performing a Gaussian smoothing with the same characteristics? If so, what are those? How precise is the graph convolution approximating the true harmonic-space Gaussian convolution in this case? This is relevant since some approximations (for instance when analyzing cosmic microwave background data) require high-precision Gaussian smoothing. Finally, is lipsharp optimizing Gaussian smoothing in any way?
 \end{mdframed}
-\todo{Answer}
+\todo{Assigned: @nati,
+Tocheck: @tomek, @michael
+\begin{itemize}
+  \item No here we only care about filter speed. 
+  \item Filters do not have to be the same as they are learned anyway by the network.
+  \item Replacing healpix filtering with graph filtering might be possible (suggested by Appendix C and fig 14), but is probably not usable when precision is required. It is left for futur work.
+\end{itemize}
+}
 
 \section{}
 
