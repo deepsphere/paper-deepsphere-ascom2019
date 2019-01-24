@@ -161,25 +161,23 @@ I have read with great interest the paper by Perraudin and collaborators present
 The paper is well-written, and the results are clearly presented. The litterature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
-\todo{Thanks the reviewer}
-
+Dear reviewer, we thank you for reading our paper and providing comments. They have helped us improving our manuscript. In this rebuttal, you can find a detailed answer to all the points you mentioned. 
 
 \subsection{}
 \begin{mdframed}[style=comment] 
 One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguising from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real comsological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
 \end{mdframed}
 
-\todo{Assigned: @nati, @michael
-General answer:
-\begin{itemize}
-  \item `An SVM or even a standard fully connected neural network (NN) would perform a lot better.'
-  a) I think that SVM fails (I think this this an overfitting problem. This is the case at least for the noiseless case, TO CHECK) I was able to run SVM, it works, but the result is pretty bad. TODO: do a full experiment.
-  b) NN is computationally not even possible, or it would have to be a very striped down version of the network... We can actually try...
-  The input number of pixel for our order $1$ is $1024^2$ which severly limits the number of neurons that can be used in a fully connected architecture. For the first layer, we were only able to $128$ neurons before hitting an out of memory errors. In this setting, with an relative amount of noise of 0.5, we were unable to find regularization setting for the network such that it would actually classify the validation set. Note that all calssifiers performed well in this particular setting. Similar conclusion were observed with other setting, even when increasing the number of neurons for order $2$ and $4$.
-  \item The reviewer is correct with respect of the number of parameters
-\end{itemize}
-We should probably add to comparing curves SVM and fully connected
-}
+\todo{Assigned: @nati, @michael}
+The intuition of the reviewer is correct, theorectially using the raw data, \emph{an SVM or even a standard fully connected neural network (NN) would perform a lot better.} In practice, this those models are limited by the computational power and the dataset size. 
+
+We had actually tried training an SVM on the raw data but were unable to obtain over $60\%$ accuracy in cases where all the other models were close to $100\%$. The classifier would either overfit or be over-regularized. For that reason, we decided, not to report the SVM results in the paper.  \nati{FYI, I did try again to be entirely sure about it.}
+
+A model based on a fully connected neural network, as suggested by the reviewer, will contains a very large amount of weights severly limiting what can be tested with conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which severly limits the number of neurons that can be used in the architecture. For the completeness of this answer, we did try a fully connected NN. Practially, in the first layer, we were only able to $128$ neurons before hitting an out of memory errors. In this setting, with an relative amount of noise of $0.5$, we were unable to regularize the network such that it would actually classify the validation set. Note that all calssifiers performed well (close to $100\%$ accuracy) in this particular setting. Similar conclusion were observed with other setting, even when increasing the number of neurons for small part of the sphere (order $2$ and $4$).
+
+This being said, the reviewer comment is justified and we will add these information to the paper. 
+
+\todo{Add it in the paper... Make clear that CNN is so much better than fully connected + say that SVM on he raw features does not work.}
 
 
 \subsection{}
@@ -188,6 +186,8 @@ Page 4: "There is no known point set that achieves the analogue of uniform sampl
 \end{mdframed}
 
 \todo{Assigned to: @all whoever can answer this question. I just do not know the answer.
+
+We clarified the sentence with this:
 \begin{mdframed}[style=manuscript] 
 blabla
 \end{mdframed}
@@ -198,11 +198,15 @@ blabla
 "Our graph is constructed as an approximation of sphere S2, a 2D manifold embedded in R3, Indeed, [33] showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity. While our construction will not exactly respect the setting defined by [33], we observe empirically strong evidence of convergence." This paragraph is unclear. Could you please add a few words to clarify what the approach of 33 is? 
 \end{mdframed}
 
-\todo{Assigned: @nati 
-We added
+\todo{Assigned: @nati, @michael}
+
+We tried to clarify the paragraph in the following manner:
 \begin{mdframed}[style=manuscript] 
-blabla
-\end{mdframed}}
+Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
+Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the Manifold and a fully connected graph built with exponentially decaying weights.
+While our construction will not exactly respect the setting defined by \cite{belkin2007convergence} (the sampling is not uniform and the graph is not fully connected), we observe empirically strong evidence of convergence.
+\end{mdframed}
+We are aware that this particular point could be more detailled. Nevertheless, we believe that a deeper discussion does not belong to this paper. In fact, we are currently investigating the convergence question with the goal of obtaining better graph constructions or rotational equivariance results.
 
 \subsection{}
 
@@ -210,8 +214,10 @@ blabla
 Figure 3: What was resolution used for those maps? Does the projection of the eigenvectors depend on the resolution and band-limit? 
 \end{mdframed}
 
-\todo{@nati
-We were actually limited in resolution when computing the graph Fourier eigenvectors as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$. Hence we used a resolution of $N_{side}=16$. The information has been added to the paper. We believe that, with the correct weighting scheme the graph eigenvectors may converge toward the spherical harmonics as the resolution increases. We also believe that the eigenvector associated with the lowest $\ell$ "converges first". }
+\todo{Assigned: @nati}
+We were actually limited in resolution when computing the graph Fourier eigenvectors as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$. Hence we used a resolution of $N_{side}=16$. The information has been added to the paper. 
+
+Since we do not have any convergence result yet, we are not usure about how the projection error evolves. However, if there is convergence (and we believe there is), then the eigenvector associated with the lowest $\ell$ probably converge first.
 
 \subsection{}
 \begin{mdframed}[style=comment] 
@@ -219,12 +225,13 @@ Page 7: "That is much more efficient than filtering with spherical harmonics, ev
 \end{mdframed}
 \todo{Assigned: @nati,
 Tocheck: @tomek, @michael
-\begin{itemize}
-  \item No here we only care about filter speed. 
-  \item Filters do not have to be the same as they are learned anyway by the network.
-  \item Replacing healpix filtering with graph filtering might be possible (suggested by Appendix C and fig 14), but is probably not usable when precision is required. It is left for futur work.
-\end{itemize}
 }
+
+In the experiment shown if Figure 4, we only care about speed and not about the filter itself (we could have taken any filter). The main reason is that in the context of neural network, filters will be learned anyway. Libsharp is probably not optimized for Gaussian smoothing, but this experiment should not be limted to Gaussian filter. We intend to report on the general filter speed and use conveniently a Gaussian.
+
+We note that, the reviewer question is interesting. Replacing spherical filtering (using the harmonic decomposition) with graph filtering might be possible in the future as suggested by Appendix C and fig 14.
+Our feeling is that in its current state, it probably does not have the required precision to be usable in a high precision setting. Nevertheless, theoretical improvement on the convergence side could definitly makes it competitive.
+
 
 \section{}
 
@@ -236,26 +243,39 @@ The paper contains an extremely well described technique for performing convolut
 I will happily recommend this paper for publication. Firstly though, I would like access to the data (privately rather than via emailing the group) so that I can check the notebooks thoroughly. The notebooks are extremely well written but I would like to run them first. As well as this I think there are a few extra applications which will improve the manuscript further, and make the method more appealing for users. I would recommend that these ideas are at least seriously considered by the authors and hopefully implemented: 
 \end{mdframed}
 
-\todo{Thank the reviewer + give him access to data}
+\todo{Assigned @Tomek
+\begin{itemize}
+  \item Thank the reviewer
+  \item give him access to data
+\end{itemize}}
 
 \subsection{}
 
 \begin{mdframed}[style=comment] 
 The first, and most important is an example using masks. Since the authors mention how their method should in principle work well with masks, especially in comparison to HEALPix and Clebsh-Gordan transform spherical harmonic methods I think that it would be extremely enlightening to present this work, probably in the form of a performance vs. time plot. With this being done, the informational content of a masked version of the cosmological application could easily be included. This would, I'm sure, be attractive to the cosmological community as well as the ML community who are always looking for good ways to deal with masked data.
 \end{mdframed}
-\nati{I do not think we can practically compare with Clebsh-Gordan transform. We need to explain that to the reviewer. This is a sensitive point.}
+\todo{Assigned: @Michael, @Nati}
+\nati{I do not think we can practically compare with Clebsh-Gordan transform. There is no code for the paper of Kondor. We can write the theoretical complexity. This is a sensitive point.}
 
 \subsection{}
 
 \begin{mdframed}[style=comment] 
 Secondly, using only SVM as a comparison might skew how well this technique appears to works in a deep learning setting. In principle (and I say this not knowing for sure) 2D CNNs should probably be able to work as well as DeepSphere (although no where near as elegantly) by taking in a projected 2D image of the sky and using *loads* of filters to learn about the distortion at different parts of the projected sky. It would be interesting (and I think a fairly easy test) to check how well DeepSphere performs against a 2D CNN on projections. 
 \end{mdframed}
-\nati{This is something we should be abble to do. Actually, since we used 1/12 of the sphere, all the pixel grids we use are somehow squared. @Tomek, do you know if we can use directly that as a projection? Or do you know how to do the projection? What happen if the traditional 2D CNN is as good as our technique?}
+\todo{Assigned: @Nati, @Michael, @Tomek}
+\nati{
+This is something we should be able to do. Actually, since we used 1/12 of the sphere, all the pixel grids we use are somehow squared. I am now using this as a projection. @Tomek, do you know if this is ok? Or do you know how to do the projection in a simple and efficient manner? 
+I am trying to make the comparizon right now
+More important, I think that traditional 2D CNNs will be as good as our algorithm. We should be very careful in the way we formulate this in our answer and in the paper.}
 
 \begin{mdframed}[style=comment] 
 Similarly, I think it would useful to check how well the DeepSphere CNN does against the FCN when the input data is rotated randomly during training - I imagine that the results should match or probably exceed the FCN results and I think this would be a neat little test which doesn't involve needing extra data, just more augmentation.
 \end{mdframed}
-\nati{Problem here is that rotation is not simple on a sphere. So it will be very slow... In theory, I believe that CNN will match FCN. What shall we do?}
+\nati{@Nati, @Michael, @Tomek
+
+Problem here is that rotation is not simple on a sphere, it will probably be slow and I will have to break a lot of code to do it.
+Nevertheless, I believe that in theory, CNN will match FCN when we do enought rotation. Should we answer that? @mMichael: what do you think?
+}
 
 \subsection*{Minor comment}
 
@@ -270,7 +290,9 @@ While our construction will not exactly respect the setting defined by [33], we 
 - Could you add a plot comparing the graph Laplacian as a function of number of pixels and the Laplace-Beltrami operator so the reader can explicitly see the convergence?
 \end{mdframed}
 
-\todo{Very good question: but too complex answer for this paper. This is kept for a future contribution. + explain why}
+\todo{Dear reviewer, this is an excellente question. We have have made the choice to takle quantitatively and theoretically the subject of convergence because of its complexity. 
+
+Very good question: but too complex answer for this paper. This is kept for a future contribution. + explain why}
 
 \subsection{}
 
@@ -812,6 +834,11 @@ Finally, after all these little points, I just want to congratulate the authors 
 
 
 
+\clearpage
+\newpage
+
+\bibliographystyle{elsarticle-num}
+\bibliography{biblio}
 
 
 \end{document}
