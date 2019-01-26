@@ -238,7 +238,7 @@ So far these algorithms have mostly been demonstrated on Euclidean domains, such
 The main challenge in designing a CNN on the sphere is to define a convolution operation that is suitable for this domain, while taking care of the necessary irregular sampling.
 Moreover, the designed convolution and resulting neural network should possess the following three key characteristics.
 First, the convolution should be equivariant to rotation, meaning that a rotation of the input implies the same rotation of the output.
-Sky maps are rotation invariant: rotating maps on the sphere doesn't change their interpretation, as only the statistics of the maps are relevant.
+\nati{We consider the sky maps rotationial invariant as in our case rotating maps on the sphere doesn't change their interpretation since only the statistics of the maps are relevant.}
 Depending on the task, we want the CNN to be either equivariant or invariant to rotation.
 Second, to be able to train the network in reasonable time, the convolution has to be computationally efficient.
 Third, a CNN should work well on parts of the sphere, as many cosmological observations cover only a part of the sky.
@@ -278,7 +278,7 @@ DeepSphere is readily apt to solve four tasks: (i) global classification (i.e., 
 Input data are spherical maps with a single value per pixel, such as the CMB temperature, or multiple values per pixel, such as surveys at multiple radio frequencies.
 
 We give a practical demonstration of DeepSphere on cosmological model discrimination using maps of projected mass distribution on the sky \citep{chang2017curvedsky}.
-This kind of maps can be created using the gravitational lensing technique \citep[see][for review]{BartelmannSchneider2001weak}.
+These kind of maps can be created using the gravitational lensing technique \citep[see][for review]{BartelmannSchneider2001weak}.
 Our maps are similar to the ones used by \citep{schmelze2017cosmologicalmodel}.
 In a simplified scenario, we classify partial sky convergence maps into two cosmological models.
 These models were designed to have very similar angular power spectrum.
@@ -301,7 +301,7 @@ A CNN is composed of the following main building blocks~\citep{lecun1998cnn}:
 Our architecture is depicted in~\figref{architecture} and discussed in greater details in \secref{architecture}. As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations, however, need to be generalized from Euclidean domains to the sphere.
 
 On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of $5 \times 5$ pixels) in the signal domain.
-Likewise, down-sampling can be achieved by taking one pixel out of $n$.
+\nati{Likewise, down-sampling can be achieved by keeping one pixel every $n$ pixels with $n=2$ being very common.}
 Because of the irregular sampling, there is no straightforward way to define a convolution on the sphere directly in the pixel domain; convolutions are most often performed using spherical harmonics.
 In our method we also use the spectral domain to define the convolution.
 The implementation, however, does not need a direct access to the spectrum, which is computationally more efficient (see \secref{efficient_convolution}).
@@ -406,8 +406,8 @@ $h: \R_+ \rightarrow \R$, a signal $\f \in \R^{N_{pix}}$ on the graph is filtere
 where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii} = h(\bLambda_{ii})$.
 
 Contrary to classical signal processing on Euclidean domains, the kernel $h$ has no single representation in the vertex domain and cannot be translated on the graph. It can however be \textit{localized} on any vertex $v_i$ by the convolution with a Kronecker delta\footnote{A Kronecker delta is the signal $\b \delta^i \in \R^{N_{pix}}$ that is zero everywhere except on vertex $v_i$ where it takes the value one.} $\b \delta^i \in \R^{N_{pix}}$. The localization operator $\T_i$ reads $\T_i h = h(\L) \b \delta^i = (h(\L))_i$, the $i$th column of $h(\L)$.
-This localization of the kernel $h$ can be useful to visualize kernels, as explained in~\ref{sec:filter_visualization}.
-If the graph is not regular, i.e., all nodes do not have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see \figref{border_effects} and~\ref{sec:border_effects}).
+This localization of the kernel $h$ can be useful to visualize kernels, as shown in an example of heat diffusion presented in~\ref{sec:filter_visualization}.
+If the graph is not regular, i.e., all nodes do not have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see ~\ref{sec:border_effects}).
 
 Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with localizations $\T_i h$ of the kernel $h$. Indeed, the result of the convolution of the signal $\f$ with the kernel $h$ is
 \begin{equation} \label{eqn:graph_convolution_spatial}
@@ -417,7 +417,7 @@ To make the parallel with the classical 1D convolution, let $f, g\in \mathbb{Z} 
 \begin{equation*}
 	(f \ast g) [i] = \sum_{j=-\infty}^\infty f[j] g[i-j] = \langle T_i g,  f \rangle,
 \end{equation*}
-where $T_i g[j] = g[i-j]$ is, up to a flip, a translation operator.
+where $T_i g[j] = g[i-j]$ is, up to a flip ($g[i-j]$ instead of $g[i+j]$), a translation operator.
 Similarly as \eqnref{graph_convolution_spatial}, the convolution of the signal $f$ by a kernel $g$ is the scalar product of $f$ with translated versions $T_i g$ of the kernel $g$.
 Additionally, it turns out that the localization operator $\T_i h$ is a generalization of the translation operator on graphs. In the particular case where the Laplacian matrix $\L$ is circulant, $\T_i h$ is a translated version of $\T_j h$ for all $i, j$ and both convolutions are equivalent. We refer the reader to \citep[Sec 2.2]{perraudin2017stationary} for a detailed discussion of the connection between translation $T_i$ and localization $\T_i$.
 
@@ -461,7 +461,7 @@ That defines radial filters, values of which depend only on the distance to the 
 % The number of nodes in a neighborhood most often even vary from node to node.
 While it may seem odd to restrict filters to be 1D while the sphere is 2D, radial filters are direction-less and result in rotation equivariant convolutions.
 We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical Euclidean convolution to a fixed-size patch.
-Similarly, each line of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an irregular patch of radius $K$.
+Similarly, each column of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an irregular patch of radius $K$.
 Hence, filters designed as polynomials of the Laplacian have local support in the vertex domain.
 
 Following \citep{defferrard2016convolutional}, we define our filters as Chebyshev polynomials.
@@ -469,7 +469,11 @@ The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_cheby}
 	h_\theta\left(\tL\right) \f = \U \left(\sum_{k=0}^K \theta_k T_k\left(\tilde{\bLambda}\right) \right) \U\trans \f = \sum_{k=0}^K \theta_k T_k\left(\tL\right) \f,
 \end{equation}
-where $\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}$ is the rescaled Laplacian with eigenvalues $\tilde{\b \Lambda}$ in $[-1, 1]$.
+where 
+\begin{equation*}
+\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}
+\end{equation*}
+is the rescaled Laplacian with eigenvalues $\tilde{\b \Lambda}$ in $[-1, 1]$.
 $T_k(\cdot)$ is the Chebyshev polynomial of degree $k$ defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$.
 While definitions \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby} both allow the representation of the same filters, we found in our experiments that optimizing $\theta$ in \eqnref{graph_convolution_cheby} is slightly more stable than $\theta$ in \eqnref{graph_convolution_monomial}.
 We believe that this is due to (i) their almost orthogonality in the spectral and spatial domains, and (ii) their uniformity.\footnote{The amplitude of the Chebyshev polynomials $T_k(x)$ is mostly constant over the domain $[-1, 1]$, independently of the order $k$. On the contrary, the amplitude of the monomials $x^k$ is very different for $|x|\approx 0$ and $|x| \approx 1$.}
@@ -477,9 +481,8 @@ Finally, note that while the graph convolution \eqnref{graph_convolution_fourier
 
 Exploiting the recursive formulation of Chebyshev polynomials, evaluating \eqnref{graph_convolution_cheby} requires $\bO(K)$ multiplications of the vector $\f$ with the sparse matrix $\tL$.
 The cost of one such multiplication is $\bO(|\E| + |\V|)$.
-By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution reduces to $\bO(N_{pix})$ operations.
-That is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
-That is especially true for smooth kernels which require a low polynomial degree $K$.
+By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution reduces to $\bO(N_{pix})$ operations and as such is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
+This is especially true for smooth kernels which require a low polynomial degree $K$.
 \figref{filtering_speed} compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
 A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform at $\ell_{max} = 3 N_{side}$ implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
 
@@ -492,11 +495,15 @@ Coarsening defines $\C(i)$, the set of children of node $v_i$.
 For the HEALPix subdivision scheme, the number of children is constant, i.e., $| \C(i) | = 4^p \ \forall i$, for some $p$.
 
 Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one parent cell.
-Given a map $\x \in \R^{N_{pix}}$, pooling defines $\y \in \R^{N'_{pix}}$ such as
+Given a map $\x \in \R^{N_{pix}}$, pooling defines $\y \in \R^{N'_{pix}}$ such that
 \begin{equation} \label{eqn:pooling}
 	y_i = f \left( \left\{ x_j : j \in \C(i) \right\} \right), \ \forall i \in [N'_{pix}],
 \end{equation}
-where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N'_{pix}}$ is the down-sampling factor, which for HEALPix is $| \C(i) | = N_{pix} / {N_{pix}}' = (N_{side} / N'_{side})^2 = 4^p$.
+where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N'_{pix}}$ is the down-sampling factor, which for HEALPix is 
+\begin{equation*}
+| \C(i) | = N_{pix} / {N_{pix}}' = (N_{side} / N'_{side})^2 = 4^p,
+\end{equation*}
+where $p=\log_2(N_{side} / N'_{side})$.
 That operation is often taken to be the maximum value, but it can be any permutation invariant operation, such as a sum or an average.
 \figref{pooling} illustrates the process.
 
@@ -512,15 +519,15 @@ That operation is often taken to be the maximum value, but it can be any permuta
 \subsection{Layers}
 
 Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to some predictions.
-The general DeepSphere architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers (GC), pooling layers (P), and batch normalization layers (BN). The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
-A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC layer, except for the last FC layer where it is set to the identity. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
+The general DeepSphere architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers ($GC$), pooling layers ($P$), and batch normalization layers ($BN$). The tail is composed of multiple fully connected layers ($FC$) followed by an optional softmax layer ($SM$) if the network is used for discrete classification.
+A non-linear function $\sigma(\cdot)$ is applied after every linear $GC$ and $FC$ layer, except for the last $FC$ layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
 
-Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a GC layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and nodes), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
+Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a $GC$ layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and nodes), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
 Using the efficient graph convolution from \eqnref{graph_convolution_cheby}, each output feature map is computed as
 \begin{equation*}
 	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + b_i \in \R^{N_{pix}}, \ \ \forall i \in [F_{out}].
 \end{equation*}
-As such, a GC layer is composed of $F_{in} \times F_{out}$ filters, each parameterized by $K$ numbers (see \secref{efficient_convolution}). A bias term $\b b \in \R^{F_{out}}$ is jointly optimized.
+As such, a $GC$ layer is composed of $F_{in} \times F_{out}$ filters, each parameterized by $K$ numbers (see \secref{efficient_convolution}). A bias term $\b b \in \R^{F_{out}}$ is jointly optimized.
 
 Given a matrix $\X \in \R^{N_{pix} \times F}$, a pooling layer computes $\Y = P(\X) \in \R^{N'_{pix} \times F}$ by reducing its spatial resolution ($N'_{pix} < N_{pix}$) according to \eqnref{pooling}.
 % Given a matrix $\X \in \R^{N_{pix} \times F}$,
@@ -535,13 +542,13 @@ The layer $FC: \R^{F_{in}} \rightarrow \R^{F_{out}}$ is defined as
 	\y = FC(\x) = \b W \x + \b b ,
 \end{equation}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
-Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last GC (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the ST), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first FC, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
+Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last $GC$ (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the $ST$), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first $FC$, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
 
-The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last FC (or ST), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
+The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last $FC$ (or $ST$), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
 \begin{equation*}
 	y_i = \frac{\exp(x_i)}{\sum_{j=1}^{N_{classes}} \exp(x_j)} \in [0, 1], \ \forall i \in [N_{classes}],
 \end{equation*}
-where $N_{classes}$ is the number of classes to discriminate. Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the probability that the input sample belongs to class $i$. This last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
+where $N_{classes}$ is the number of classes to discriminate. \nati{Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the confidence of the network that the input sample belongs to class $i$. Note that in general, this probability distribution does not correspond to the true posterior distribution $p(y|x)$.} This last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
 
 \subsection{Network architectures}
 \label{sec:architecture}
@@ -565,7 +572,7 @@ The number of input features $F_{in}$ depends on the data. For the CMB radiation
 
 DeepSphere can perform dense or global predictions, for regression or classification.
 A typical global classification task is to classify maps into cosmological model classes \citep{schmelze2017cosmologicalmodel}. A typical global regression task is to infer the parameters of a cosmological model  from maps \citep{fluri2018deep,gupta2018nongaussianinformation}. Some dense regression tasks are denoising, interpolation of missing values, or inpainting parts of a map \citep{Inoue2008inpainting}. Segmentation and feature detection \citep{Amsel2007detecting} are examples of dense classification tasks.
-The output's size of the neural network depends on the task. See \tabref{tasks}.
+The size of the output of the neural network depends on the task. See \tabref{tasks}.
 
 Fully convolutional networks (FCNs) have been introduced by  \citep{long2015fcn} and are mostly used for the semantic segmentation of images, a dense classification task.
 An example FCN for dense regression is
@@ -577,15 +584,15 @@ If P layers are used, they have to be inverted via up-sampling in an encoder-dec
 
 The set of input pixels which influence the value of an output pixel forms a \textit{receptive field}.
 That field is isotropic and local, i.e., it forms a disk centered around the output pixel.
-Its radius is influenced by the polynomial order $K$ of GC layers (setting how far the convolution operation looks around), and the down-sampling factor of P layers if any.
+Its radius is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of P layers if any.
 Its radius should be large enough to capture statistics of interest.
-For example, a small a partial sky observation can provide only limited information of cosmological relevance.
+For example, a partial sky observation can provide only limited information of cosmological relevance.
 On the other hand, looking at the whole sky is often superfluous and waste computations, as most interactions are local.
 A data and task dependent trade-off is to be found.
 Note here that while global predictions use, by definition, the whole sky, dense predictions are not necessarily local.
 
 By treating each output pixel independently and in parallel, this architecture is a principled way to perform rotation equivariant operations.
-Rotation equivariance means that the rotation operation commutes with the neural network, i.e., a rotation of the input implies the same rotation of the output.\footnote{Small errors will however appear as GC layers are not exactly equivariant due to the small discrepancy between the graph Fourier modes and the spherical harmonics. See \ref{sec:comparison_spherical_harmonics}.}
+Rotation equivariance means that the rotation operation commutes with the neural network, i.e., a rotation of the input implies the same rotation of the output.\footnote{Small errors will however appear as $GC$ layers are not exactly equivariant due to the small discrepancy between the graph Fourier modes and the spherical harmonics. See \ref{sec:comparison_spherical_harmonics}.}
 
 Global tasks can be solved by averaging dense predictions \citep{lin2013globalavgpooling, springenberg2014allconv}.
 Global averaging is computed by the layer $AV: \R^{N_{pix} \times F} \rightarrow \R^F$.
@@ -599,8 +606,8 @@ Here, the FCN predicts parameters for many overlapping parts of the sky in paral
 Global predictions are made invariant to rotation on the SO(3) group by averaging dense equivariant predictions.
 Rotation invariance means that rotating the input does not impact the prediction.
 
-By replacing the average by a FC layer, one gets the standard convolutional neural network (CNN), which is a generalization of the FCN.
-Indeed, the AV layer is a FC layer where all the entries of $\W$ in \eqnref{fc_layer} are equal to $1/N_{pix}$ and $\b b = \b 0$.
+By replacing the average by a $FC$ layer, one gets the standard convolutional neural network (CNN), which is a generalization of the FCN.
+Indeed, the $AV$ layer is a $FC$ layer where all the entries of $\W$ in \eqnref{fc_layer} are equal to $1/N_{pix}$ and $\b b = \b 0$.
 By dropping rotation invariance, CNNs learn where to put attention on the domain.
 That is useful when pixels are not of the same importance, with respect to the task.
 For example, on images, the subject of interest is most often around the center of the picture.
@@ -608,22 +615,22 @@ Hence, those pixels are more predictive than the ones in the periphery when cons
 On the sphere, location is important when analyzing weather data on the Earth for example, as oceans and mountains play different roles.
 An example of such an architecture is
 \begin{equation*}
-	NN = FC \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC.
+	NN = FC \circ \sigma \circ F \circ P \circ \sigma \circ BN \circ GC.
 \end{equation*}
 
 For tasks that are rotation invariant, FCNs need less training data as the rotation symmetry is backed in the architecture and need not be learned.
 Than can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
 Moreover, FCNs can accommodate maps with a varying number of pixels.
 % agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels.
-Such global summarization as the AV layer is commonly used along graph convolutions to classify graphs of varying sizes (as it is invariant to node permutation) \citep{duvenaud2015gcn, li2015gatedgnn}.
+Such global summarization as the $AV$ layer is commonly used along graph convolutions to classify graphs of varying sizes (as it is invariant to node permutation) \citep{duvenaud2015gcn, li2015gatedgnn}.
 As such, CNNs should only be used if rotation invariance is undesired.
 
-All the above architectures can be used for classification (instead of regression) by appending a SM layer.
+All the above architectures can be used for classification (instead of regression) by appending a $SM$ layer.
 An example FCN for global classification is therefore
 \begin{equation*}
 	NN = SM \circ AV \circ GC \circ \sigma \circ GC \circ P \circ \sigma \circ BN \circ GC.
 \end{equation*}
-Similarly, we emphasize that the use of FC and AV layers is the sole difference between a neural network engineered for global or dense prediction.
+Similarly, we emphasize that the use of $FC$ and $AV$ layers is the sole difference between a neural network engineered for global or dense prediction.
 
 \subsection{Training}
 
@@ -636,7 +643,7 @@ For a regression task, a common choice is the mean squared error (MSE)
 \begin{equation*}
 	C(\Y, \bar \Y) = \frac{\|\Y-\bar{\Y}\|_2^2}{N_{pix} F_{out}} = \frac{1}{N_{pix} F_{out}} \sum_{i=1}^{N_{pix}} \sum_{j=1}^{F_{out}} (y_{ij} - \bar y_{ij})^2,
 \end{equation*}
-where $\bar{\Y}$ is the desired output. Again, take $N_{pix} = 1$ for global regression. We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
+where $\bar{\Y}$ is the desired output. Again, take $N_{pix} = 1$ for global regression. We emphasize that the cost function and the $SM$ layer are the sole differences between a neural network engineered for classification or regression.
 
 The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ C \left( NN_\theta(\X), \bar \Y \right) \right]$. In general, that expectation cannot be computed as the data distribution is unknown. We can however minimize an approximation, the empirical risk over the training set $\left\{ \left( \X_i, \bar \Y_i \right) \right\}_{i=1}^{N_{samples}}$:
 \begin{equation*}
@@ -697,7 +704,7 @@ Thanks to this iso-latitude property, the SHT is computed using recurrence relat
 The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\left( N_{pix} \log \sqrt{N_{pix}} \right)$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO\left(N_{pix}^{3/2}\right)$ operations.}
 The Clebsh-Gordan transform can be used to perform the non-linear transformation in the spectral domain \citep{kondor2018clebsch}.
 As such, the SHT is only performed once on the input (no back and forth SHT between each layer).
-While this clever trick lowers the complexity of the convolution to $\bO(N_{pix})$, the non-linearity is $\bO(N_{pix}^{3/2})$.
+\nati{While this clever trick lowers the complexity of the convolution (Adamar product in the spectral domain) to $\bO(N_{pix})$, the non-linearity (Clebsch–Gordan product) is $\bO(N_{pix}^{3/2})$.}
 This work is another indication that there might be a $\Omega(N_{pix}^{3/2})$ computational lower bound for the proper treatment of rotation equivariance with the spherical harmonics.
 In comparison, DeepSphere scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}), at the expense of not being exactly equivariant (see \ref{sec:comparison_spherical_harmonics}).
 Being a mathematically well-defined rotation equivariant network is the main advantage of methods based on spherical harmonics.
@@ -832,7 +839,7 @@ with \hspace{0.5cm} \begin{tabular}{lll}
 \end{tabular}
 \end{center}
 where $GC_F$ indicates a graph convolutional layer with $F$ output feature maps, $P_4$ is a pooling layer that divides the number of pixels by 4, $\sigma$ is a ReLU, and the Chebyshev polynomials in \eqnref{graph_convolution_cheby} are of degree $K=5$.
-The layers $L_1$ to $L_5$ build the statistical evidence to classify each pixel of a down-sampled sphere. The last GC layer acts as a linear classifier and outputs two (non-normalized) predictions. The AV layer averages these predictions. Probabilities are computed by the SM layer.
+The layers $L_1$ to $L_5$ build the statistical evidence to classify each pixel of a down-sampled sphere. The last $GC$ layer acts as a linear classifier and outputs two (non-normalized) predictions. The $AV$ layer averages these predictions. Probabilities are computed by the $SM$ layer.
 
 For comparison, we tried the more conventional CNN architecture, where the classification is performed by a fully connected layer from the last feature maps instead of the average of local classifications. This architecture is not invariant to rotation. The selected network is defined as
 \begin{equation*}
@@ -983,23 +990,6 @@ Nevertheless, our experiments suggest that these downsides do not have an import
 	\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
-\section{Border effects}
-\label{sec:border_effects}
-
-One should not forget that a significant part of our analysis is done with a full sphere and that in practice we often use only part of the graph as the data may be incomplete (see \figref{example_maps}).
-In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
-It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
-As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile.
-These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
-Moreover, as long as the training data comes from simulations with the same applied mask, we do not expect these effects to cause problems for the analysis.
-
-\begin{figure}[ht!]
-	\centering
-	\includegraphics[width=\linewidth]{border_effects}
-	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
-	\label{fig:border_effects}
-\end{figure}
-
 \section{Example: heat diffusion}
 \label{sec:heat_diffusion}
 \label{sec:filter_visualization}
@@ -1049,10 +1039,29 @@ In a neural network setting, the fact that the graph convolution is not exactly 
 In \figref{gaussian_filters_visualization}, we further leverage this example to present the three visualizations of a HEALPix graph convolution kernel.
 We remember that the convolution kernel resulting from the heat diffusion is defined as $K_t(x)=e^{-\tau t x}$. For our visualization, we simply plot this function, i.e., we evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. Note that, the lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
-As a second visualization, we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker to obtain a representation on the sphere. We then plot the result with a gnomonic projection.
-For our third visualization, we leverage the fact that we are working on the sphere and hence theoretically have  spherical filters (up to the irregularities of the sampling). We plot the section of the convoluted Kroneker.
-To do so, we convolve a Kroneker on the nodes along the equator and use the equator for our section.
-Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker.
+As a second visualization, we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker $\delta$  to obtain a representation on the sphere. We then plot the result with a gnomonic projection.
+For our third visualization, we leverage the fact that we are working on the sphere and hence theoretically have  spherical filters (up to the irregularities of the sampling). We plot the section of the convoluted Kroneker $\delta$ .
+To do so, we convolve a Kroneker $\delta$ on the nodes along the equator and use the equator for our section.
+Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker $\delta$ .
+
+
+\section{Border effects}
+\label{sec:border_effects}
+
+One should not forget that a significant part of our analysis is done with a full sphere and that in practice we often use only part of the graph as the data may be incomplete (see \figref{example_maps}).
+In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
+It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
+As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile.
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
+Moreover, as long as the training data comes from simulations with the same applied mask, we do not expect these effects to cause problems for the analysis.
+
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=\linewidth]{border_effects}
+	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
+	\label{fig:border_effects}
+\end{figure}
+
 
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation}
