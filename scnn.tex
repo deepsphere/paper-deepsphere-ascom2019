@@ -645,7 +645,8 @@ For a regression task, a common choice is the mean squared error (MSE)
 \end{equation*}
 where $\bar{\Y}$ is the desired output. Again, take $N_{pix} = 1$ for global regression. We emphasize that the cost function and the $SM$ layer are the sole differences between a neural network engineered for classification or regression.
 
-The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ C \left( NN_\theta(\X), \bar \Y \right) \right]$. In general, that expectation cannot be computed as the data distribution is unknown. We can however minimize an approximation, the empirical risk over the training set $\left\{ \left( \X_i, \bar \Y_i \right) \right\}_{i=1}^{N_{samples}}$:
+\nati{The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ C \left( NN_\theta(\X), \bar \Y \right) \right]$, where $\esp$ is the expectation over the joint distribution $(\X, \bar \Y)$.}
+In general, that expectation cannot be computed as the data distribution is unknown. We can however minimize an approximation, the empirical risk over the training set $\left\{ \left( \X_i, \bar \Y_i \right) \right\}_{i=1}^{N_{samples}}$:
 \begin{equation*}
 	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} C \left(NN_\theta(\X_i), \bar \Y_i \right).
 \end{equation*}
@@ -673,7 +674,7 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
 \end{figure}
 
 A first approach, explored by \citep{boomsma2017spherical} for molecular modeling and \citep{su2017sphericalconv, coors2018spherenet} for omnidirectional imaging, is to use a 2D CNN on a discretization of the sphere that is a grid, such as the equirectangular projection (\figref{sphere_grids}, left panel), or a set of grids, such as the cubed-sphere defined by~\citep{ronchi1996cubed} (\figref{sphere_grids},  middle panel).
-As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, what makes it computationally efficient.
+As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, which makes it computationally efficient.
 This approach is applicable to the many pixelizations that are based on a regular subdivision of a base polyhedron, such as HEALPix. Each base polyhedron then forms a grid.
 Care has to be taken to handle boundary conditions: for example by padding a grid with the content of the opposite side (equirectangular) or of the neighboring grids (cubed-sphere, HEALPix). That incurs some computational losses.
 For samplings that are not equal area, such as the equirectangular projection, the convolution operation should be adjusted to take the induced distortion into account \citep{su2017sphericalconv, coors2018spherenet}.
@@ -716,7 +717,7 @@ A straightforward way to impose locality in the original domain is to impose smo
 A more elegant approach is to define filters that are provably localized.
 The filters defined in \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby}, by being polynomials of the Laplacian, are of this kind.
 
-All the above methods cannot be easily accelerated when the data lies on a part of the sphere only.
+\nati{All the presented methods, but our, cannot be easily accelerated when the data lies on a part of the sphere only.}
 That is an important use case in cosmology as measurements are often partial, i.e., whole sky maps are rare.
 One could still fill the unseen part of the sphere with zeros, and avoid computing empty integrals.
 It is, however, not straightforward to identify empty space, and computations would still be wasted (for example on a ring that mostly contains zeros but a few measurements).
@@ -747,7 +748,7 @@ Another trend, parallel to the modelling of structured data, is the use of graph
 The performance of DeepSphere is demonstrated on a discrimination problem: the classification of convergence maps into two cosmological model classes.
 The experiment presented here is similar to the one by \citep{schmelze2017cosmologicalmodel}.
 These maps are similar to those created with gravitational lensing techniques \citep{chang2017curvedsky}.
-The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
+The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters (see \secref{data} for details).
 The classification methods were trained to predict a label from a HEALPix map.
 Our Python implementation{\interfootnotelinepenalty=10000 \footnote{\url{https://github.com/SwissDataScienceCenter/DeepSphere}}} to reproduce those experiments are openly available online.
 The data is available upon request from the cosmology group.\footnote{\url{http://www.cosmology.ethz.ch}}
@@ -765,7 +766,7 @@ For these reasons we decided to use the classification problem in this work, and
 	\centering
 	\includegraphics[width=\linewidth]{psd_sigma3}
 	\caption{Power spectrum densities of the noiseless maps.
-		To prevent the cosmological models to be distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies ($\ell>1000$).}
+		To prevent the cosmological models from being distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies ($\ell>1000$).}
 	\label{fig:psd_sigma3}
 \end{figure}
 
@@ -871,7 +872,7 @@ Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti
 
 \figref{results} compares the classification accuracy of DeepSphere (FCN and CNN variants) and the two baselines across five noise levels and three sample sizes.
 We indeed observe that the problem is made more difficult as the sample size decreases, and the noise increases.
-As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
+As fewer pixels are available to make a decision about a sample, the algorithms have access to less information and thus cannot classify as well.
 As the noise increases, the useful information gets diluted in irrelevant data, i.e., the signal-to-noise ratio (SNR) diminishes.
 
 As the cosmological parameters were chosen for the maps to have similar PSDs (see \figref{psd_sigma3}), it is reassuring to observe that an SVM with those as features has difficulties discriminating the models.
@@ -896,7 +897,7 @@ While testing the FCN and CNN variants, we made the following empirical observat
 First, training was more stable (in the sense that the loss decreased more smoothly) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
 Nevertheless, we could not observe a significant difference in accuracy after convergence.
 Second, using $\ell_2$ regularization does not help either with performance or training of the models, mostly because the models are not over-fitting.
-Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property to keep the energy of the signal more or less constant across layers\footnote{We derived this rule from the Chebyshev polynomial equations and some empirical experiments.}.
+Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property of keeping the energy of the signal more or less constant across layers\footnote{We derived this rule from the Chebyshev polynomial equations and some empirical experiments.}.
 % Nati to Michael: The problem with the previous claim is that it depends on the non-linarity. Furthermore, does it make sense to make such a claim if we use batch norm?
 Finally, we observe that scaling the Laplacian's eigenvalues between $[-a, a]$, where $0 < a \leq 1$, significantly helps in stabilizing the optimization. We use $a = 0.75$ in our experiments.
 
@@ -948,8 +949,8 @@ As a future work, it would be interesting to further investigate the link betwee
 Furthermore, the influence of irregular sampling on the convolution's equivariance to rotation should be empirically quantified and ideally theoretically bounded.
 Further comparison of DeepSphere to other spherical CNN formulations, with different sampling schemes, would also be worthwhile.
 
-The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
-In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
+The fact that a graph representation of the discretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes which aim to enable fast convolutions.
+In the long term, graphs might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
 
 \section*{Acknowledgements}
 
@@ -971,7 +972,8 @@ The block-diagonal structure of the matrix, as opposed to diagonal, results the 
 
 While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
 First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}.
-Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
+Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. 
+We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
 Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere.
 Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
 Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
@@ -1018,29 +1020,27 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
   \label{fig:gaussian_filters_comparizon}
 \end{figure}
 
-Furthermore, this result is another sign that the constructed graph is able to capture the spherical
+Furthermore, the harmonics ressemblance is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. In some applications, where the
 exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
 In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
 
 \begin{figure}[ht!]
 \centering
-\includegraphics[width=\linewidth]{gaussian_filters_spectral}
-\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$ in spectral domain.}
-\vspace{0.3in}
-\includegraphics[width=\linewidth]{gaussian_filters_gnomonic}
-\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$: cross-section of the kernel through the pixels along the equator.}
-\vspace{0.3in}
-\includegraphics[width=\linewidth]{gaussian_filters_section}
-\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$ in a gnomonic projection.}
+\includegraphics[width=\linewidth]{gaussian_filters_spectral}\\
+\vspace{0.2in}
+\includegraphics[width=\linewidth]{gaussian_filters_gnomonic}\\
+\vspace{0.2in}
+\hspace{0.3cm}\includegraphics[width=0.95\linewidth]{gaussian_filters_section}
+\caption{\nati{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$. (top) Spectral domain. (middle) Cross-section of the kernel through the pixels along the equator. (bottom) Gnomonic projection.}}
 \label{fig:gaussian_filters_visualization}
 \end{figure}
 
 In \figref{gaussian_filters_visualization}, we further leverage this example to present the three visualizations of a HEALPix graph convolution kernel.
-We remember that the convolution kernel resulting from the heat diffusion is defined as $K_t(x)=e^{-\tau t x}$. For our visualization, we simply plot this function, i.e., we evaluate $K_t$
+We remember that the convolution kernel resulting from the heat diffusion is defined as $K_t(x)=e^{-\tau t x}$. For our (top) visualization, we simply plot this function, i.e., we evaluate $K_t$
 at the graph eigenvalues $\text{diag}(\bLambda)$. Note that, the lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
-As a second visualization, we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker $\delta$  to obtain a representation on the sphere. We then plot the result with a gnomonic projection.
-For our third visualization, we leverage the fact that we are working on the sphere and hence theoretically have  spherical filters (up to the irregularities of the sampling). We plot the section of the convoluted Kroneker $\delta$ .
+As a second visualization (middle), we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker $\delta$  to obtain a representation on the sphere. We then plot the result with a gnomonic projection.
+\nati{For our third visualization (bottom), our goal is to plot the section of a filter. This visualization might be convenient as we theoretically have spherical filters (up to the irregularities of the sampling). The idea is to plot the section of the convolved Kroneker $\delta$.}
 To do so, we convolve a Kroneker $\delta$ on the nodes along the equator and use the equator for our section.
 Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker $\delta$ .
 
@@ -1050,7 +1050,7 @@ Note that, because of the small irregularities in the HEALPix sampling, the seco
 
 One should not forget that a significant part of our analysis is done with a full sphere and that in practice we often use only part of the graph as the data may be incomplete (see \figref{example_maps}).
 In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
-It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
+It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, when working with a subpart of the sphere, its border slightly affects the convolution.
 As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile.
 These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
 Moreover, as long as the training data comes from simulations with the same applied mask, we do not expect these effects to cause problems for the analysis.
@@ -1076,7 +1076,7 @@ For a fair comparison between DeepSphere and the baselines, we have to ensure th
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{hist_error_order2_noise1_5}
-	\caption{Error w.r.t.\ the number of training samples for histogram features and the linear SVM (setting: order $o=2$, relative noise level 1.5). The error clearly converged and adding more samples will not help. The validation error might be slightly below the training error as it is used to select hyper-parameters.}
+	\caption{Error w.r.t.\ the number of training samples for histogram features and the linear SVM (setting: order $o=2$, relative noise level 1.5). The error clearly converged such that adding more samples will not improve the classifier. The validation error might be slightly below the training error as the validation set is used to select hyper-parameters.}
 	\label{fig:hist_error_evolution}
 \end{figure}
 
@@ -1107,7 +1107,7 @@ where $n_p$ represents the number of particles in a specific pixel on the shell 
 	\label{fig:sketch_lightcone_simulation}
 \end{figure}
 
-The data is generated for the present analysis is based on the fast approximate N-Body simulation code \pkg{L-PICOLA} \citep{howlett2015lpicola}. For our purposes, we chose a simulation volume $V_\mathrm{sim} = (4200 \, h^{-1}\, \mathrm{Mpc})^3$, a total number of particles $N_\mathrm{part}^\mathrm{sim} = 1024^3$ placed on a mesh of size $N_\mathrm{mesh}^\mathrm{sim} = 2048^3$. The simulation was then performed 30 times with different seeds for each of the two $\Lambda$CDM cosmological models described in section \secref{data} covering a redshift range from $z = 0.1$ to $z = 0.8$. The \pkg{L-PICOLA} were performed in lightcone mode, where the simulation output is already arranged as a lightcone. Here we chose a redshift-shell thickness of $\Delta z = 0.01$.
+The data generated for the present analysis is based on the fast approximate N-Body simulation code \pkg{L-PICOLA} \citep{howlett2015lpicola}. For our purposes, we chose a simulation volume $V_\mathrm{sim} = (4200 \, h^{-1}\, \mathrm{Mpc})^3$, a total number of particles $N_\mathrm{part}^\mathrm{sim} = 1024^3$ placed on a mesh of size $N_\mathrm{mesh}^\mathrm{sim} = 2048^3$. The simulation was then performed 30 times with different seeds for each of the two $\Lambda$CDM cosmological models described in section \secref{data} covering a redshift range from $z = 0.1$ to $z = 0.8$. The \pkg{L-PICOLA} were performed in lightcone mode, where the simulation output is already arranged as a lightcone. Here we chose a redshift-shell thickness of $\Delta z = 0.01$.
 
 \section*{Bibliography}
 \bibliographystyle{elsarticle-num}
