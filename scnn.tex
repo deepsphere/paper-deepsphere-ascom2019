@@ -337,7 +337,7 @@ High-resolutions HEALPix maps easily reach millions of pixels.
 \subsection{Graph construction}
 
 \nati{Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
-Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the Manifold and a fully connected graph built with exponentially decaying weights.
+Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
 While our construction will not exactly respect the setting defined by \citep{belkin2007convergence} (the sampling is not uniform and the graph is not fully connected), we observe empirically strong evidence of convergence.}
 
 From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
@@ -740,7 +740,7 @@ As the convolution is motivated by a multiplication in the graph Fourier spectru
 
 Thanks to their versatility, graph neural networks have been used in a variety of tasks, such as identifying diseases from brain connectivity networks \citep{ktena2018metriclearning} or population graphs \citep{parisot2017disease}, designing drugs using molecular graphs \citep{hop2018drugdesign}, segmenting 3D point clouds \citep{qi2017pointcloudsegmentation}, optimizing shapes to be aerodynamic \citep{baque2018shape}, and many more.
 By interwinding graph convolutional layers and recurrent layers \citep{seo2016gcrn}, they can for example model structured time series such as traffic on road networks \citep{li2018traffic}, or recursively complete matrices for recommendation \citep{monti2017recommendation}.
-Another trend, parallel to the modelling of structured data, is the use of graph neural networks for relational reasoning \citep{battaglia2018review}.
+Another trend, parallel to the modeling of structured data, is the use of graph neural networks for relational reasoning \citep{battaglia2018review}.
 
 \section{Experiments}
 \label{sec:experiments}
@@ -942,7 +942,7 @@ DeepSphere performs better than the two baselines for all considered cases.
 The advantage is small for large, noise-free maps, and grows up to 10\% for smaller, noisier data.
 
 Spherical CNNs are so far mostly used for omnidirectional imaging.
-Many scientific fields, such as weather or climate modelling, would however benefit from an efficient and versatile spherical CNN.
+Many scientific fields, such as weather or climate modeling, would however benefit from an efficient and versatile spherical CNN.
 With this work, we hope to demonstrate and help democratize the use of those tools for spherical data analysis.
 
 As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
@@ -988,7 +988,9 @@ Nevertheless, our experiments suggest that these downsides do not have an import
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors}
-	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics that correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics that correspond to the same degree $\ell$ are linearly dependent. There are $2 \ell + 1$ orders per degree $\ell$. Moreover, we see that the Fourier modes have the correct symmetries, indicated by the perfect orthogonality between even and odd functions. For example, the modes corresponding to $\ell=7$ are perfectly orthogonal to the harmonics corresponding to $\ell=0,2,4,6,8$.}
+	\includegraphics[width=\linewidth]{figures/subspace_alignment_percentage.pdf}
+	\caption{Top: Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics that correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics that correspond to the same degree $\ell$ are linearly dependent. There are $2 \ell + 1$ orders per degree $\ell$. Moreover, we see that the Fourier modes have the correct symmetries, indicated by the perfect orthogonality between even and odd functions. For example, the modes corresponding to $\ell=7$ are perfectly orthogonal to the harmonics corresponding to $\ell=0,2,4,6,8$.
+	\nati{Bottom: Evolution of the allignement of the graph Fourier mode and the spherical harmonics for with respect of the speherical harmonic index $\ell$. It is the percentage of energy contained in the diagonal blocks of the correlation matrix plotted on top.}}
 	\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
 
@@ -1019,8 +1021,7 @@ which is, by definition, the convolution of the signal $\b{f}(0)$ with the kerne
 }
   \label{fig:gaussian_filters_comparizon}
 \end{figure}
-
-Furthermore, the harmonics ressemblance is another sign that the constructed graph is able to capture the spherical
+Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. In some applications, where the
 exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
 In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.

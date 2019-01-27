@@ -192,7 +192,7 @@
 
 % Note: it is very convenient to refer to other comments using the referencing system of \LaTeX, such as here see  \autoref{comment:errorEq2}.
 
-The authors would like to thank the reviewers for their comments, which significantly helped improving the manuscript. We believe we have addressed all the issues raised in the following rebuttal. 
+The authors would like to thank the reviewers for their comments, which significantly helped improve the manuscript. We believe we have addressed all the issues raised in the following rebuttal. 
 %  For each comment, we have first highlighted the issue, then we provided an answer, and finally we described how the manuscript was adjusted.
 
 \section*{Answer to the editor}
@@ -216,7 +216,7 @@ I have read with great interest the paper by Perraudin and collaborators present
 The paper is well-written, and the results are clearly presented. The litterature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
-Dear reviewer, we thank you for reading our paper and providing comments. They have helped us improving our manuscript. In this rebuttal, you can find a detailed answer to all the points you mentioned. 
+Dear reviewer, we thank you for reading our paper and providing comments. They have helped us improve our manuscript. In this rebuttal, you can find a detailed answer to all the points you mentioned. 
 
 \subsection{}
 \begin{mdframed}[style=comment] 
@@ -224,15 +224,18 @@ One fairly significant concern I have is how convincing the application to other
 \end{mdframed}
 
 \todo{Assigned: @nati, @michael}
-The intuition of the reviewer is correct, theorectially using the raw data, \emph{an SVM or even a standard fully connected neural network (NN) would perform a lot better.} In practice, this those models are limited by the computational power and the dataset size. 
+The intuition of the reviewer is correct. Theoretically, using the raw data, \emph{an SVM or even a standard fully connected neural network (NN) would perform a lot better.} In practice, this those models are limited by the computational power and the dataset size. 
 
-We had actually tried training an SVM on the raw data but were unable to obtain over $60\%$ accuracy in cases where all the other models were close to $100\%$. The classifier would either overfit or be over-regularized. For that reason, we decided, not to report the SVM results in the paper.  \nati{FYI, I did try again to be entirely sure about it.}
+We actually tried training an SVM on the raw data but were unable to obtain over $60\%$ accuracy in the easiest cases where all the other tested models were close to $100\%$. Practically, the classifier would either overfit or be over-regularized. For that reason, we decided, not to report the raw-data SVM results in the paper.  
+\nati{FYI, I did try again to be entirely sure about it.}
 
-A model based on a fully connected neural network, as suggested by the reviewer, will contains a very large amount of weights severly limiting what can be tested with conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which severly limits the number of neurons that can be used in the architecture. For the completeness of this answer, we did try a fully connected NN. Practially, in the first layer, we were only able to $128$ neurons before hitting an out of memory errors. In this setting, with an relative amount of noise of $0.5$, we were unable to regularize the network such that it would actually classify the validation set. Note that all calssifiers performed well (close to $100\%$ accuracy) in this particular setting. Similar conclusion were observed with other setting, even when increasing the number of neurons for small part of the sphere (order $2$ and $4$).
+A model based on a fully connected neural network, as suggested by the reviewer, contains a very large number of weights which severely restricts what can be tested with conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which limits the number of neurons that can be used in the architecture. For the completeness of this answer, we did try a fully connected NN. Practically, in the first layer, we were only able to $128$ neurons before hitting an out of memory errors. In this setting, with a relative amount of noise of $0.5$, we were unable to regularize the network such that it would actually classify the validation set. Note that all reported classifiers performed well (close to $100\%$ accuracy) in this particular setting. Similar conclusions were observed with other settings.
+%Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical
+structure of the HEALPix sampling. , even when increasing the number of neurons for small part of the sphere (order $2$ and $4$).
 
-This being said, the reviewer comment is justified and we will add these information to the paper. 
+This being said, the reviewer comment is justified and we will add this information to the paper. 
 
-\todo{Add it in the paper... Make clear that CNN is so much better than fully connected + say that SVM on he raw features does not work.}
+\todo{Add it in the paper... Make clear that CNN is so much better than fully connected + say that SVM on the raw features does not work.}
 
 
 \subsection{}
@@ -258,10 +261,10 @@ blabla
 We tried to clarify the paragraph in the following manner:
 \begin{mdframed}[style=manuscript] 
 Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
-Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the Manifold and a fully connected graph built with exponentially decaying weights.
+Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
 While our construction will not exactly respect the setting defined by \cite{belkin2007convergence} (the sampling is not uniform and the graph is not fully connected), we observe empirically strong evidence of convergence.
 \end{mdframed}
-We are aware that this particular point could be more detailled. Nevertheless, we believe that a deeper discussion does not belong to this paper. In fact, we are currently investigating the convergence question with the goal of obtaining better graph constructions or rotational equivariance results.
+We are aware that this particular point could be more detailed. Nevertheless, we believe that a deeper discussion does not belong to this paper. In fact, we are currently investigating the convergence question with the goal of obtaining better graph constructions or rotational equivariance results.
 
 \subsection{}
 
@@ -272,7 +275,7 @@ Figure 3: What was resolution used for those maps? Does the projection of the ei
 \todo{Assigned: @nati}
 We were actually limited in resolution when computing the graph Fourier eigenvectors as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$. Hence we used a resolution of $N_{side}=16$. The information has been added to the paper. 
 
-Since we do not have any convergence result yet, we are not usure about how the projection error evolves. However, if there is convergence (and we believe there is), then the eigenvector associated with the lowest $\ell$ probably converge first.
+Since we do not have any convergence result yet, we are not sure about how the projection error evolves. However, if there is convergence (and we believe there is), then the eigenvectors associated with the lowest $\ell$ probably converge first.
 
 \subsection{}
 \begin{mdframed}[style=comment] 
@@ -282,10 +285,11 @@ Page 7: "That is much more efficient than filtering with spherical harmonics, ev
 Tocheck: @tomek, @michael
 }
 
-In the experiment shown if Figure 4, we only care about speed and not about the filter itself (we could have taken any filter). The main reason is that in the context of neural network, filters will be learned anyway. Libsharp is probably not optimized for Gaussian smoothing, but this experiment should not be limted to Gaussian filter. We intend to report on the general filter speed and use conveniently a Gaussian.
+In the experiment shown if Figure 4, we only care about speed and not about the filter itself (we could have chosen any filter). The main reason is that in the context of neural networks, filters will be learned and hence is not predefined. 
+While, libsharp is probably not optimized for Gaussian smoothing, in this experiment we intend to report on the general filter speed and use conveniently a Gaussian.
 
 We note that, the reviewer question is interesting. Replacing spherical filtering (using the harmonic decomposition) with graph filtering might be possible in the future as suggested by Appendix C and fig 14.
-Our feeling is that in its current state, it probably does not have the required precision to be usable in a high precision setting. Nevertheless, theoretical improvement on the convergence side could definitly makes it competitive.
+Our feeling is that in its current state, it probably does not have the required precision to be usable in a high precision setting. Nevertheless, theoretical improvement on the convergence side could potentially make it competitive.
 
 
 \section{}
@@ -311,7 +315,7 @@ The first, and most important is an example using masks. Since the authors menti
 \end{mdframed}
 \todo{Assigned: @Michael, @Nati}
 Our implementation is actually already working with a mask, we choose to use parts of $1/12$, $1/48$ and $1/192$ of the total sphere. Our main motivation was to build a "large" dataset with a relatively low number of cosmological maps. 
-In term of neural network, the availlable implementation of \cite{cohen2018sphericalcnn,kondor2018clebsch} for spherical CNNs and Clebsh-Gordan CNNs are not scalable enough to be trained on the cosmological maps dataset and do not use the HEALPix sampling. Hence a comparison with thee methods requires a different setting, which far beyond the scope of our contribution. Nevertheless, this comparizon is important and we preparing a second contribution where it will be conducted.
+In terms of neural network, the available implementation of \cite{cohen2018sphericalcnn,kondor2018clebsch} for spherical CNNs and Clebsh-Gordan CNNs are not scalable enough to be trained on the cosmological maps dataset and do not use the HEALPix sampling. Hence a comparison with these methods requires a different setting, which far beyond the scope of our contribution. Nevertheless, this comparison is important and we are preparing a second contribution where it will be conducted.
 
 \nati{We could compare the price of one convolution. What do you think? We can write the theoretical complexity. This is a sensitive point! }
 
@@ -324,7 +328,7 @@ Secondly, using only SVM as a comparison might skew how well this technique appe
 
 \nati{\textbf{Very important point!!!}
 \begin{itemize}
-  \item We will do this comparizon...
+  \item We can do this comparison...
   \item Since we used 1/12 of the sphere, all the pixel grids we use are somehow squared. I am now using this as a projection. @Tomek, do you know if this is ok? Or do you know how to do the projection in a simple and efficient manner? 
   \item I think that traditional 2D CNNs will be as good as our algorithm. We should be very careful in the way we formulate this in our answer and in the paper.
 \end{itemize}
@@ -335,8 +339,8 @@ Similarly, I think it would useful to check how well the DeepSphere CNN does aga
 \end{mdframed}
 \todo{Assigned: @Nati, @Michael, @Tomek}
 
-Theoretically, providing that the FCN and the CNN have the same modelization power (i.e, the FCN does not have more or larger layers) and assuming the convolution would be Truly invariant to rotation, the CNN could never exceed the FCN for truly rotational invariant data. However, assuming enought augmentation (as suggested by the reviewer) and training, the CNN should get to the level of the FCN. In practice, this would require more training as the CNN has to learn the invariance. 
-The point of defining a FCN instead of a CNN is to avoid the complexity of making this augmention. Hence we did not implement it. Nevertheless, it is an interesting point worth discussion in the paper. We updated the manuscript accordingly.
+Theoretically, providing that the FCN and the CNN have the same modelisation power (i.e, the FCN does not have more or larger layers) and assuming the convolution would be truly invariant to rotation, the CNN could never exceed the FCN for truly rotational invariant data. However, assuming enough augmentation (as suggested by the reviewer) and training, the CNN should get to the level of the FCN. In practice, this would require more training as the CNN has to learn the invariance. 
+The point of defining a FCN instead of a CNN is to avoid the complexity of augmenting the dataset. Hence we did not implement it. Nevertheless, it is an interesting point worth discussion in the paper. We updated the manuscript accordingly.
 \todo{Do it}
 
 \nati{
@@ -350,7 +354,7 @@ Technically, testing this is complicated as rotation on HEALPix are complicated 
 \begin{mdframed}[style=comment] 
 I should say, even though I made the above comments, I thought the paper was really excellent and well written. There were a couple of very minor points which I would like the authors to expand slightly on or consider.
 \end{mdframed}
-Thank you very much for your comments. We adressed them to the best we could.
+Thank you very much for your comments. We addressed them to the best we could.
 
 \subsection{}
 \begin{mdframed}[style=comment] 
@@ -359,7 +363,7 @@ While our construction will not exactly respect the setting defined by [33], we 
 - Could you add a plot comparing the graph Laplacian as a function of number of pixels and the Laplace-Beltrami operator so the reader can explicitly see the convergence?
 \end{mdframed}
 
-This is a good question and a fair request. Problematically, we cannot provide such a plot without solving the theoretical problem first. Indeed to experimentally show convergence, we need to actually build a series of graph Laplacian that converges toward the Laplace Beltrami operator. This far more complicated than building one Laplacian and observe some similarities between the two operators.
+This is a good question and a fair request. Problematically, we cannot provide such a plot without solving the theoretical problem first. Indeed to experimentally show convergence, we actually need to build a series of graph Laplacian that converges toward the Laplace Beltrami operator. This far more complicated than building one Laplacian and observe some similarities between the two operators.
 
 This is actually a problem we are currently investigating. We plan to make a separate contribution.
 
@@ -372,8 +376,8 @@ We found out that the one proposed above works well for our purpose, and did not
 - Are you really going to search through different weighting schemes in future work? I would be interested if you were, but could you speculate on what you expect to achieve by looking at different ones?
 \end{mdframed}
 
-Yes we are investigating the question of graph weights.
-As suggested in the previous, the weighting scheme used is very important for our laplacian to approach the true Laplace Beltrami operator. Using a more appropriate weighting scheme, one could hope for a more rotational invariant convolution and a faster convergence rate of the opertor. 
+Yes, we are investigating the question of graph weights.
+As suggested in the previous comment, the weighting scheme used is very important for the graph Laplacian to approach the true Laplace Beltrami operator. Using a more appropriate weighting scheme, one could hope for a more rotational invariant convolution and a faster convergence rate of the operator. 
 \nati{@michael, how much shall we say here?}
 
 \subsection{}
@@ -383,7 +387,7 @@ Thanks to the softmax, the output $\bf{y}\in\mathbb{R}^{N_{classes}}$ of a neura
 - This is a common misconception which is incorrect and needs restating. It is *not* a probability distribution for the class, rather it is a discretised conditional distribution for the class given both the data and the weights and biases of the trained network. One way to see that the value of $y_i$ cannot be considered a probability (which implies P(y|x), i.e. the probability of a class given the data) is that if the network is untrained, would you retrieve back the correct probability? It's wholly dependent on the network.
 \end{mdframed}
 
-We agree with the reviewer. We actually misformulate the this sentence. We have reformulate it as:
+We agree with the reviewer. We actually misformulate this sentence. We have reformulated it as:
 \begin{mdframed}[style=manuscript] 
 Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the confidence of the network that the input sample belongs to class $i$. Note that in general, this probability distribution does not correspond to the true posterior distribution $p(y|x)$.
 \end{mdframed}
@@ -412,27 +416,31 @@ As such, the SHT is only performed once on the input (no back and forth SHT betw
 
 - I don't understand what the difference is between the convolution and the "non-linearity". I think this sentence either needs explaining further. Is the process $\mathcal{O}(N_{pix})$ or $\mathcal{O}(N^{3/2}_{pix})$?
 \end{mdframed}
-In the work of \cite{kondor2018clebsch}, the convolution is perfomed in the spectral (harmonic) domain with a simple Adamar product. Instead of recomposing the signal and applying a traditional non-linearity such as "relu" in the pixel domain, \cite{kondor2018clebsch} propose to apply directly a Clebsch–Gordan product in the spectral domain. As a non-linear operation preserving the rotation equivariance, it is considered as the non-linearity of the neural network.
+In the work of \cite{kondor2018clebsch}, the convolution is performed in the spectral (harmonic) domain with a simple Adamar product. Instead of recomposing the signal and applying a traditional non-linearity such as "relu" in the pixel domain, \cite{kondor2018clebsch} proposes to directly apply a Clebsch–Gordan product in the spectral domain. As a non-linear operation preserving the rotation equivariance, it is considered as the non-linearity of the neural network.
 
 We have modified the manuscript as:
 \begin{mdframed}[style=manuscript] 
 While this clever trick lowers the complexity of the convolution (Adamar product in the spectral domain) to $\bO(N_{pix})$, the non-linearity (Clebsch–Gordan product) is $\bO(N_{pix}^{3/2})$.
 \end{mdframed}
-\nati{Should we be more clear in the paper?}
+\nati{Should we be clearer in the paper?}
 
 \subsection{}
 \begin{mdframed}[style=comment] 
 When mentioning that you are 10 to 20 times faster than the SHT it should be noted that libsharp has amazing distributed mpi functionality which helps, although of course your method is genuinely lower order computationally (and can be distributed simply on a GPU).
 \end{mdframed}
-When comparing the speed, we used a single core CPU implemention of the graph convolution. We believe that this comparizon is fair.
-\nati{Is this sufficent?}
+When comparing the speed, we used a single-core CPU implementation of the graph convolution. We believe that this comparison is fair.
+\nati{Is this sufficient?}
 
 \subsection{}
 \begin{mdframed}[style=comment] 
 In Appendix A. (my personal favourite part) could you measure the percent difference that different eigenvectors differ from the spherical harmonics due to incomplete discretisation of the sphere, perhaps plotting side by side plots like Figure 3, but with SH too (or their differences). By the way, Figure A.12 is placed in the wrong section.
 \end{mdframed}
-\todo{Answer + compute the ratio of outside block energy (see Fig. A.12)}
+\todo{Assigned: @nati, @michael}
+We added a figure showing the percentage of mis-alignment with the spherical harmonics. We also moved Figure A.12 in the correct subsection.
 
+\begin{center}
+\includegraphics[width=0.5\linewidth]{figures/subspace_alignment_percentage.pdf}
+\end{center}
 
 \subsection{}
 \begin{mdframed}[style=comment] 
@@ -445,7 +453,7 @@ In the current version of the manuscript and the code, we simply fitted a few $t
 \begin{mdframed}[style=comment] 
 A question that I would like to know personally, are you thinking about a future upgrade to non-radial kernels?
 \end{mdframed}
-We are thinking about it. However, as the graph framework we are using only works with radial filters, it is not a simple question. One simple trick to make network sensitive to direction is to add a per channel fully connected layers. We are currently investigating other potential graph techniques that would lead to non-radial kernels.
+We are thinking about it. However, as the graph framework we are using only works with radial filters, it is not a simple question. One simple trick to make the network sensitive to direction is to add a per-channel fully connected layers. We are currently investigating other potential graph techniques that would lead to non-radial kernels.
 
 
 \subsection{Details}
@@ -453,7 +461,7 @@ We are thinking about it. However, as the graph framework we are using only work
 Finally, I noticed a few points in the text where there were typos or things which were difficult to follow and I have put a note of them below and tried to correct them as much as I can so that you don't have to put too much effort in - I can't wait to see this paper published. Sorry that the list is so extensive (I'm a bit of a stickler for details and trying to write papers concisely):
 \end{mdframed}
 \todo{Assigned @tomek. 
-This reviewer really spend the time. We should say something.}
+This reviewer really spend the time. Should we say something here?}
 
 \begin{mdframed}[style=comment] 
 Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation [9–16].
@@ -466,6 +474,7 @@ Convolutional Neural Networks (CNNs) have been proposed as an alternative analys
 When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
 \end{mdframed}
 \todo{Assigned: @tomek}
+\nati{I personally think it is better without separating the lines}
 
 \begin{mdframed}[style=comment] 
 You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
@@ -478,7 +487,7 @@ You change a lot between "node", "vertex" and "pixel". Could you stick to one of
 You change between math font and text font for the names of your layers when inside and outside of equations. It would look a lot neater sticking with one choice. (Sorry, that seems quite petty and I don't mean it to be).
 \end{mdframed}
 Thank you for the suggestion. We have made the paper consistent.
-\nati{@all, when you read the paper, please check that I did not forget some of them. Every layer has be changed to math symbole as we use them like function. For example SM becomes $SM$.}
+\nati{@all, when you read the paper, please check that I did not forget some of them. Every layer has been changed to math symbols as we use them like function. For example, SM becomes $SM$.}
 
 \begin{mdframed}[style=comment] 
 In Appendix C. you talk about Kroneker a lot, but earlier you talk about Kroneker $\delta$ (which is it's correct name). It's probably worth sticking with the full name.
@@ -491,7 +500,7 @@ Sky maps are rotation invariant: rotating maps on the sphere doesn’t change th
 \end{mdframed}
 This sentence has been reformulated as:
 \begin{mdframed}[style=manuscript] 
-We consider the sky maps rotationial invariant as in our case rotating maps on the sphere doesn't change their interpretation since only the statistics of the maps are relevant.
+We consider the sky maps rotational invariant as in our case rotating maps on the sphere doesn't change their interpretation since only the statistics of the maps are relevant.
 \end{mdframed}
 
 \begin{mdframed}[style=comment] 
@@ -507,7 +516,7 @@ This kind of maps can be created using the gravitational lensing technique [see 
 
 - It should be "These" and not "This". "These kind of maps can be created using the gravitational lensing technique [see 29, for review]"
 \end{mdframed}
-Thank you for spotting this mistake.
+Thank you for spotting this mistake. We updated the manuscript.
 
 \begin{mdframed}[style=comment] 
 A CNN is composed of the following main building blocks [31]: (i) a convolution, (ii) a non-linearity, (iii) a down-sampling operation, (iv) a pooling operation, and (v), optionally, normalization.
@@ -651,7 +660,7 @@ Thank you for spotting this mistake. We have corrected the manuscript.
 
 - Can you explain what $p$ is and it would probably be worth splitting this equation into a multi-line align environment for clarity.
 \end{mdframed}
-In fact, $p$ is defined as $p=\log_2(N_{side} / N'_{side})$. We have updated the manuscript with this clarification and with an equation environnment.
+In fact, $p$ is defined as $p=\log_2(N_{side} / N'_{side})$. We have updated the manuscript with this clarification and with an equation environment.
 
 \begin{mdframed}[style=comment] 
 The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM).
@@ -675,7 +684,7 @@ The rectified linear unit (ReLU) $\sigma(\cdot) = \textrm{max}(\cdot, 0)$ is a c
 
 - Is this the choice you adopt? You should mention that you do, if you indeed do.
 \end{mdframed}
-\todo{Assigned: michael}
+\todo{Assigned: @michael}
 
 \begin{mdframed}[style=comment] 
 Note that the output $\bf{Y}\in\mathbb{R}^{N_{pix}\times F_{out}}$ of the last GC (or the output $\bf{Y}\in\mathbb{R}^{N_{stat}\times F_{out}}$ of the ST), ...
@@ -733,9 +742,9 @@ The goal of learning is to find the parameters $\theta$ of the neural network th
 
 - It is the goal of training, not of learning (in common parlance anyway). Also, you should say that E[] is the expectation rather than leaving people to guess according to the next sentence.
 \end{mdframed}
-\todo{Assign:  @nati, @michael. \nati{@micheal, please check carefully this one, also in the text, I am not sure my notation is correct}}
+\todo{Assign:  @nati, @michael. \nati{@micheal, please check this one carefully, also in the text, I am not sure my notation is correct}}
 
-According to us, the goal of training is to minimize the emprical risk, which does not contain the expectation. On the contrary, the goal of learning is to minimize the expected risk, i.e. we additionally do not want to overfit the training set. Hence we left "learning" in the text. Nevertheless, we specified the expectation operator.
+According to us, the goal of training is to minimize the empirical risk, which does not contain the expectation. On the contrary, the goal of learning is to minimize the expected risk, i.e. we additionally do not want to overfit the training set. Hence we left "learning" in the text. Nevertheless, we specified the expectation operator.
 
 \begin{mdframed}[style=comment] 
 The optimization is performed by computing an error gradient w.r.t. all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
@@ -761,7 +770,7 @@ A straightforward way to impose locality in the original domain is to impose smo
 \end{mdframed}
 \todo{Assigned: @all}
 
-\nati{The reviewer is correct. Our justification is shaddy. I am not sure how to make this clear, without writting too much. It is kind of a general consent that smoothness in one domain implies loclization in the other. The reason is that for the continuous Fourier transform, we have:
+\nati{The reviewer is correct. Our justification is shaddy. I am not sure how to make this clear, without writing too much. It is kind of a general consent that smoothness in one domain implies localization in the other. The reason is that for the continuous Fourier transform, we have:
 \begin{equation*}
 \widehat{f(t\cdot)}(\omega)=\frac{1}{t}\hat{f}\left(\frac{\omega}{t}\right). 
 \end{equation*}
@@ -770,7 +779,7 @@ Heisenberg uncertainty principle bounds the concentration in both domains simult
 \begin{equation*}
 \text{var}({f})\text{var}({\hat{f}}) \geq \frac{1}{16 \pi^2}
 \end{equation*}
-Hence the theorem says that you cannot concentrate abritrarily in one domain without de-concentrating in the other. 
+Hence the theorem says that you cannot concentrate arbitrarily in one domain without de-concentrating in the other. 
 
 Now the question is: how do we fix the text? Also Heisenberg does not exist in the discrete case...
 }
@@ -855,7 +864,7 @@ We derived this rule from the Chebyshev polynomial equations and some empirical 
 - This is a bit loose, can you explain further and add a citation if you didn't do the experiments yourself?
 \end{mdframed}
 \todo{Assign: @nati, @michael}
-\nati{We would need an appendix to do that. It is the last figure of the figures notebook (expected filter). I could spend two hours and write some equation... @michael, what do you think?}
+\nati{We would need an appendix to do that. It is the last figure of the figure’s notebook (expected filter). I could spend two hours and write some equation... @michael, what do you think?}
 
 \begin{mdframed}[style=comment] 
 Figure 10: Random selection of 24 learned filters from the fifth spherical convolutional layer L5. Top: section. Bottom: gnomonic projection.
@@ -863,9 +872,9 @@ Figure 10: Random selection of 24 learned filters from the fifth spherical convo
 - There is not enough information in this caption. Can you explain that there is some obvious peak structure. I think a colourbar on the gnomonic projection would be useful too.
 \end{mdframed}
 \todo{Assign: @all}
-\nati{The problem is that random filters are picky as well and look very similar. Should we say that? I to not think a colorbar is necessary since there is number on the top plot. Do you agree?}
+\nati{The problem is that random filters are picky as well and look very similar. Should we say that? I do not think a colorbar is necessary since there are numbered axes on the top plots. Do you agree?}
 
-We decided to not add a colorbar as scale information is already present in the top plot of the figure. 
+We decided not to add a colorbar as scale information is already present in the top plot of the figure. 
 
 \begin{mdframed}[style=comment] 
 The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
@@ -901,7 +910,7 @@ Nevertheless, dealing working with a subpart of the sphere, its border slightly 
 
 - There is a superfluous word (dealing/working). I think this would read better as "Nevertheless, when working with only a part of the sphere, the border slightly affects the convolution."
 \end{mdframed}
-We have corrected this mistake according the reviewer suggestion.
+We have corrected this mistake according to the reviewer suggestion.
 
 \begin{mdframed}[style=comment] 
 These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
@@ -918,7 +927,7 @@ Furthermore, this result is another sign that the constructed graph is able to c
 \end{mdframed}
 We have clarifed the sentence as:
 \begin{mdframed}[style=manuscript] 
-Furthermore, the harmonics ressemblance is another sign that the constructed graph is able to capture the spherical
+Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical
 structure of the HEALPix sampling. 
 \end{mdframed}
 
@@ -927,14 +936,14 @@ In a neural network setting, the fact that the graph convolution is not exactly 
 
 - I think it might be another one of the most important points in the paper which allows you to justify why not being exact (like a spherical harmonic transform) is acceptable. If I were you I'd move this into the main body of the paper.
 \end{mdframed}
-\todo{Assign: @all, \nati{What do you think? I had the feeling we already have that in the main body of the paper. I cannot remember where though.}}
+\todo{Assign: @all, \nati{What do you think? I had the feeling we already have that in the main body of the paper. I cannot remember where, though.}}
 
 \begin{mdframed}[style=comment] 
 We then plot the result with a gnomonic projection.
 
 - Can you add in Figure C.16 here. "We then plot the result with a gnomonic projection, as shown in Figure C.16". Also, why do you choose a gnomonic projection? In fact, with plots C.16 and C.17 I would make them a single plot (as in Figure. 10),
 \end{mdframed}
-We have merged the three plot a an signal figure and adapted the text reference accordingly.
+Inspired by the reviewer comment, we have merged the three plots in a single figure and adapted the text accordingly.
 
 \begin{mdframed}[style=comment] 
 We plot the section of the convoluted Kroneker.
