@@ -1052,17 +1052,18 @@ Note that, because of the small irregularities in the HEALPix sampling, the seco
 \section{Border effects}
 \label{sec:border_effects}
 
-One should not forget that a significant part of our analysis is done with a full sphere and that in practice we often use only part of the graph as the data may be incomplete (see \figref{example_maps}).
-In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
-It is irrelevant when working on the complete sphere as this surface has no border. Nevertheless, when working with a subpart of the sphere, its border slightly affects the convolution.
-As depicted in \figref{border_effects}, a filter localized near the border of a part of the sphere (via $h(\L) \b \delta_i$) no longer has an isotropic profile.
+The graph setting used throughout this contribution corresponds to assuming reflective border conditions.
+While that is irrelevant when working on the complete sphere (as it has no border), it slightly affects the convolution operation when only a part of the sphere is considered.
+As depicted in \figref{border_effects}, a filter localized near a border (via $h(\L) \b \delta_i$) is no longer isotropic.
 These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
-Moreover, as long as the training data comes from simulations with the same applied mask, we do not expect these effects to cause problems for the analysis.
+We however do not expect these effects to cause any problem as long as the data samples cover the same area.
 
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{border_effects}
-	\caption{Convolution kernel (also called filter) $h$ localized in the center and left corner of a surface. A filter is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution} and \eqnref{graph_convolution_spatial}). The graph is built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$. The filter is not isotropic anymore when localized on the left corner due to border effects. The graph representation of a manifold assumes reflective border conditions.}
+	\caption{Convolution kernel (also called filter) localized in the center and left corner of a graph built from $1/12^\text{th}$ of the sphere at $N_{side} = 16$.
+		A filter $h$ is localized on a pixel $i$ as $\T_i h = h(\L) \b \delta_i$ (see \secref{graph_convolution}, equation~\eqnref{graph_convolution_spatial}).
+	The filter is not isotropic anymore when localized on the corner as the graph representation of a manifold assumes reflective border conditions.}
 	\label{fig:border_effects}
 \end{figure}
 
