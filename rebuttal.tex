@@ -283,15 +283,14 @@ Since we do not have any convergence result yet, we are not sure about how the p
 \begin{mdframed}[style=comment]
 Page 7: "That is much more efficient than filtering with spherical harmonics, even though HEALPix was de- signed as an iso-latitude sampling that has a fast spherical transform. That is especially true for smooth kernels which require a low polynomial degree K. Figure 4 compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here. A naive implementation of our method is ten to twenty times faster for Nside = 2048, with K = 20 and K = 5, respectively, than using the spherical harmonic transform at lmax = 3Nside implemented by the highly optimized libsharp [38] library used by HEALPix." This is not so clear. Is the graph method also performing a Gaussian smoothing with the same characteristics? If so, what are those? How precise is the graph convolution approximating the true harmonic-space Gaussian convolution in this case? This is relevant since some approximations (for instance when analyzing cosmic microwave background data) require high-precision Gaussian smoothing. Finally, is lipsharp optimizing Gaussian smoothing in any way?
 \end{mdframed}
-\todo{Assigned: @nati,
-Tocheck: @tomek, @michael
-}
 
-In the experiment shown if Figure 4, we only care about speed and not about the filter itself (we could have chosen any filter). The main reason is that in the context of neural networks, filters will be learned and hence is not predefined.
-While, libsharp is probably not optimized for Gaussian smoothing, in this experiment we intend to report on the general filter speed and use conveniently a Gaussian.
-
-We note that, the reviewer question is interesting. Replacing spherical filtering (using the harmonic decomposition) with graph filtering might be possible in the future as suggested by Appendix C and fig 14.
-Our feeling is that in its current state, it probably does not have the required precision to be usable in a high precision setting. Nevertheless, theoretical improvement on the convergence side could potentially make it competitive.
+The experiment whose result is reported in Figure 4 is intended to report filtering speed, independently of the chosen filter (we used a Gaussian for convenience).
+While libsharp is probably not optimizing Gaussian smoothing in particular (w.r.t. filtering with any other filter), it is a highly optimized library for SHT.
+We don't care about the approximation quality as, in the context of neural networks, filters are learned.
+That is, graph filters are not approximating any predefined true harmonic-space filters anyway.
+It is however true that replacing spherical filtering (using the SHT) with graph filtering is an interesting prospect (in terms of speed) that might be possible in the future as suggested by Appendix B (Figure B.13).
+We feel that, in its current state, graph filtering is probably not a good enough approximation to be usable when high-precision filtering is required.
+Nevertheless, theoretical improvements on a potential equivalence (or convergence) of the Laplacian eigenvectors to the spherical harmonics (see our answer to comment 1.4) could potentially make it competitive.
 
 
 \section{}
