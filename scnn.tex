@@ -469,7 +469,7 @@ The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_cheby}
 	h_\theta\left(\tL\right) \f = \U \left(\sum_{k=0}^K \theta_k T_k\left(\tilde{\bLambda}\right) \right) \U\trans \f = \sum_{k=0}^K \theta_k T_k\left(\tL\right) \f,
 \end{equation}
-where 
+where
 \begin{equation*}
 \tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}
 \end{equation*}
@@ -499,7 +499,7 @@ Given a map $\x \in \R^{N_{pix}}$, pooling defines $\y \in \R^{N'_{pix}}$ such t
 \begin{equation} \label{eqn:pooling}
 	y_i = f \left( \left\{ x_j : j \in \C(i) \right\} \right), \ \forall i \in [N'_{pix}],
 \end{equation}
-where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N'_{pix}}$ is the down-sampling factor, which for HEALPix is 
+where $f$ is a function which operates on sets (possibly of varying sizes) and $N_{pix} / {N'_{pix}}$ is the down-sampling factor, which for HEALPix is
 \begin{equation*}
 | \C(i) | = N_{pix} / {N_{pix}}' = (N_{side} / N'_{side})^2 = 4^p,
 \end{equation*}
@@ -972,7 +972,7 @@ The block-diagonal structure of the matrix, as opposed to diagonal, results the 
 
 While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
 First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}.
-Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics. 
+Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
 We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
 Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere.
 Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
