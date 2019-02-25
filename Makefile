@@ -1,4 +1,4 @@
-PDFNAME = scnn.pdf
+PDFNAME = scnn.pdf rebuttal.pdf
 
 all:	$(PDFNAME)
 
