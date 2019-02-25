@@ -275,10 +275,9 @@ In fact, we are currently investigating this convergence with the goal of constr
 Figure 3: What was resolution used for those maps? Does the projection of the eigenvectors depend on the resolution and band-limit?
 \end{mdframed}
 
-\todo{Assigned: @nati}
-We were actually limited in resolution when computing the graph Fourier eigenvectors as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$. Hence we used a resolution of $N_{side}=16$. The information has been added to the paper.
+Those maps have been produced with a resolution of $N_{side}=16$. The information has been added to the paper. (High resolution is costly as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$.)
 
-Since we do not have any convergence result yet, we are not sure about how the projection error evolves. However, if there is convergence (and we believe there is), then the eigenvectors associated with the lowest $\ell$ probably converge first.
+Since we do not have any convergence result yet, we are not sure about how the projection error evolves. However, if there is convergence (and we believe there is), the eigenvectors associated with the lowest $\ell$ probably converge first.
 
 \subsection{}
 \begin{mdframed}[style=comment]
