@@ -246,13 +246,12 @@ In practice, the large number of parameters required by a FCNN severely restrict
 Page 4: "There is no known point set that achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions." This is ambigious. There exists multiple schemes for performing exact SHT on band-limited signals. Those sampling are more efficient than healpix - often in terms of number of pixels, and sometimes in terms of performance of the spherical harmonic transforms - and more accurate since the transform is exact (at least numerically - so typical errors are machine precision). Healpix transforms are only exact to 1e-7 when using iterative schemes, and that depends on Nside and lmax. Please clarify this paragraph. Obviously healpix is very advantageous for the pooling and other operations that take advantage of its hierarchical nature. This is well discussed in the paper - in particular how the fast graph algorithms could accomodate other sampling schemes.
 \end{mdframed}
 
-\todo{Assigned to: @all whoever can answer this question. I just do not know the answer.
+That is right.
+The confusion was due to our ignorance.
+We removed the sentence from the paragraph as we don't need to make such a point.
+%\mdeff{That sentence mostly came from \url{https://healpix.jpl.nasa.gov/html/intronode2.htm}.}
+%\mdeff{uniform sampling == same distance between all neighboring pixels}
 
-We clarified the sentence with this:
-\begin{mdframed}[style=manuscript]
-blabla
-\end{mdframed}
-}
 
 \subsection{}
 \begin{mdframed}[style=comment]
