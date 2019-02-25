@@ -312,8 +312,8 @@ The gist of our method is to define the convolution operation on a sphere using 
 \label{sec:healpix}
 
 Before doing any numerical analysis on the sphere, one first has to choose a tessellation, i.e., an exhaustive partition of the sphere into finite area elements, where the data under study is quantized.
-%The simplicity of the spherical form belies the intricacy of global analysis on the sphere.
-%There is no known point set that achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions.
+The simplicity of the spherical form belies the intricacy of global analysis on the sphere: there is no known point set that achieves the analogue of uniform sampling in Euclidean space.
+% and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions.
 %Any existing proposition of practical schemes for the discrete treatment of such functions on the sphere introduces some systematic error dependent on the global properties of the point set.
 While our method is applicable to any pixelisation of the sphere, two details depend on the chosen sampling: (i) the choice of neighbours in the construction of the graph, and (ii) the choice of parent nodes when coarsening the graph.
 As HEALPix~\citep{gorski2005healpix} is our target application, we tailor the method to that particular sampling in the subsequent exposition.
@@ -336,9 +336,9 @@ High-resolutions HEALPix maps easily reach millions of pixels.
 
 \subsection{Graph construction}
 
-\nati{Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
+Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
 Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
-While our construction will not exactly respect the setting defined by \citep{belkin2007convergence} (the sampling is not uniform and the graph is not fully connected), we observe empirically strong evidence of convergence.}
+While our construction does not exactly respect their setting (the sampling is not uniform and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see \ref{sec:comparison_spherical_harmonics}).
 
 From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
 In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i \in \V$.

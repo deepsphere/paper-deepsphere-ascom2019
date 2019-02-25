@@ -247,8 +247,9 @@ Page 4: "There is no known point set that achieves the analogue of uniform sampl
 \end{mdframed}
 
 That is right.
+Thanks for pointing it out.
 The confusion was due to our ignorance.
-We removed the sentence from the paragraph as we don't need to make such a point.
+We removed the part about exact SHTs from the paragraph as we don't need to make such a point.
 %\mdeff{That sentence mostly came from \url{https://healpix.jpl.nasa.gov/html/intronode2.htm}.}
 %\mdeff{uniform sampling == same distance between all neighboring pixels}
 
@@ -258,15 +259,15 @@ We removed the sentence from the paragraph as we don't need to make such a point
 "Our graph is constructed as an approximation of sphere S2, a 2D manifold embedded in R3, Indeed, [33] showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity. While our construction will not exactly respect the setting defined by [33], we observe empirically strong evidence of convergence." This paragraph is unclear. Could you please add a few words to clarify what the approach of 33 is?
 \end{mdframed}
 
-\todo{Assigned: @nati, @michael}
-
 We tried to clarify the paragraph in the following manner:
 \begin{mdframed}[style=manuscript]
 Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
 Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
-While our construction will not exactly respect the setting defined by \cite{belkin2007convergence} (the sampling is not uniform and the graph is not fully connected), we observe empirically strong evidence of convergence.
+While our construction does not exactly respect their setting (the sampling is not uniform and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see Appendix A).
 \end{mdframed}
-We are aware that this particular point could be more detailed. Nevertheless, we believe that a deeper discussion does not belong to this paper. In fact, we are currently investigating the convergence question with the goal of obtaining better graph constructions or rotational equivariance results.
+
+While this particular point deserves more details, we believe that a deeper discussion does not belong to this paper.
+In fact, we are currently investigating this convergence with the goal of constructing better graphs whose Fourier modes would converge to (or even be equivalent to) the spherical harmonics.
 
 \subsection{}
 
