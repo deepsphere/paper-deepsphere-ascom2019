@@ -885,6 +885,11 @@ The gap even widens as the problem becomes more difficult.
 This is likely due to DeepSphere learning features that are adapted to the problem instead of relying on hand-designed features.
 The accuracy of DeepSphere is $>97\%$ for orders $o=1$ and $o=2$, for all noise levels, and starts to deteriorate for $o=4$, reaching 90\% for the highest noise level.
 
+It may seem unfair to compare DeepSphere, who has access to raw pixels, with SVMs who only see limited features (histograms and PSDs).
+We however trained an SVM on the raw pixels and were unable to obtain over $60\%$ accuracy in the easiest cases (i.e., noiseless).
+(Remember that every other tested model is close to $100\%$ in that setting.)
+% TODO: provide an explanation why?
+
 As expected, we observe that the FCN slightly outperforms the CNN.
 This may seem counterintuitive as the CNN is a generalization of the FCN and hence should be able to learn the same function and provide at least equivalently good results.
 Nevertheless, as discussed in \secref{architecture}, the larger number of parameters incurred by the increased flexibility requires more training data to learn the rotation symmetry.
@@ -974,7 +979,7 @@ While these indications show that the constructed graph Fourier basis approximat
 First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}.
 Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
 We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
-Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e, they will span a small part of the sphere.
+Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
 Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
 Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
 

@@ -141,6 +141,7 @@
   \renewcommand{\subsectionautorefname}{Comment}
 
 \newcommand{\nati}[1]{{\color[rgb]{.1,.6,.1}{NP: #1}}}
+\newcommand{\mdeff}[1]{{\color[rgb]{.1,.6,.1}{MD: #1}}}
 \newcommand{\TK}[1]{{\color{red}{TK: #1}}}
 \newcommand{\todo}[1]{{\color[rgb]{.6,.1,.6}{TODO: #1}}}
 
@@ -217,26 +218,27 @@ I have read with great interest the paper by Perraudin and collaborators present
 The paper is well-written, and the results are clearly presented. The litterature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
-Dear reviewer, we thank you for reading our paper and providing comments. They have helped us improve our manuscript. In this rebuttal, you can find a detailed answer to all the points you mentioned.
+Dear reviewer, we thank you for your time and comments. The manuscript improved thanks to your feedback. In this rebuttal, you can find a detailed answer to all the points you mentioned.
 
 \subsection{}
 \begin{mdframed}[style=comment]
 One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguising from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real comsological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
 \end{mdframed}
 
-\todo{Assigned: @nati, @michael}
-The intuition of the reviewer is correct. Theoretically, using the raw data, \emph{an SVM or even a standard fully connected neural network (NN) would perform a lot better.} In practice, this those models are limited by the computational power and the dataset size.
+We agree that the ML algorithms should be tested on the same input data for a fair comparison.
+%In practice, those models are limited by the computational power and the dataset size.
 
-We actually tried training an SVM on the raw data but were unable to obtain over $60\%$ accuracy in the easiest cases where all the other tested models were close to $100\%$. Practically, the classifier would either overfit or be over-regularized. For that reason, we decided, not to report the raw-data SVM results in the paper.
-\nati{FYI, I did try again to be entirely sure about it.}
+We did try to train an SVM on the raw data but were unable to obtain over $60\%$ accuracy in the easiest cases, where every other tested model is close to $100\%$.
+Practically, the classifier would either overfit or be over-regularized.
+We hence decided not to report the raw-data SVM results in the paper.
+This information has been added to the manuscript.
+% \nati{FYI, I did try again to be entirely sure about it.}
 
-A model based on a fully connected neural network, as suggested by the reviewer, contains a very large number of weights which severely restricts what can be tested with conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which limits the number of neurons that can be used in the architecture. For the completeness of this answer, we did try a fully connected NN. Practically, in the first layer, we were only able to $128$ neurons before hitting an out of memory errors. In this setting, with a relative amount of noise of $0.5$, we were unable to regularize the network such that it would actually classify the validation set. Note that all reported classifiers performed well (close to $100\%$ accuracy) in this particular setting. Similar conclusions were observed with other settings.
-%Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical
-structure of the HEALPix sampling. , even when increasing the number of neurons for small part of the sphere (order $2$ and $4$).
-
-This being said, the reviewer comment is justified and we will add this information to the paper.
-
-\todo{Add it in the paper... Make clear that CNN is so much better than fully connected + say that SVM on the raw features does not work.}
+While fully-connected NNs (FCNNs) generalize CNNs, they don't perform as well as CNNs on tasks where the symmetries exploited by the CNN are relevant.\footnote{For cosmological data on the sphere, a desired symmetry, highlighted in the introduction, is for the model to be invariant to rotations.}
+That is similar to our comparison of the FCN and CNN variants.
+While the CNN is a generalization, it doesn't perform as well as the FCN.
+In practice, the large number of parameters required by a FCNN severely restricts what can be tested on conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which limits the number of neurons that can be used in the architecture. For completeness, we tried a FCNN and were only able to squeeze $128$ neurons in the first layer before hitting an out-of-memory error. With this architecture and a relative amount of noise of $0.5$, we were unable to regularize the network such that it would classify the validation set. (Remember that all reported classifiers obtained close to $100\%$ accuracy in this setting.) Similar conclusions were observed with other settings.
+%Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical structure of the HEALPix sampling, even when increasing the number of neurons for small part of the sphere (order $2$ and $4$).
 
 
 \subsection{}
