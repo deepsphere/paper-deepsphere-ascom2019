@@ -316,11 +316,29 @@ You'll find an answer to all the points you mentioned in this rebuttal.
 \begin{mdframed}[style=comment]
 The first, and most important is an example using masks. Since the authors mention how their method should in principle work well with masks, especially in comparison to HEALPix and Clebsh-Gordan transform spherical harmonic methods I think that it would be extremely enlightening to present this work, probably in the form of a performance vs. time plot. With this being done, the informational content of a masked version of the cosmological application could easily be included. This would, I'm sure, be attractive to the cosmological community as well as the ML community who are always looking for good ways to deal with masked data.
 \end{mdframed}
-\todo{Assigned: @Michael, @Nati}
-Our implementation is actually already working with a mask, we choose to use parts of $1/12$, $1/48$ and $1/192$ of the total sphere. Our main motivation was to build a "large" dataset with a relatively low number of cosmological maps.
-In terms of neural network, the available implementation of \cite{cohen2018sphericalcnn,kondor2018clebsch} for spherical CNNs and Clebsh-Gordan CNNs are not scalable enough to be trained on the cosmological maps dataset and do not use the HEALPix sampling. Hence a comparison with these methods requires a different setting, which far beyond the scope of our contribution. Nevertheless, this comparison is important and we are preparing a second contribution where it will be conducted.
 
-\nati{We could compare the price of one convolution. What do you think? We can write the theoretical complexity. This is a sensitive point! }
+We agree with the reviewer that an example with an irregular mask is the most missed.
+A performance versus time plot would indeed be a great way to present such a comparison.
+As the reviewer hints at, this example would be better presented in the light of a comparison to other formulations of spherical CNNs.
+While such a comparison would without any doubt be insightful on many aspects (not only for masked data, but also on the role of isotropic filters or the importance of rotation equivariance), it is better carried out on diverse datasets and tasks, and deserves, in our opinion, a follow-up paper to be properly addressed.
+The point of this paper was (1) to show that spherical CNNs are a great model for cosmological applications, and (2) that a graph-based spherical CNN has certain undeniable advantages.
+As hinted in the conclusion, we are actively working on a more thorough comparison of graph-based and SHT-based spherical CNNs.
+
+On the practical side, a proper comparison requires to either modify the available implementations of \cite{cohen2018sphericalcnn,esteves2017sphericalcnn,kondor2018clebsch} to use the HEALPix sampling, or to transform the cosmological maps to the sampling schemes they support.
+Moreover, implementing the pooling operation for irregular masks is not trivial.
+All in all, that is a tremendous amount of engineering work that we preferred to defer.
+
+Keep in mind that, while they are not irregular masks, we already use $1/12$, $1/48$, and $1/192$ parts of the sphere for training and inference.
+While an SHT-based method needs to consider the whole sphere to work with this data, our graph-based method only considers the used part (and still takes the curvature of the surface into account).
+The computational advantage of doing so has been added to Figure 4.
+As stated above, the performance comparison will however have to wait our follow-up work.
+% Our main motivation was to build a "large" dataset with a relatively low number of cosmological maps.
+
+% In terms of neural network, the available implementation of \cite{cohen2018sphericalcnn,kondor2018clebsch} for spherical CNNs and Clebsh-Gordan CNNs are not scalable enough to be trained on the cosmological maps dataset and do not use the HEALPix sampling. Hence a comparison with these methods requires a different setting, which far beyond the scope of our contribution.
+
+%\nati{We could compare the price of one convolution. What do you think? We can write the theoretical complexity. This is a sensitive point!}
+
+\mdeff{measure the computational time of filtering on a 1/12, 1/48 or 1/192 of the sphere with the graph. Add the result to Figure 4 and compare with filtering of the full sphere (with SHT and graph).}
 
 \subsection{}
 
