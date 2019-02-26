@@ -950,9 +950,12 @@ Spherical CNNs are so far mostly used for omnidirectional imaging.
 Many scientific fields, such as weather or climate modeling, would however benefit from an efficient and versatile spherical CNN.
 With this work, we hope to demonstrate and help democratize the use of those tools for spherical data analysis.
 
-As a future work, it would be interesting to further investigate the link between the graph Fourier basis and the spherical harmonics.
-Furthermore, the influence of irregular sampling on the convolution's equivariance to rotation should be empirically quantified and ideally theoretically bounded.
-Further comparison of DeepSphere to other spherical CNN formulations, with different sampling schemes, would also be worthwhile.
+As future work, it would be interesting to further investigate the relation between the graph Fourier basis and the spherical harmonics.
+The goal would be to find edge weights such that the graph Laplacian converges (or is equivalent) to the Laplace-Beltrami (up to a certain bandwidth).
+Ideally, that should work for any sampling of the sphere.
+That would enable a truly rotation equivariant graph convolution and high-precision filtering using the graph rather than the SHT (for speed).
+% Furthermore, the influence of irregular sampling on the convolution's equivariance to rotation should be empirically quantified and ideally theoretically bounded.
+Finally, a comparison of DeepSphere to other spherical CNN formulations, with different sampling schemes, would be worthwhile.
 
 The fact that a graph representation of the discretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes which aim to enable fast convolutions.
 In the long term, graphs might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.

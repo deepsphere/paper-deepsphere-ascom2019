@@ -421,9 +421,16 @@ We found out that the one proposed above works well for our purpose, and did not
 - Are you really going to search through different weighting schemes in future work? I would be interested if you were, but could you speculate on what you expect to achieve by looking at different ones?
 \end{mdframed}
 
-Yes, we are investigating the question of graph weights.
-As suggested in the previous comment, the weighting scheme used is very important for the graph Laplacian to approach the true Laplace Beltrami operator. Using a more appropriate weighting scheme, one could hope for a more rotational invariant convolution and a faster convergence rate of the operator.
-\nati{@michael, how much shall we say here?}
+Yes, we are investigating how to best set the edge weights (the sole degree of freedom when building a graph).
+The question is: what edge weights should be set such that the graph Laplacian converges (or is equivalent) to the Laplace-Beltrami (up to a certain bandwidth).
+Ideally, that should work for any sampling of the sphere.
+(Equivalently, the Fourier modes converge or are equivalent to the spherical harmonics.)
+A proof of convergence or equivalence would allow a graph convolution that is truly equivariant to rotation.
+Moreover, it would enable to do high-precision filtering using the graph rather than the SHT (for speed).
+See also comment 1.6 and our answer there.
+
+% \nati{@michael, how much shall we say here?}
+% \mdeff{I like to be open. It's mostly written in the paper anyway.}
 
 \subsection{}
 \begin{mdframed}[style=comment]
@@ -431,6 +438,8 @@ Thanks to the softmax, the output $\bf{y}\in\mathbb{R}^{N_{classes}}$ of a neura
 
 - This is a common misconception which is incorrect and needs restating. It is *not* a probability distribution for the class, rather it is a discretised conditional distribution for the class given both the data and the weights and biases of the trained network. One way to see that the value of $y_i$ cannot be considered a probability (which implies P(y|x), i.e. the probability of a class given the data) is that if the network is untrained, would you retrieve back the correct probability? It's wholly dependent on the network.
 \end{mdframed}
+
+Thanks for the clarification.
 
 We agree with the reviewer. We actually misformulate this sentence. We have reformulated it as:
 \begin{mdframed}[style=manuscript]
