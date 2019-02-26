@@ -548,7 +548,11 @@ The softmax layer is the last layer in a neural network engineered for classific
 \begin{equation*}
 	y_i = \frac{\exp(x_i)}{\sum_{j=1}^{N_{classes}} \exp(x_j)} \in [0, 1], \ \forall i \in [N_{classes}],
 \end{equation*}
-where $N_{classes}$ is the number of classes to discriminate. \nati{Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a probability distribution over the classes, i.e., $y_i$ is the confidence of the network that the input sample belongs to class $i$. Note that in general, this probability distribution does not correspond to the true posterior distribution $p(y|x)$.} This last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
+where $N_{classes}$ is the number of classes to discriminate.
+Thanks to the softmax, the output $\y \in \R^{N_{classes}}$ of a neural network is a discretised conditional distribution for the class given the data and trained parameters.
+That is, $y_i$ is the confidence of the network that the input sample belongs to class $i$.
+% Note that in general, this probability distribution does not correspond to the true posterior distribution $p(y|x)$.
+This last layer is actually normalizing $\x$ into $\y$ such that $\| \y \|_1 = \sum_i y_i = 1$.
 
 \subsection{Network architectures}
 \label{sec:architecture}
@@ -675,7 +679,7 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
     \label{fig:healpix_graph_4}
 \end{figure}
 
-A first approach, explored by \citep{boomsma2017spherical} for molecular modeling and \citep{su2017sphericalconv, coors2018spherenet} for omnidirectional imaging, is to use a 2D CNN on a discretization of the sphere that is a grid, such as the equirectangular projection (\figref{sphere_grids}, left panel), or a set of grids, such as the cubed-sphere defined by~\citep{ronchi1996cubed} (\figref{sphere_grids},  middle panel).
+A first approach, explored by \citep{boomsma2017spherical} for molecular modeling and \citep{su2017sphericalconv, coors2018spherenet} for omnidirectional imaging, is to use a 2D CNN on a discretisation of the sphere that is a grid, such as the equirectangular projection (\figref{sphere_grids}, left panel), or a set of grids, such as the cubed-sphere defined by~\citep{ronchi1996cubed} (\figref{sphere_grids},  middle panel).
 As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, which makes it computationally efficient.
 This approach is applicable to the many pixelizations that are based on a regular subdivision of a base polyhedron, such as HEALPix. Each base polyhedron then forms a grid.
 Care has to be taken to handle boundary conditions: for example by padding a grid with the content of the opposite side (equirectangular) or of the neighboring grids (cubed-sphere, HEALPix). That incurs some computational losses.
