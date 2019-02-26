@@ -450,7 +450,11 @@ For example, on images, the subject of interest is most often around the center 
 
 - I don't see that this is general at all, only if you are considering say, preprocessed postage stamps of galaxies. I can't think of many other cases in modern machine learning where the images contain the informative part only in the centre of an image. I do agree that the informative part is often localised though. Maybe this should be updated.
 \end{mdframed}
-\todo{Assigned: @michael}
+
+Think of the MNIST digits, cells in biomedical imaging, faces on portraits, etc.
+Most photographers prefer the subject of interest to be centered.
+Then, what's important is not that the informative part is only in the center, but that a fully connected layer allows a network to focus its attention on the domain.
+With average pooling, all pixels are equal.
 
 \subsection{}
 \begin{mdframed}[style=comment]
