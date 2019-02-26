@@ -321,7 +321,7 @@ We agree with the reviewer that an example with an irregular mask is the most mi
 A performance versus time plot would indeed be a great way to present such a comparison.
 As the reviewer hints at, this example would be better presented in the light of a comparison to other formulations of spherical CNNs.
 While such a comparison would without any doubt be insightful on many aspects (not only for masked data, but also on the role of isotropic filters or the importance of rotation equivariance), it is better carried out on diverse datasets and tasks, and deserves, in our opinion, a follow-up paper to be properly addressed.
-The point of this paper was (1) to show that spherical CNNs are a great model for cosmological applications, and (2) that a graph-based spherical CNN has certain undeniable advantages.
+The point of this paper was (i) to show that spherical CNNs are a great model for cosmological applications, and (ii) that a graph-based spherical CNN has certain undeniable advantages.
 As hinted in the conclusion, we are actively working on a more thorough comparison of graph-based and SHT-based spherical CNNs.
 
 On the practical side, a proper comparison requires to either modify the available implementations of \cite{cohen2018sphericalcnn,esteves2017sphericalcnn,kondor2018clebsch} to use the HEALPix sampling, or to transform the cosmological maps to the sampling schemes they support.
@@ -368,20 +368,23 @@ Secondly, using only SVM as a comparison might skew how well this technique appe
 \end{itemize}
 }
 
+\subsection{}
+
 \begin{mdframed}[style=comment]
 Similarly, I think it would useful to check how well the DeepSphere CNN does against the FCN when the input data is rotated randomly during training - I imagine that the results should match or probably exceed the FCN results and I think this would be a neat little test which doesn't involve needing extra data, just more augmentation.
 \end{mdframed}
-\todo{Assigned: @Nati, @Michael, @Tomek}
 
-Theoretically, providing that the FCN and the CNN have the same modelisation power (i.e, the FCN does not have more or larger layers) and assuming the convolution would be truly invariant to rotation, the CNN could never exceed the FCN for truly rotational invariant data. However, assuming enough augmentation (as suggested by the reviewer) and training, the CNN should get to the level of the FCN. In practice, this would require more training as the CNN has to learn the invariance.
-The point of defining a FCN instead of a CNN is to avoid the complexity of augmenting the dataset. Hence we did not implement it. Nevertheless, it is an interesting point worth discussion in the paper. We updated the manuscript accordingly.
-\todo{Do it}
+That comparison is not warranted.
+% or justified. pointless is maybe too aggressive
+There are two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture of the model, or (ii) augment the dataset such that a (more general) model learns them ``brute-force''.
+With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
+Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
+That is a waste of resources which is only justified if it's not possible to back the desired invariance in the architecture.
+We updated the manuscript to more precisely reflect this argumentation.
 
-\nati{
-Technically, testing this is complicated as rotation on HEALPix are complicated and expensive. We probably will have to break a lot of code to do it.
-
-@Michael: what do you think?
-}
+% \nati{Technically, testing this is complicated as rotation on HEALPix are complicated and expensive. We probably will have to break a lot of code to do it.
+% @Michael: what do you think?}
+% \mdeff{Agreed.}
 
 \subsection*{Minor comment}
 

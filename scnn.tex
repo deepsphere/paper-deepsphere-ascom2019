@@ -618,7 +618,9 @@ An example of such an architecture is
 	NN = FC \circ \sigma \circ F \circ P \circ \sigma \circ BN \circ GC.
 \end{equation*}
 
-For tasks that are rotation invariant, FCNs need less training data as the rotation symmetry is backed in the architecture and need not be learned.
+There are in general two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture, or (ii) augment the dataset such that a (more general) model learns them.
+With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
+For tasks that are rotation invariant, FCNs hence need less training data as the rotation symmetry is backed in the architecture and need not be learned.
 Than can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
 Moreover, FCNs can accommodate maps with a varying number of pixels.
 % agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels.
@@ -794,7 +796,7 @@ The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} 
 We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
 
 The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}.
-A brief overview about the map making procedure used in \pkg{UFalcon} as well as the simulation parameters are given in Appendix~\ref{sec:convergence_mass_maps}.
+A brief overview about the map making procedure used in \pkg{UFalcon} as well as the simulation parameters are given in \ref{sec:convergence_mass_maps}.
 We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=0.8$, instead of $z=1.5$.
 \pkg{L-PICOLA} \citep{howlett2015lpicola} is used for fast and approximate N-body simulations.
 For each class, we generate $30$ simulations.
