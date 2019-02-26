@@ -345,13 +345,26 @@ As stated above, the performance comparison will however have to wait our follow
 \begin{mdframed}[style=comment]
 Secondly, using only SVM as a comparison might skew how well this technique appears to works in a deep learning setting. In principle (and I say this not knowing for sure) 2D CNNs should probably be able to work as well as DeepSphere (although no where near as elegantly) by taking in a projected 2D image of the sky and using *loads* of filters to learn about the distortion at different parts of the projected sky. It would be interesting (and I think a fairly easy test) to check how well DeepSphere performs against a 2D CNN on projections.
 \end{mdframed}
+
 \todo{Assigned: @Nati, @Michael, @Tomek}
+
+\todo{experiment in prograss by nati}
 
 \nati{\textbf{Very important point!!!}
 \begin{itemize}
   \item We can do this comparison...
   \item Since we used 1/12 of the sphere, all the pixel grids we use are somehow squared. I am now using this as a projection. @Tomek, do you know if this is ok? Or do you know how to do the projection in a simple and efficient manner?
   \item I think that traditional 2D CNNs will be as good as our algorithm. We should be very careful in the way we formulate this in our answer and in the paper.
+\end{itemize}
+}
+
+\mdeff{Agreed that we should do at least one thing they asked for.
+\begin{itemize}
+	\item Testing on the 1/12 of the sphere is not what he asked for. On one hand, a global projection would exhibit more distortion. On the other, we never use the whole sphere.
+	\item Keep in mind that there is no orientation that is consistent for the 12 base faces (i.e., where is up?).
+	\item Agreed that the performance should be very similar. Both are doing local computations. And locally (3 to 5 pixels across), the sphere is isomorphic to an Euclidean plane.
+	\item The only difference, in my opinion, would be due to the anisotropic filters the 2D CNN has access to.
+	\item Not sure we should include this result in the main paper. Hard to justify in the story, especially as a comparison with alternative spherical CNNs is missing. Let's see the results.
 \end{itemize}
 }
 
