@@ -400,9 +400,17 @@ While our construction will not exactly respect the setting defined by [33], we 
 - Could you add a plot comparing the graph Laplacian as a function of number of pixels and the Laplace-Beltrami operator so the reader can explicitly see the convergence?
 \end{mdframed}
 
-This is a good question and a fair request. Problematically, we cannot provide such a plot without solving the theoretical problem first. Indeed to experimentally show convergence, we actually need to build a series of graph Laplacian that converges toward the Laplace Beltrami operator. This far more complicated than building one Laplacian and observe some similarities between the two operators.
+Good point.
+To experimentally show convergence, we would need to build a series of graph Laplacians that converges to the Laplace-Beltrami operator.
+This is complicated and requires to solve the theoretical problem first.
+Hence, we built one Laplacian and observed some similarities between the two operators instead.
+We agree that our wording was unfortunate and have modified the manuscript to mean that we empirically observed a strong correspondence rather than a proper convergence.
+The convergence (or even exact correspondence) is a problem we are currently investigating and plan to release as a separate contribution.
+See also comment 1.4 and our answer there.
 
-This is actually a problem we are currently investigating. We plan to make a separate contribution.
+\todo{the new figure A.12 is maybe a weak proof of convergence}
+
+\mdeff{@nati, what do you think?}
 
 
 \subsection{}
