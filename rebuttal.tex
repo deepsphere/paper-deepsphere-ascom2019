@@ -215,7 +215,7 @@ Though this is designated a minor revision, there are quite a few points that ne
 \begin{mdframed}[style=comment]
 I have read with great interest the paper by Perraudin and collaborators presenting a methodology (and the associated code) for performing deep machine learning on the sphere using novel algorithms.
 
-The paper is well-written, and the results are clearly presented. The litterature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
+The paper is well-written, and the results are clearly presented. The literature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
 Dear reviewer, we thank you for your time and thorough comments.
@@ -224,10 +224,16 @@ You'll find an answer to all the points you mentioned in this rebuttal.
 
 \subsection{}
 \begin{mdframed}[style=comment]
-One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguising from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real comsological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
+One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguishing from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real cosmological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
 \end{mdframed}
 
 We agree that the ML algorithms should be tested on the same input data for a fair comparison.
+\TK{PS and histograms are standard statistics used by the cosmology community for analysing real data. This is why we chose it as the reference point.
+The single step of moving away from these hand-picked statistics to ML approaches is already interesting for physicists.
+It would be indeed interesting to compare the performance of the CNN to other ML-based algorithms, but we belive it is a major undertaking if to be conducted fairly.
+Given that the our method gives significant advantage over the traditional statistics used in cosmology, we believe that the current scope of the paper is already interesting for cosmologists.
+We would be keen to leave more detailed comparisons of ML-algorithms for future work.
+}
 %In practice, those models are limited by the computational power and the dataset size.
 
 We did try to train an SVM on the raw data but were unable to obtain over $60\%$ accuracy in the three noiseless cases, which is far behind every other tested model.
@@ -245,7 +251,7 @@ In practice, the large number of parameters required by a FCNN severely restrict
 
 \subsection{}
 \begin{mdframed}[style=comment]
-Page 4: "There is no known point set that achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions." This is ambigious. There exists multiple schemes for performing exact SHT on band-limited signals. Those sampling are more efficient than healpix - often in terms of number of pixels, and sometimes in terms of performance of the spherical harmonic transforms - and more accurate since the transform is exact (at least numerically - so typical errors are machine precision). Healpix transforms are only exact to 1e-7 when using iterative schemes, and that depends on Nside and lmax. Please clarify this paragraph. Obviously healpix is very advantageous for the pooling and other operations that take advantage of its hierarchical nature. This is well discussed in the paper - in particular how the fast graph algorithms could accomodate other sampling schemes.
+Page 4: "There is no known point set that achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions." This is ambiguous. There exists multiple schemes for performing exact SHT on band-limited signals. Those sampling are more efficient than healpix - often in terms of number of pixels, and sometimes in terms of performance of the spherical harmonic transforms - and more accurate since the transform is exact (at least numerically - so typical errors are machine precision). Healpix transforms are only exact to 1e-7 when using iterative schemes, and that depends on Nside and lmax. Please clarify this paragraph. Obviously healpix is very advantageous for the pooling and other operations that take advantage of its hierarchical nature. This is well discussed in the paper - in particular how the fast graph algorithms could accommodate other sampling schemes.
 \end{mdframed}
 
 That is right.
@@ -305,11 +311,19 @@ The paper contains an extremely well described technique for performing convolut
 I will happily recommend this paper for publication. Firstly though, I would like access to the data (privately rather than via emailing the group) so that I can check the notebooks thoroughly. The notebooks are extremely well written but I would like to run them first. As well as this I think there are a few extra applications which will improve the manuscript further, and make the method more appealing for users. I would recommend that these ideas are at least seriously considered by the authors and hopefully implemented:
 \end{mdframed}
 
-\todo{@Tomek: give him access to data}
+
 
 Dear reviewer, we would like to thank you back for your time, your good words, and your thorough review.
 The manuscript substantially improved thanks to your work.
 You'll find an answer to all the points you mentioned in this rebuttal.
+
+The data is available on request in Zenodo, but the access is not anonymous.
+For the special purpose of the review, we put the data from Zenodo in the cloud storage.
+It can be access by a public link:
+https://polybox.ethz.ch/index.php/s/Oi2NjdF8dnMdwot
+The link will expire on 31 March.
+The password is "DeepSphere101".
+Please do not share these details to anyone, or do not use it for purposes other than the review.
 
 \subsection{}
 
@@ -347,6 +361,7 @@ Secondly, using only SVM as a comparison might skew how well this technique appe
 \end{mdframed}
 
 \todo{Assigned: @Nati, @Michael, @Tomek}
+\TK{makes sense to me.}
 
 \todo{experiment in prograss by nati}
 
@@ -357,6 +372,7 @@ Secondly, using only SVM as a comparison might skew how well this technique appe
   \item I think that traditional 2D CNNs will be as good as our algorithm. We should be very careful in the way we formulate this in our answer and in the paper.
 \end{itemize}
 }
+\TK{I would be tempted to leave it to future work! It is an interesting comparison, but requires more work and it brings only a bit more to already awesome paper.}
 
 \mdeff{Agreed that we should do at least one thing they asked for.
 \begin{itemize}
@@ -381,6 +397,7 @@ With respect to rotation invariance, the FCN architecture is of the first kind, 
 Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
 That is a waste of resources which is only justified if it's not possible to back the desired invariance in the architecture.
 We updated the manuscript to more precisely reflect this argumentation.
+\TK{Seems a bit strong to me.. maybe we would write it in a softer language?}
 
 % \nati{Technically, testing this is complicated as rotation on HEALPix are complicated and expensive. We probably will have to break a lot of code to do it.
 % @Michael: what do you think?}
@@ -516,6 +533,8 @@ Finally, I noticed a few points in the text where there were typos or things whi
 \end{mdframed}
 \todo{Assigned @tomek.
 This reviewer really spend the time. Should we say something here?}
+\TK{Thank you very much for taking the time for making these corrections. We find them very helpful and improving the quality of the paper.
+We implemented most of them, see below.}
 
 \begin{mdframed}[style=comment]
 Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation [9–16].
@@ -523,18 +542,21 @@ Convolutional Neural Networks (CNNs) have been proposed as an alternative analys
 - There are many of us in the community who are not overly keen on "precision" of parameter estimation being the target for machine learning. Rather, we would prefer robustness of parameter estimation. It might be worth changing this sentence a bit so as not to upset some of the referenced authors ;)
 \end{mdframed}
 \todo{Assigned: @tomek, @michael}
+\TK{not sure what do to here.. will people get upset? "Precision" is commonly used in cosmology}
 
 \begin{mdframed}[style=comment]
 When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
 \end{mdframed}
 \todo{Assigned: @tomek}
 \nati{I personally think it is better without separating the lines}
+\TK{Thank you for the suggestion, normally we would adopt it, but the paper is already quite long, and breaking up the lines in equations would make it even longer. So we decided against it.}
 
 \begin{mdframed}[style=comment]
 You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
 \end{mdframed}
 \todo{Assigned: @all}
 \nati{What do you think? This avoid repetition. But we could be more consistent...}
+\TK{Agreed. Do you want to make the change @nati?}
 
 
 \begin{mdframed}[style=comment]
@@ -562,8 +584,7 @@ The flexibility of modelling the data domain with a graph allows to easily model
 
 - I think you're missing a "one" after allows. "The flexibility of modelling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled."
 \end{mdframed}
-\todo{assigned: @tomek}
-\nati{I am not sure of the english here.}
+\TK{Thank you for the suggestion, we updated the text.}
 
 \begin{mdframed}[style=comment]
 This kind of maps can be created using the gravitational lensing technique [see 29, for review]
@@ -602,7 +623,7 @@ As each pixel is subdivided in four, the second coarser resolution is $N_{pix} =
 
 - Might it be more concise to write "The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$."
 \end{mdframed}
-\todo{assigned: @tomek}
+\TK{Thank you for the suggestion, we updated the text.}
 
 \begin{mdframed}[style=comment]
 ... is a measure of the variation of the eigenvector $\bf{u}_i$ is on the graph defined by the Laplacian L.
@@ -648,8 +669,9 @@ Similarly as (2), the convolution of the signal $f$ by a kernel $g$ is the scala
 
 - I think this should be "As with equation (2)" or "Similarly, as in equation (2)" but I can't tell which. Also, it would be really useful if you referred to equations by "equation (x)" rather than just "(x)" throughout - much easier to read that way.
 \end{mdframed}
-\todo{Assign: @michael, @tomek}
-\nati{I do not know what we should do.}
+% \todo{Assign: @michael, @tomek}
+% \nati{I do not know what we should do.}
+Thank you for your suggestion. Ideally we would replace equation references such as "(1)" with "Equation (1)", but given the large number of equation references, we would prefer to stick with a short-form to avoid lengthening the paper further.
 
 \begin{mdframed}[style=comment]
 The 1-neighborhood of a node is the set of nodes that are directly connected to it. The k-neighborhood of a node is the set of nodes that are connected to it through paths of length k.
@@ -691,16 +713,18 @@ Coarsening can be naturally designed for hierarchical pixelisation schemes, as e
 
 - I think you mean "where" instead of "as"
 \end{mdframed}
-\todo{Assigned: @tomek}
-\nati{I think the "as" is correct here. We use it for "because". Not sure...}
+% \todo{Assigned: @tomek}
+% \nati{I think the "as" is correct here. We use it for "because". Not sure...}
+\TK{Thank you for the suggestion, we adopted it.}
 
 \begin{mdframed}[style=comment]
 Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
 
 - This has an unusual syntax which makes it difficult to follow. I think you mean something like "To coarsen, the sub-cells are merged to summarise the data supported on them."
 \end{mdframed}
-\todo{Assigned: @tomek}
-\nati{I prefer the version we have. But I leave it up to you to decide.}
+% \todo{Assigned: @tomek}
+% \nati{I prefer the version we have. But I leave it up to you to decide.}
+\TK{We updated the text as suggested.}
 
 \begin{mdframed}[style=comment]
 Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R}^{N'_{pix}}$ such as
@@ -871,14 +895,15 @@ Implementation of full cosmological inference requires, however, many more simul
 
 - Unless you have a cheap neural network based likelihood-free method ;)
 \end{mdframed}
-\todo{Assigned @Tomek}
+\TK{Indeed. We added a word "typically" to reflect that there may be cases like this.}
 
 \begin{mdframed}[style=comment]
 For each class, we generate 30 simulations.
 
 - Just mention that there are two classes again, to make it clear that "class" means "cosmology".
 \end{mdframed}
-\todo{Assign: @Tomek}
+% \todo{Assign: @Tomek}
+\TK{Updated the sentence.}
 
 \begin{mdframed}[style=comment]
 That is a data augmentation scheme, as it creates more training examples than we have simulations.
@@ -887,6 +912,7 @@ That is a data augmentation scheme, as it creates more training examples than we
 \end{mdframed}
 \todo{Assign: @all}
 \nati{I think that the primary goal of adding noise is the make the problem harder, and show robust prediction, not the make the dataset larger... Hence I disagree with the reviewer. What do you think?}
+\TK{This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem easier to solve. As these two facts are connected, we prefer to leave the sentence as is.}
 
 The primary goal of the noise addition is the make the problem harder and show robust prediction. We use it to augment our dataset as well. Hence we believe that the correct formulation is suitable.
 
@@ -936,6 +962,7 @@ The fact that a graph representation of the disretised sphere enables an efficie
 - It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
 \end{mdframed}
 \todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
+\TK{Sounds good to me.}
 
 \begin{mdframed}[style=comment]
 In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
@@ -958,6 +985,7 @@ In this case, the graph setting used through this contribution correspond to ass
 - It should be "assumed". "In this case, the graph setting used through this contribution correspond to assumed reflective border conditions."
 \end{mdframed}
 \todo{@assign: Tomek}
+\TK{Thank you for pointing it out, we believe that the original intended meaning is better reflected as is now.}
 
 \begin{mdframed}[style=comment]
 Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.

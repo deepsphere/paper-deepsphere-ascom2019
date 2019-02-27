@@ -271,7 +271,7 @@ The main idea is to model the discretised sphere as a graph of connected pixels:
 We use the graph CNN formulation introduced in \citep{defferrard2016convolutional}, and a pooling strategy that exploits a hierarchical pixelisation of the sphere to analyse the data at multiple scales.
 As the Equal Area isoLatitude Pixelisation (HEALPix)~\citep{gorski2005healpix} is a popular sampling used in cosmology and astrophysics, we tailored the method to that particular sampling.
 DeepSphere is, however, easily used with other samplings as only two elements depend on it: (i) the choice of neighboring pixels when building the graph, and (ii) the choice of parent pixels when building the hierarchy.
-The flexibility of modeling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
+The flexibility of modeling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
 Using a $k$-nearest neighbours graph, the convolution operation costs $\mathcal{O}(N_{pix})$ operations, where $N_{pix}$ is the number of pixels.
 This is the lowest possible complexity for a convolution without approximations.
 DeepSphere is readily apt to solve four tasks: (i) global classification (i.e., predict a class from a map), (ii) global regression (i.e., predict a set of parameters from a map), (iii) dense classification (i.e., predict a class for each pixel of a map), and (iv) dense regression, (i.e., predict a set of maps from a map).
@@ -331,7 +331,8 @@ Isolatitude is essential for the implementation of a fast spherical transform.
 HEALPix is the sole pixelisation scheme which satisfies those three properties.
 
 The lowest possible resolution is given by the base partitioning of the surface into $N_{pix} = 12$ equal-sized pixels (right-most sphere in \figref{pooling}).
-As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \times 12 = 2^2 \times 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \times 12 = 4^2 \times 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
+% As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2 \times 12 = 2^2 \times 12 = 48$ pixels (middle sphere in \figref{pooling}), the third is $N_{pix} = N_{side}^2 \times 12 = 4^2 \times 12 = 192$ pixels, etc., where $N_{side} = 1, 2, 4, 8, \ldots$ is the grid resolution parameter.
+The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$.
 High-resolutions HEALPix maps easily reach millions of pixels.
 
 \subsection{Graph construction}
@@ -488,8 +489,9 @@ A naive implementation of our method is ten to twenty times faster for $N_{side}
 
 \subsection{Coarsening and Pooling}
 
-Coarsening can be naturally designed for hierarchical pixelisation schemes, as each subdivision divides a cell in an equal number of child sub-cells.
-Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
+Coarsening can be naturally designed for hierarchical pixelisation schemes, where each subdivision divides a cell in an equal number of child sub-cells.
+% Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
+To coarsen, the sub-cells are merged to summarise the data supported on them.
 Merging cells lead to a coarser graph.
 Coarsening defines $\C(i)$, the set of children of node $v_i$.
 For the HEALPix subdivision scheme, the number of children is constant, i.e., $| \C(i) | = 4^p \ \forall i$, for some $p$.
@@ -761,7 +763,7 @@ The data is available upon request from the cosmology group.\footnote{\url{http:
 
 While we only demonstrate a classification task here, other tasks, such as regression or segmentation, are also possible (see \secref{architecture}).
 The regression task will most likely be the most practical cosmological application, as described in \citep{gupta2018nongaussianinformation} and \citep{fluri2018deep}.
-Implementation of full cosmological inference requires, however, many more simulations, building the likelihood function, and several other auxiliary tasks.
+Implementation of full cosmological inference typically requires, however, many more simulations, building the likelihood function, and several other auxiliary tasks.
 The classification problem is much more straightforward to implement and execute, and can be used to fairly compare the accuracy of the algorithm against benchmarks \citep{schmelze2017cosmologicalmodel}.
 For these reasons we decided to use the classification problem in this work, and we expect the relative performance of the methods to generalise to the regression scenario.
 
@@ -803,7 +805,7 @@ The simulations are created using the fast lightcone method \pkg{UFalcon} descri
 A brief overview about the map making procedure used in \pkg{UFalcon} as well as the simulation parameters are given in \ref{sec:convergence_mass_maps}.
 We however use a single simulation box, as opposed to two used in that work, as we use source galaxies at a lower redshift of $z=0.8$, instead of $z=1.5$.
 \pkg{L-PICOLA} \citep{howlett2015lpicola} is used for fast and approximate N-body simulations.
-For each class, we generate $30$ simulations.
+We generate $30$ simulations for each of the two classes.
 Out of the $60$ simulations, $20$ are kept as the test set, and $20\%$ of the remaining training data is used as a validation set, to monitor the training process and select the hyper-parameters.
 \figref{map_sample} shows the whole sky simulations and a zoom region for both models.
 Initial conditions for these simulations are the same, so the differences in structures can only be attributed to different cosmological parameters used to evolve the particle distribution.
