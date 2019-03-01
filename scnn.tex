@@ -711,9 +711,7 @@ For example with HEALPix, which was designed to have a fast SHT by being iso-lat
 Each ring has $\bO\left(\sqrt{N_{pix}}\right)$ pixels.
 Thanks to this iso-latitude property, the SHT is computed using recurrence relations for Legendre polynomials on co-latitude and fast Fourier transforms (FFTs) on longitude.
 The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\left( N_{pix} \log \sqrt{N_{pix}} \right)$, plus $\sqrt{N_{pix}}$ matrix multiplications of size $\sqrt{N_{pix}}$ for a total cost of $\bO\left(N_{pix}^{3/2}\right)$ operations.}
-The Clebsh-Gordan transform can be used to perform the non-linear transformation in the spectral domain \citep{kondor2018clebsch}.
-As such, the SHT is only performed once on the input (no back and forth SHT between each layer).
-\nati{While this clever trick lowers the complexity of the convolution (Adamar product in the spectral domain) to $\bO(N_{pix})$, the non-linearity (Clebsch–Gordan product) is $\bO(N_{pix}^{3/2})$.}
+While the Clebsh-Gordan transform can be leveraged to avoid SHTs between layers (it does a non-linear transformation in the spectral domain), the transform itself costs $\bO(N_{pix}^{3/2})$, for no reduction of overall complexity \citep{kondor2018clebsch}.
 This work is another indication that there might be a $\Omega(N_{pix}^{3/2})$ computational lower bound for the proper treatment of rotation equivariance with the spherical harmonics.
 In comparison, DeepSphere scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}), at the expense of not being exactly equivariant (see \ref{sec:comparison_spherical_harmonics}).
 Being a mathematically well-defined rotation equivariant network is the main advantage of methods based on spherical harmonics.

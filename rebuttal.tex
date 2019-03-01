@@ -495,13 +495,13 @@ As such, the SHT is only performed once on the input (no back and forth SHT betw
 
 - I don't understand what the difference is between the convolution and the "non-linearity". I think this sentence either needs explaining further. Is the process $\mathcal{O}(N_{pix})$ or $\mathcal{O}(N^{3/2}_{pix})$?
 \end{mdframed}
-In the work of \cite{kondor2018clebsch}, the convolution is performed in the spectral (harmonic) domain with a simple Adamar product. Instead of recomposing the signal and applying a traditional non-linearity such as "relu" in the pixel domain, \cite{kondor2018clebsch} proposes to directly apply a Clebsch–Gordan product in the spectral domain. As a non-linear operation preserving the rotation equivariance, it is considered as the non-linearity of the neural network.
 
-We have modified the manuscript as:
-\begin{mdframed}[style=manuscript]
-While this clever trick lowers the complexity of the convolution (Adamar product in the spectral domain) to $\bO(N_{pix})$, the non-linearity (Clebsch–Gordan product) is $\bO(N_{pix}^{3/2})$.
-\end{mdframed}
-\nati{Should we be clearer in the paper?}
+In \cite{kondor2018clebsch}, the convolution is performed in the spectral (harmonic) domain with a simple Hadamard product.
+Instead of recomposing the signal and applying a traditional non-linearity such as the ReLU in the pixel domain, \cite{kondor2018clebsch} proposes to apply a Clebsch–Gordan product in the spectral domain.
+(As a non-linear operation preserving rotation equivariance, it is considered as the non-linearity of the NN.)
+Their convolution costs $\mathcal{O}(N_{pix})$, and their non-linearity costs $\mathcal{O}(N^{3/2}_{pix})$.
+Stacking those layers result in a NN of overall $\mathcal{O}(N^{3/2}_{pix})$ time complexity.
+We clarified the sentence.
 
 \subsection{}
 \begin{mdframed}[style=comment]
