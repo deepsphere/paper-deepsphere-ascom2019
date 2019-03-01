@@ -627,7 +627,7 @@ An example of such an architecture is
 There are in general two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture, or (ii) augment the dataset such that a (more general) model learns them.
 With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
 For tasks that are rotation invariant, FCNs hence need less training data as the rotation symmetry is backed in the architecture and need not be learned.
-Than can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
+This can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
 Moreover, FCNs can accommodate maps with a varying number of pixels.
 % agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels.
 Such global summarization as the $AV$ layer is commonly used along graph convolutions to classify graphs of varying sizes (as it is invariant to node permutation) \citep{duvenaud2015gcn, li2015gatedgnn}.
