@@ -507,8 +507,11 @@ We clarified the sentence.
 \begin{mdframed}[style=comment]
 When mentioning that you are 10 to 20 times faster than the SHT it should be noted that libsharp has amazing distributed mpi functionality which helps, although of course your method is genuinely lower order computationally (and can be distributed simply on a GPU).
 \end{mdframed}
-When comparing the speed, we used a single-core CPU implementation of the graph convolution. We believe that this comparison is fair.
-\nati{Is this sufficient?}
+
+True.
+In the experiment, both were compared on a single core.
+They might however scale differently given one can be distributed through MPI and the other on a GPU.
+The manuscript was updated.
 
 \subsection{}
 \begin{mdframed}[style=comment]

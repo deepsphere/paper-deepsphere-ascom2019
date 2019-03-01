@@ -485,7 +485,8 @@ The cost of one such multiplication is $\bO(|\E| + |\V|)$.
 By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational cost of the convolution reduces to $\bO(N_{pix})$ operations and as such is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform.
 This is especially true for smooth kernels which require a low polynomial degree $K$.
 \figref{filtering_speed} compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
-A naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform at $\ell_{max} = 3 N_{side}$ implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
+On a single core, a naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform at $\ell_{max} = 3 N_{side}$ implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
+Note that the two might however scale differently, given that \pkg{libsharp} can be distributed on CPUs through MPI while our method can be distributed on GPUs by \pkg{TensorFlow}.
 
 \subsection{Coarsening and Pooling}
 
