@@ -206,7 +206,14 @@ Thank you for submitting your manuscript to Astronomy and Computing. I have rece
 Though this is designated a minor revision, there are quite a few points that need to be addressed before the paper is acceptable for publication.  When resubmitting your manuscript, please carefully consider all issues mentioned in the reviewers' comments, outline every change made point by point, and provide suitable rebuttals for any comments not addressed.
 \end{mdframed}
 
-\todo{Answer to editor}
+Dear Editor,
+
+Thanks for handling our submission. We have revised our manuscript following many of the reviewer suggestions. We believe that it is now ready for publication. Currenlty, the dataset can be accessed simply via Zenodo. While this process is not anonymons, we provide in this rebuttal (Comment \#2) a special link for the reviewers to access it is anonymously. 
+
+We thank the reviewers for taking the time to review our manuscript and for their constructive comments. We have answered
+
+
+\newpage
 
 \section{}
 
@@ -218,7 +225,9 @@ I have read with great interest the paper by Perraudin and collaborators present
 The paper is well-written, and the results are clearly presented. The literature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
-Dear reviewer, we thank you for your time and thorough comments.
+Dear reviewer, 
+
+we thank you for your time and thorough comments.
 The manuscript improved thanks to your feedback.
 You'll find an answer to all the points you mentioned in this rebuttal.
 
@@ -227,16 +236,19 @@ You'll find an answer to all the points you mentioned in this rebuttal.
 One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguishing from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real cosmological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
 \end{mdframed}
 
-We agree that the ML algorithms should be tested on the same input data for a fair comparison.
-\TK{PS and histograms are standard statistics used by the cosmology community for analysing real data. This is why we chose it as the reference point.
-The single step of moving away from these hand-picked statistics to ML approaches is already interesting for physicists.
+We agree that the ML algorithms should be tested on the same input data for a fair comparison. 
+
+We performed the comparizon with these features at it reflects the two-steps traditional way in classic machine learning: a) designing features b) using a method a ``simple'' classifier. Deep learning changed this this tactic with networks that learn the features directly from the raw data.
+The PS and histograms were chosen because they are standard statistics used by the cosmology community for analysing real data. 
+This is why we chose it as the reference point.
+In fact, the single step of moving away from these hand-picked statistics to ML approaches is already interesting for physicists.
 It would be indeed interesting to compare the performance of the CNN to other ML-based algorithms, but we belive it is a major undertaking if to be conducted fairly.
 Given that the our method gives significant advantage over the traditional statistics used in cosmology, we believe that the current scope of the paper is already interesting for cosmologists.
 We would be keen to leave more detailed comparisons of ML-algorithms for future work.
-}
+
 %In practice, those models are limited by the computational power and the dataset size.
 
-We did try to train an SVM on the raw data but were unable to obtain over $60\%$ accuracy in the three noiseless cases, which is far behind every other tested model.
+This beeing said, we did try to train an SVM on the raw data, but were unable to obtain over $60\%$ accuracy in the three noiseless cases, which is far behind every other tested model.
 Practically, the classifier would either overfit or be over-regularized.
 We hence decided not to report the raw-data SVM results in the paper.
 This information has now been added to the manuscript.
@@ -270,12 +282,14 @@ We removed the part about exact SHTs from the paragraph as we don't need to make
 We tried to clarify the paragraph in the following manner:
 \begin{mdframed}[style=manuscript]
 Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
-Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
-While our construction does not exactly respect their setting (the sampling is not uniform and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see Appendix A).
+Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing random uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
+While our construction does not exactly respect their setting (the sampling is deterministic and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see Appendix A).
 \end{mdframed}
 
 While this particular point deserves more details, we believe that a deeper discussion does not belong to this paper.
-In fact, we are currently investigating this convergence with the goal of constructing better graphs whose Fourier modes would converge to (or even be equivalent to) the spherical harmonics.
+In fact, we are currently investigating this convergence with the goal of constructing better graphs whose Fourier modes would converge to 
+% (or even be equivalent to) 
+the spherical harmonics.
 
 \subsection{}
 
@@ -285,7 +299,7 @@ Figure 3: What was resolution used for those maps? Does the projection of the ei
 
 Those maps have been produced with a resolution of $N_{side}=16$. The information has been added to the paper. (High resolution is costly as diagonalizing the Laplacian matrix scales as $O(N_{pix}^3)$.)
 
-Since we do not have any convergence result yet, we are not sure about how the projection error evolves. However, if there is convergence (and we believe there is), the eigenvectors associated with the lowest $\ell$ probably converge first.
+Since we do not have any convergence result yet, we are not sure about how the projection error evolves. However, if there is convergence (and we believe there is providing the correct set of graph weight is selected), the eigenvectors associated with the lowest $\ell$ probably converge first.
 
 \subsection{}
 \begin{mdframed}[style=comment]
@@ -302,7 +316,7 @@ Nevertheless, theoretical improvements on a potential equivalence (or convergenc
 
 
 \section{}
-
+\label{sec:dataset}
 \begin{mdframed}[style=comment]
 First of all, I would like to thank the authors for writing such a well thought out paper on such an interesting method.
 
