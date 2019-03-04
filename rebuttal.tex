@@ -654,7 +654,7 @@ A CNN is composed of the following main building blocks [31]: (i) a convolution,
 - I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
 \end{mdframed}
 \todo{assigned: @michael}
-\nati{I do not know what to say. I just do not care what is the definition of a CNN.stat}
+\nati{I do not know what to say. I just do not care what is the definition of a CNN.}
 
 \begin{mdframed}[style=comment]
 Likewise, down-sampling can be achieved by taking one pixel out of n.
@@ -1047,9 +1047,13 @@ Figure 10: Random selection of 24 learned filters from the fifth spherical convo
 \end{mdframed}
 \todo{Assign: @all}
 % \nati{The problem is that random filters are picky as well and look very similar. Should we say that? I do not think a colorbar is necessary since there are numbered axes on the top plots. Do you agree?}
-\TK{Added sentence}
+% \TK{Added sentence}
 
 We decided not to add a colorbar as scale information is already present in the top plot of the figure.
+We added a small explanation for the peak structure
+\begin{mdframed}[style=comment]
+The structure in the filters resembles peaks, which is not unexpected, given that the convergence maps largely consist of concentrated clumps.
+\end{mdframed}
 
 \begin{mdframed}[style=comment]
 The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
