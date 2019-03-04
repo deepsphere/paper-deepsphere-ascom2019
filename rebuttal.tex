@@ -565,7 +565,7 @@ We cannot compare individual eigenvectors and spherical harmonics because of arb
 While any rotation of the basis of a subspace (the space spanned by the eigenvectors and harmonics corresponding to a given degree $\ell$) doesn't alter the spanned subspace, the difference between the basis vectors before and after the rotation can be 100\%.
 
 Your suggestion however made us realize that figure A.12 was not ideal in comparing the eigenvectors to the spherical harmonics.
-As such, we replaced it with another that we hope is clearer.
+As such, we replaced it with another that we hope is clearer. This new figures probably satisfies your the request of your comment.
 We also moved Figure A.12 in the correct subsection.
 
 \subsection{}
@@ -575,14 +575,14 @@ In Appendix C. is there a connection between $t$ and $\sigma$ that you can make,
 
 In the current version of the manuscript and the code, we simply fitted a few $t$ to match the different $\sigma$.
 In theory, there should be a connection between the two values providing the graph Laplacian has converged toward the Laplace Beltrami operator.
-Again, this is left for a future contribution.
+% Again, this is left for a future contribution.
 
 \subsection{}
 \begin{mdframed}[style=comment]
 A question that I would like to know personally, are you thinking about a future upgrade to non-radial kernels?
 \end{mdframed}
 
-We thought about it but are not sure that it would be beneficial.
+We thought about it but are not sure that it would be beneficial. We are also unsure howto do it in practice.
 %The main difficulty is that a graph is not intrinsically oriented.
 %However, as the graph framework we are using only works with radial filters, it is not a simple question.
 %A simple trick to make the network sensitive to direction is to add a per-channel fully connected layer.
