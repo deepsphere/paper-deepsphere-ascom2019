@@ -208,7 +208,7 @@ Though this is designated a minor revision, there are quite a few points that ne
 
 Dear Editor,
 
-Thanks for handling our submission. We have revised our manuscript following many of the reviewer suggestions. We believe that it is now ready for publication. Currenlty, the dataset can be accessed simply via Zenodo. While this process is not anonymons, we provide in this rebuttal (Comment \#2) a special link for the reviewers to access it is anonymously.
+Thanks for handling our submission. We have revised our manuscript following many of the reviewer suggestions. We believe that it is now ready for publication. Currently, the dataset can be accessed simply via Zenodo. While this process is not anonymous, we provide in this rebuttal (Comment \#2) a special link for the reviewers to access it is anonymously.
 
 We thank the reviewers for taking the time to review our manuscript and for their constructive comments. We have answered
 
@@ -238,7 +238,7 @@ One fairly significant concern I have is how convincing the application to other
 
 We agree that the ML algorithms should be tested on the same input data for a fair comparison.
 
-We performed the comparizon with these features at it reflects the two-steps traditional way in classic machine learning: a) designing features b) using a method a ``simple'' classifier. Deep learning changed this this tactic with networks that learn the features directly from the raw data.
+We performed the comparison with these features at it reflects the two-steps traditional way in classic machine learning: a) designing features b) using a method a ``simple'' classifier. Deep learning changed this this tactic with networks that learn the features directly from the raw data.
 The PS and histograms were chosen because they are standard statistics used by the cosmology community for analysing real data.
 This is why we chose it as the reference point.
 In fact, the single step of moving away from these hand-picked statistics to ML approaches is already interesting for physicists.
@@ -248,7 +248,7 @@ We would be keen to leave more detailed comparisons of ML-algorithms for future 
 
 %In practice, those models are limited by the computational power and the dataset size.
 
-This beeing said, we did try to train an SVM on the raw data, but were unable to obtain over $60\%$ accuracy in the three noiseless cases, which is far behind every other tested model.
+This being said, we did try to train an SVM on the raw data, but were unable to obtain over $60\%$ accuracy in the three noiseless cases, which is far behind every other tested model.
 Practically, the classifier would either overfit or be over-regularized.
 We hence decided not to report the raw-data SVM results in the paper.
 This information has now been added to the manuscript.
@@ -388,7 +388,7 @@ As the problem we are solving only involve one of these 12 parts, we can use thi
 This operation is computationally very cheap and probably spread quite evenly across the resulting image.
 This projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.
 
-As we believe that this projection is the optimal one to use a traditonal CNN for application, we performed the experiment using it.
+As we believe that this projection is the optimal one to use a traditional CNN for application, we performed the experiment using it.
 
 
 Our expectation were similar with the one of the reviewer, but the results did surprise us as the performance of the traditional CNN did in general not match DeepSphere, (see Figure 9 of the manuscript).
@@ -429,7 +429,7 @@ Similarly, I think it would useful to check how well the DeepSphere CNN does aga
 
 % That comparison is not warranted.
 % or justified. pointless is maybe too aggressive
-We do not believe this comparizon is useful because of the following theoretical reason
+We do not believe this comparison is useful because of the following theoretical reason
 There are two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture of the model, or (ii) augment the dataset such that a (more general) model learns them ``brute-force''.
 With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
 Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
@@ -606,7 +606,7 @@ Thank you for the suggestion, normally we would adopt it, but the paper is alrea
 \begin{mdframed}[style=comment]
 You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
 \end{mdframed}
-We agree with the reviewer that using different term for the same notion can be confusing for the reader. 
+We agree with the reviewer that using different term for the same notion can be confusing for the reader.
 Nevertheless, while ``a node'' and ``a vertex'' are synonyms refering to a graph part, ``a pixel'' is a different concept refering to a point of the (spherical) sampling.
 As a result, we decided to keep the ``vertex'' and ``pixel''.
 % \todo{Assigned: @all}
@@ -903,7 +903,7 @@ A straightforward way to impose locality in the original domain is to impose smo
 \end{mdframed}
 \todo{Assigned: @all}
 
-\nati{The reviewer is correct. Our justification is shaddy. I am not sure how to make this clear, without writing too much. It is kind of a general consent that smoothness in one domain implies localization in the other. The reason is that for the continuous Fourier transform, we have:
+\nati{The reviewer is correct. Our justification is shady. I am not sure how to make this clear, without writing too much. It is kind of a general consent that smoothness in one domain implies localization in the other. The reason is that for the continuous Fourier transform, we have:
 \begin{equation*}
 \widehat{f(t\cdot)}(\omega)=\frac{1}{t}\hat{f}\left(\frac{\omega}{t}\right).
 \end{equation*}
