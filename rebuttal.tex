@@ -654,7 +654,7 @@ A CNN is composed of the following main building blocks [31]: (i) a convolution,
 - I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
 \end{mdframed}
 \todo{assigned: @michael}
-
+\nati{I do not know what to say. I just do not care what is the definition of a CNN.}
 
 \begin{mdframed}[style=comment]
 Likewise, down-sampling can be achieved by taking one pixel out of n.
@@ -671,7 +671,8 @@ A rhombus is a quadrilateral whose four sides all have the same length.
 
 - I'm not sure that this really needs to be said.
 \end{mdframed}
-\todo{assigned: @michael}
+We agree with the reviewer and updated the manuscript accordingly.
+% \todo{assigned: @michael}
 
 \begin{mdframed}[style=comment]
 As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2\times12=2^2\times12=48$ pixels (middle sphere in Figure 5), the third is $N_{pix} = N_{side}^2\times12=42\times12=192$ pixels, etc., where $N_side =1,2,4,8,\dots$ is the grid resolution parameter.
@@ -735,9 +736,14 @@ The 1-neighborhood of a node is the set of nodes that are directly connected to 
 
 - I'm a little confused here, I think the neighbourhood is every pixel which is closer than the distance of some pixel. The value of k would then be the length of the set of ordered distances for all pixels up to this pixel. Is that correct? For example, take a 3x3 square (on Euclidean space for simplicity), if the central pixel has coordinates (0, 0) then the 1-neighbourhood would be all pixels at a length of 1 pixel or less, i.e. (-1, 0), (+1, 0), (0, -1) and (0, +1) who are all at the same distance so the set of distances is {1} pixel and the length of the set is 1. The 2-neighbourhood would then be all pixels which were a distance $\sqrt{2}$ pixels or less away, i.e. (-1, 0), (+1, 0), (0, -1), (0, +1), (-1, -1), (-1, +1), (+1, -1), (+1, +1) so the set of distances would be {1, $\sqrt{2}$} pixels and the length of the set is 2. Is this correct? If so k is not a length. If this is not correct, I think I misunderstand something and so this should be updated in the text.
 \end{mdframed}
-% Here the notion of neighboorhood is defined in the context of graphs. Hence there is no coordinates to compute distances.
+\todo{To check: @michael}
 
-\todo{Assigned: @michael}
+Here, the notion of neighboorhood is defined in the context of graphs. As there is no coordinates to compute distances in this context, one way to define the distance between two vertices is to count the number of edges in the shortest path between these two vertices. To clarify this point, we added more context in the manuscript:
+
+\begin{mdframed}[style=manuscript]
+In the context of graph, one way to define the distance between two vertices is to count the number of edges in the shortest path between these two vertices. Hence, we define the 1-neighborhood of a vertex as the set of vertices that are directly connected to it. The $k$-neighborhood of a vertex is the set of vertices that are connected to it through paths of length $k$.
+\end{mdframed}
+
 
 \begin{mdframed}[style=comment]
 Similarly, each line of the matrix $\sum_{k=0}^K\theta_k\bf{L}^k$ defines an irregular patch of radius $K$.
@@ -828,7 +834,7 @@ Note that the output $\bf{Y}\in\mathbb{R}^{N_{pix}\times F_{out}}$ of the last G
 
 - What is ST, you don't mention it before and only once after?
 \end{mdframed}
-\todo{Assigned: @michael}
+We thank the reviewer for spotting this. Indeed $ST$ was not defined. In the manuscript, we have replaced $ST$ by statistical layer.
 
 \begin{mdframed}[style=comment]
 The output’s size of the neural network depends on the task.

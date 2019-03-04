@@ -321,7 +321,8 @@ As HEALPix~\citep{gorski2005healpix} is our target application, we tailor the me
 
 HEALPix is a particular case of a more general class of schemes based on a hierarchical subdivision of a base polyhedron.
 Another example is the geodesic grids which are based on geodesic polyhedrons, i.e., polyhedrons made of triangular faces. A counter-example is the equirectangular projection, which is not constructed from a base polyhedron, although it can be subdivided.
-In the particular HEALPix case, the base is a rhombic dodecahedron, i.e., a polyhedron made from 12 congruent rhombic faces.\footnote{A rhombus is a quadrilateral whose four sides all have the same length.}
+In the particular HEALPix case, the base is a rhombic dodecahedron, i.e., a polyhedron made from 12 congruent rhombic faces.
+% \footnote{A rhombus is a quadrilateral whose four sides all have the same length.}
 See \figref{pooling} for an illustration of the base rhombic dodecahedron and its subdivisions.
 
 The HEALPix pixelisation produces a hierarchical subdivision of a spherical surface where each pixel covers the same surface area as every other pixel.
@@ -450,7 +451,7 @@ The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_monomial}
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
-where $\L^k$ captures $k$-neighborhoods.\footnote{The 1-neighborhood of a vertex is the set of vertices that are directly connected to it. The $k$-neighborhood of a vertex is the set of vertices that are connected to it through paths of length $k$.}
+where $\L^k$ captures $k$-neighborhoods.\footnote{In the context of graph, one way to define the distance between two vertices is to count the number of edges in the shortest path between these two vertices. Hence, we define the 1-neighborhood of a vertex as the set of vertices that are directly connected to it. The $k$-neighborhood of a vertex is the set of vertices that are connected to it through paths of length $k$.}
 The entry $(\L^k)_{ij}$ is the sum of all weighted paths of length $k$ between vertices $v_i$ and $v_j$, where the weight of a path is the multiplication of all the edge weights on the path.
 Hence, it is non-zero if and only if vertices $v_i$ and $v_j$ are connected by at least one path of length $k$.
 Filtering with a polynomial convolution kernel can thus be interpreted in the pixel (vertex) domain as a weighted linear combination of neighboring pixel values.
@@ -545,9 +546,9 @@ The layer $FC: \R^{F_{in}} \rightarrow \R^{F_{out}}$ is defined as
 	\y = FC(\x) = \b W \x + \b b ,
 \end{equation}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
-Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last $GC$ (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the $ST$), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first $FC$, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
+Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last $GC$ (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the statistical layer), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first $FC$, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
 
-The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last $FC$ (or $ST$), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
+The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last $FC$ (or statistical layer), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
 \begin{equation*}
 	y_i = \frac{\exp(x_i)}{\sum_{j=1}^{N_{classes}} \exp(x_j)} \in [0, 1], \ \forall i \in [N_{classes}],
 \end{equation*}
