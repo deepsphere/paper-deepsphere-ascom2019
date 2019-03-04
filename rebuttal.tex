@@ -678,7 +678,7 @@ As each pixel is subdivided in four, the second coarser resolution is $N_{pix} =
 
 - Might it be more concise to write "The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$."
 \end{mdframed}
-\TK{Thank you for the suggestion, we updated the text.}
+Thank you for the suggestion, we updated the text.
 
 \begin{mdframed}[style=comment]
 ... is a measure of the variation of the eigenvector $\bf{u}_i$ is on the graph defined by the Laplacian L.
@@ -692,7 +692,9 @@ Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$,a signal $f\in\math
 
 - You don't mention what $\mathbb{R}_+$ is or why $h$ defines that map.
 \end{mdframed}
-\nati{This seems clear to me. Specifying what $\mathbb{R}_+$ is would be a bit too much I believe. @all -> is it also for you?}
+We are not sure what the reviewer means here. $\mathbb{R}_+$ is the ensemble of the real positive numbers and $h$ is simply a function that maps any positive real numbers to another real number.
+
+\nati{This seems clear to me. Specifying what $\mathbb{R}_+$ is would be a bit too much I believe. @all, is it also for you?}
 
 \begin{mdframed}[style=comment]
 This localization of the kernel $h$ can be useful to visualize kernels, as explained in Appendix C.
@@ -733,6 +735,8 @@ The 1-neighborhood of a node is the set of nodes that are directly connected to 
 
 - I'm a little confused here, I think the neighbourhood is every pixel which is closer than the distance of some pixel. The value of k would then be the length of the set of ordered distances for all pixels up to this pixel. Is that correct? For example, take a 3x3 square (on Euclidean space for simplicity), if the central pixel has coordinates (0, 0) then the 1-neighbourhood would be all pixels at a length of 1 pixel or less, i.e. (-1, 0), (+1, 0), (0, -1) and (0, +1) who are all at the same distance so the set of distances is {1} pixel and the length of the set is 1. The 2-neighbourhood would then be all pixels which were a distance $\sqrt{2}$ pixels or less away, i.e. (-1, 0), (+1, 0), (0, -1), (0, +1), (-1, -1), (-1, +1), (+1, -1), (+1, +1) so the set of distances would be {1, $\sqrt{2}$} pixels and the length of the set is 2. Is this correct? If so k is not a length. If this is not correct, I think I misunderstand something and so this should be updated in the text.
 \end{mdframed}
+% Here the notion of neighboorhood is defined in the context of graphs. Hence there is no coordinates to compute distances.
+
 \todo{Assigned: @michael}
 
 \begin{mdframed}[style=comment]
@@ -930,6 +934,7 @@ By interwinding graph convolutional layers and recurrent layers [65], they can f
 - I'm not sure what interwinding is, I guess you mean by making GC recurrent, or do you mean using GC and then RL separately? Either way there should be commas around "for example".
 \end{mdframed}
 \todo{Assign @michael}
+
 
 \begin{mdframed}[style=comment]
 To prevent the cosmological models to be distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell> 1000$ ).
