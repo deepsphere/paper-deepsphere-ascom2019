@@ -398,7 +398,6 @@ This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
 \subsection{Convolution on graphs}
 \label{sec:graph_convolution}
 
-
 As there is no notion of translation on a graph, we cannot convolve two graph signals in a strict sense.
 We can, however, convolve a signal with a kernel defined in the spectral domain.
 More precisely, we can filter a graph signal by a kernel.
@@ -722,7 +721,7 @@ The computational cost is thus $\sqrt{N_{pix}}$ FFTs for a total cost of $\bO\le
 While the Clebsh-Gordan transform can be leveraged to avoid SHTs between layers (it does a non-linear transformation in the spectral domain), the transform itself costs $\bO(N_{pix}^{3/2})$, for no reduction of overall complexity \citep{kondor2018clebsch}.
 This work is another indication that there might be a $\Omega(N_{pix}^{3/2})$ computational lower bound for the proper treatment of rotation equivariance with the spherical harmonics.
 In comparison, DeepSphere scales as $\bO(N_{pix})$ (see \secref{efficient_convolution}), at the expense of not being exactly equivariant (see \ref{sec:comparison_spherical_harmonics}).
-Being a mathematically well-defined rotation equivariant network is the main advantage of methods based on spherical harmonics.
+Being a mathematically well-defined rotation equivariant network is the main advantage of methods based on spherical harmonics, though the fact that convolution kernels are learned probably compensates for inexact equivariance.
 See \citep{kondor2018equivariance} for a rigorous treatment of convolution and equivariance in neural networks.
 
 While defining the convolution in the spectral domain avoids all sampling issues, filters so defined are not naturally localized in the original domain.
@@ -1060,8 +1059,8 @@ $\b{f}(0)$, the solution of~\eqnref{heat_equation} can be expressed as
 \begin{equation*}
   \b{f}(t) = e^{-\L \tau t} \b{f}(0) = \U e^{-\bLambda \tau t} \U\trans \g{f}(0) = K_t(\L) \b{f}(0),
 \end{equation*}
-which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, the graph convolution can approximate the spherical convolution. For additional insights about the graph kernel $K_t$, we refer to the \figref{gaussian_filters_visualization}.
-% and~\ref{sec:filter_visualization}.
+which is, by definition, the convolution of the signal $\b{f}(0)$ with the kernel $K_t(\lambda)=e^{-\tau t \lambda}$. Since the kernel $K_t$ is applied to the graph eigenvalues $\bLambda$, which can be interpreted as squared frequencies, it can also be considered as a generalization of the Gaussian kernel on the sphere. \figref{gaussian_filters_comparizon} shows the effect of the convolution by diffusing a unit of heat for $\tau=1$ at various times $t$. By comparing the graph convolution with the spherical symmetric Gaussian smoothing, we observe that both techniques lead to similar results (see \figref{gaussian_filters_comparizon}). While the graph convolution remains different from the spherical convolution, this small experiment shows that, providing the correct parameters, the graph convolution can approximate the spherical convolution.
+\figref{gaussian_filters_visualization} should give more insights about the graph kernel $K_t$.
 
 \begin{figure}[ht!]
   \centering
@@ -1078,24 +1077,27 @@ Furthermore, the harmonic resemblance is another sign that the constructed graph
 In some applications, where the exactitude of the convolution is not a requirement, such as de-noising, graph convolution could be used instead of using the spherical harmonics.
 In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
 
-\begin{figure}[ht!]
-\centering
-\includegraphics[width=\linewidth]{gaussian_filters_spectral}\\
-\vspace{0.2in}
-\includegraphics[width=\linewidth]{gaussian_filters_gnomonic}\\
-\vspace{0.2in}
-\hspace{0.3cm}\includegraphics[width=0.95\linewidth]{gaussian_filters_section}
-\caption{\nati{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$. (top) Spectral domain. (middle) Cross-section of the kernel through the pixels along the equator. (bottom) Gnomonic projection.}}
-\label{fig:gaussian_filters_visualization}
+\begin{figure}[t]
+	\centering
+	\includegraphics[width=\linewidth]{gaussian_filters_spectral} \\
+	\vspace{0.2in}
+	\includegraphics[width=\linewidth]{gaussian_filters_gnomonic} \\
+	\vspace{0.2in}
+	\includegraphics[width=\linewidth]{gaussian_filters_section}
+	\caption{Visualization of the convolution kernel $K_t(x)=e^{-\tau t x}$. Top: spectral domain. Middle: gnomonic projection. Bottom: cross-section along the equator.}
+	\label{fig:gaussian_filters_visualization}
 \end{figure}
 
-In \figref{gaussian_filters_visualization}, we further leverage this example to present the three visualizations of a HEALPix graph convolution kernel.
-We remember that the convolution kernel resulting from the heat diffusion is defined as $K_t(x)=e^{-\tau t x}$. For our (top) visualization, we simply plot this function, i.e., we evaluate $K_t$
-at the graph eigenvalues $\text{diag}(\bLambda)$. Note that, the lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
-As a second visualization (middle), we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kronecker $\delta$ to obtain a representation on the sphere. We then plot the result with a gnomonic projection.
-\nati{For our third visualization (bottom), our goal is to plot the section of a filter. This visualization might be convenient as we theoretically have spherical filters (up to the irregularities of the sampling). The idea is to plot the section of the convolved Kronecker $\delta$.}
-To do so, we convolve a Kronecker $\delta$ on the vertices along the equator and use the equator for our section.
-Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kronecker $\delta$.
+We further leverage this example to present three visualizations of a convolution kernel.
+The first visualization (\figref{gaussian_filters_visualization}, top) is a plot of the kernel function, i.e., it shows $K_t$ evaluated at the graph eigenvalues $\text{diag}(\bLambda)$.
+% and~\ref{sec:filter_visualization}.
+Note that small eigenvalues $\lambda$ correspond to small frequencies, i.e., to spectral modes of low variation.
+The second visualization (\figref{gaussian_filters_visualization}, middle) shows the kernel localized on the sphere (gnomonic projection).
+As the kernel $K_t$ is defined in the graph spectral domain, it was convolved with a Kronecker $\delta$ to obtain a representation on the sphere (see \secref{graph_convolution}).
+The third visualization (\figref{gaussian_filters_visualization}, bottom) plots the section of the filter.
+This visualization might be easier to read as the filters are isotropic (up to the irregularities of the sampling).
+The plot is obtained by convolving a Kronecker $\delta$ on the vertices along the equator.
+Note that, because of the small irregularities in the HEALPix sampling, the second and third methods are subject to small variations depending on the chosen position of the Kronecker $\delta$.
 
 
 \section{Border effects}
@@ -1143,7 +1145,7 @@ For a fair comparison between DeepSphere and the baselines, we have to ensure th
 \begin{figure}[ht!]
 	\centering
 	\includegraphics[width=\linewidth]{hist_error_order2_noise1_5}
-	\caption{Error w.r.t.\ the number of training samples for histogram features and the linear SVM (setting: order $o=2$, relative noise level 1.5). The error clearly converged such that adding more samples will not improve the classifier. The validation error might be slightly below the training error as the validation set is used to select hyper-parameters.}
+	\caption{Error w.r.t.\ the number of training samples for histogram features and the linear SVM (setting: order $o=2$, relative noise level 1.5). The error clearly converged such that adding more samples will not improve the classifier. The validation error might be slightly below the training error as it was used to select the hyper-parameters.}
 	\label{fig:hist_error_evolution}
 \end{figure}
 
