@@ -1018,7 +1018,7 @@ To prevent the cosmological models to be distinguished by their power spectra al
 - This should be "To prevent the cosmological models from being distinguished by their power spectra alone the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell> 1000$ ).
 \end{mdframed}
 
-We have corrected this formulation according to the reviewer suggestion.
+We followed the suggestion.
 
 \begin{mdframed}[style=comment]
 The two sets of maps were created using the standard cosmological model with two sets of cosmological parameters.
@@ -1042,9 +1042,10 @@ For each class, we generate 30 simulations.
 - Just mention that there are two classes again, to make it clear that "class" means "cosmology".
 \end{mdframed}
 
-% \todo{Assign: @Tomek}
-We updated the sentence following the reviewer suggestion.
-\nati{@Tomek, do you think it is fine that we do not say that class==comoslogy? It think so.}
+We followed the suggestion.
+
+% \nati{@Tomek, do you think it is fine that we do not say that class==comoslogy? It think so.}
+% \mdeff{I think it's two cosmologies as it's two sets of parameters. Adding again two classes is enough.}
 
 \begin{mdframed}[style=comment]
 That is a data augmentation scheme, as it creates more training examples than we have simulations.
@@ -1052,13 +1053,14 @@ That is a data augmentation scheme, as it creates more training examples than we
 - I think that you should introduce the Gaussian noise paragraph by stating that you perform data augmentation via the addition of randomly drawn Gaussian noise, rather than talking about the random noise first and then explaining that the reason is for data augmentation. ML specialists in particular will be happier with the addition of noise for DA (as will cosmologists I think).
 \end{mdframed}
 
-\todo{To check: @all}
 % \nati{I think that the primary goal of adding noise is the make the problem harder, and show robust prediction, not the make the dataset larger... Hence I disagree with the reviewer. What do you think?}
 % \TK{This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem easier to solve. As these two facts are connected, we prefer to leave the sentence as is.}
 
 % The primary goal of the noise addition is the make the problem harder and show robust prediction. We use it to augment our dataset as well. Hence we believe that the correct formulation is suitable.
 
-This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem solvable even with a small amount of initial simulation. As these two facts are connected, we prefer to leave the sentence as is.
+This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy.
+It is convenient that this fact can be used for data augmentation too. % and make the ML problem solvable even with a small amount of simulations.
+As these two facts are connected, we prefer to leave the sentence as is.
 
 \begin{mdframed}[style=comment]
 Probabilities are computed by the SM layer.
@@ -1066,13 +1068,10 @@ Probabilities are computed by the SM layer.
 - As explained above, these are not probabilities, they are class predictions from the network.
 \end{mdframed}
 
-\todo{To check: @michael}
 % \nati{Should we simply say "normalized network score"? I do not know...}
+% \mdeff{SM normalizes the predictions}
 
-We changed the manuscript to:
-\begin{mdframed}[style=manuscript]
-The normalized network scores are computed by the $SM$ layer.
-\end{mdframed}
+We updated the sentence.
 
 \begin{mdframed}[style=comment]
 As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
@@ -1080,7 +1079,7 @@ As less pixels are available to make a decision about a sample, the algorithms h
 - Should be "As fewer pixels...". Also, "makes more mistakes" kind of anthropomorphises the network too much. Perhaps "have access to less information and thus cannot classify as well".
 \end{mdframed}
 
-We followed the reviewer suggestions.
+We followed the suggestions.
 
 \begin{mdframed}[style=comment]
 This standard deviation has the property to keep the energy of the signal more or less constant across layers
@@ -1088,7 +1087,7 @@ This standard deviation has the property to keep the energy of the signal more o
 - Should be "of keeping" instead of "to keep". "This standard deviation has the property of keeping the energy of the signal more or less constant across layers"
 \end{mdframed}
 
-We corrected the manuscript.
+We followed the suggestion.
 
 \begin{mdframed}[style=comment]
 We derived this rule from the Chebyshev polynomial equations and some empirical experiments.
@@ -1098,10 +1097,8 @@ We derived this rule from the Chebyshev polynomial equations and some empirical 
 
 % \todo{Assign: @nati, @michael}
 % \nati{We would need an appendix to do that. It is the last figure of the figure’s notebook (expected filter). I could spend two hours and write some equation... @michael, what do you think?}
+
 We updated the section with a citation and some extra information.
-\begin{mdframed}[style=manuscript]
-We derived this rule from the Chebyshev polynomial equations and some empirical experiments. Following the principle presented in \cite{glorot2010understanding}, we searched for the initialisation scheme keeping the expected amplitude of the signal constant through the different layers of the neural network.
-\end{mdframed}
 
 \begin{mdframed}[style=comment]
 Figure 10: Random selection of 24 learned filters from the fifth spherical convolutional layer L5. Top: section. Bottom: gnomonic projection.
@@ -1109,15 +1106,11 @@ Figure 10: Random selection of 24 learned filters from the fifth spherical convo
 - There is not enough information in this caption. Can you explain that there is some obvious peak structure. I think a colourbar on the gnomonic projection would be useful too.
 \end{mdframed}
 
-\todo{Assign: @all}
 % \nati{The problem is that random filters are picky as well and look very similar. Should we say that? I do not think a colorbar is necessary since there are numbered axes on the top plots. Do you agree?}
 % \TK{Added sentence}
 
 We decided not to add a colorbar as scale information is already present in the top plot of the figure.
-We added a small explanation for the peak structure
-\begin{mdframed}[style=manuscript]
-The structure in the filters resembles peaks, which is not unexpected, given that the convergence maps largely consist of concentrated clumps.
-\end{mdframed}
+We added a small explanation for the peak structure.
 
 \begin{mdframed}[style=comment]
 The fact that a graph representation of the disretised sphere enables an efficient convolution relaxes the iso-latitude constraint on the design of sampling schemes who aim to enable fast convolutions.
@@ -1125,7 +1118,8 @@ The fact that a graph representation of the disretised sphere enables an efficie
 - It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
 \end{mdframed}
 
-We followed the reviewer suggestion (and we went for ``which'').
+We followed the suggestions.
+
 % \todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
 % \TK{Sounds good to me.}
 
@@ -1142,31 +1136,33 @@ We believe that it might be the case for a different construction of the graph (
 
 - What makes you believe this? If you don't want to mention it in this paper, please don't speculate a "belief". I might just be reading the sentence incorrectly, but it makes me a little uncomfortable when there is no evidence backing that up. If you have some evidence then it's worth presenting it.
 \end{mdframed}
-\todo{Assign: @nati, @michael}
+
 As already mentioned in this rebuttal, our belief comes from the fact that we are working on this.
-Nevertheless, we agree with the reviewer that a scientific article should not contains speculations.
-Hence, we removed that suggestion from the manuscript.
+Nevertheless, we agree that a scientific article should not contain speculations.
+We removed that speculation.
 
 \begin{mdframed}[style=comment]
 In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
 
 - It should be "assumed". "In this case, the graph setting used through this contribution correspond to assumed reflective border conditions."
 \end{mdframed}
-Thank you for pointing it out, we believe that the original intended meaning is better reflected as is now.
+
+We followed the suggestion.
 
 \begin{mdframed}[style=comment]
 Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
 
 - There is a superfluous word (dealing/working). I think this would read better as "Nevertheless, when working with only a part of the sphere, the border slightly affects the convolution."
 \end{mdframed}
-We have corrected this mistake according to the reviewer suggestion.
+
+We corrected the wording.
 
 \begin{mdframed}[style=comment]
 These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
 
 - Are they really mitigated? Surely there are still effects but you are happy with the level?
 \end{mdframed}
-\todo{Assign: @nati, @michael}
+
 With the zero padding, the border effects become similar to the ones in traditional CNNs.
 This information has been added to the manuscript.
 
@@ -1175,11 +1171,8 @@ Furthermore, this result is another sign that the constructed graph is able to c
 
 - What does "this" refer to?
 \end{mdframed}
-We have clarifed the sentence as:
-\begin{mdframed}[style=manuscript]
-Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical
-structure of the HEALPix sampling.
-\end{mdframed}
+
+We precised it.
 
 \begin{mdframed}[style=comment]
 In a neural network setting, the fact that the graph convolution is not exactly equivariant to rotation is probably compensated by the fact that convolution kernels are learned.
