@@ -831,6 +831,15 @@ For fairness, the training set was augmented in a similar way as for DeepSphere:
 As for DeepSphere, the SVM regularization hyper-parameter was tuned based on the performance over the validation set.
 The classification accuracy of DeepSphere and both baselines was checked as a function of the used area (the order $o$), and the relative level of additive noise.
 
+\nati{
+Additionally, we compare DeepSphere to a traditional 2-dimensional convolutional neural network (2DCNN). 
+To do so, the samples are first transformed into a square image before being fed into the 2DCNN. 
+As described in \ref{sec:projection}, we use the geometrical properties of HEALPix to construct an efficient and simple projection of the samples. 
+Note that during the review process another spherical CNN architecture using exploiting this property appeared \cite{krachmalnicoff2019convolutional}. 
+We used convolution kernel of size $5\times 5$ and reduced the number of filters in order to match the number of variables between DeepSphere and the 2DCNN.
+}
+\nati{Say something about the number of parameters/fitlers. }
+
 \subsection{Network architecture and hyper-parameters}
 
 As discussed in \secref{architecture}, the choice of a network architecture depends on the data and task at hand.
@@ -877,7 +886,7 @@ Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti
 	\label{fig:results}
 \end{figure*}
 
-\figref{results} compares the classification accuracy of DeepSphere (FCN and CNN variants) and the two baselines across five noise levels and three sample sizes.
+\figref{results} compares the classification accuracy of DeepSphere (FCN and CNN variants), the 2DCNN and the two baselines across five noise levels and three sample sizes.
 We indeed observe that the problem is made more difficult as the sample size decreases, and the noise increases.
 As fewer pixels are available to make a decision about a sample, the algorithms have access to less information and thus cannot classify as well.
 As the noise increases, the useful information gets diluted in irrelevant data, i.e., the signal-to-noise ratio (SNR) diminishes.
@@ -894,6 +903,14 @@ The accuracy of DeepSphere is $>97\%$ for orders $o=1$ and $o=2$, for all noise 
 
 It may seem unfair to compare DeepSphere, who has access to raw pixels, with SVMs who only see limited features (histograms and PSDs).
 We however trained an SVM on the raw pixels and were unable to obtain over $60\%$ accuracy in any of the three noiseless cases.
+
+\nati{
+To our surprise, the traditional 2DCNN did not match the performance of DeepSphere. 
+It can probably be explained by the fact that 2DCNN breaks the rotational invariance of the data. 
+The problem comes from the fact that the projection introduce a distortion in the geometry and the network has to learn a correct weighting scheme to compensate for it. 
+Unfortunately, this operation waste many parameters, reducing the modelization power of the network and requires large amount of training data which is not fully available.
+Note that, when visualizing the learned convolution kernels, we observed that they were not radial. 
+}
 
 As expected, we observe that the FCN slightly outperforms the CNN.
 This may seem counterintuitive as the CNN is a generalization of the FCN and hence should be able to learn the same function and provide at least equivalently good results.
@@ -1078,6 +1095,19 @@ We however do not expect these effects to cause any problem as long as the data 
 	\label{fig:border_effects}
 \end{figure}
 
+\nati{
+\section{Maps projection onto a 2-dimensional plane}
+\label{sec:projection}
+In order to compare the DeepSphere architecture with a traditional 2d-CNN, we need to project the spherical data onto a plane. 
+Problematically a radial projection is computationally expensive to the point where, because of the dataset augmentation, it becomes significantly more expensive than the actual training of the network.
+Hence, we decided to use the geometrical properties of HEALPix to create a ``special'' projection. 
+In the HEALPix sampling, the sphere is first separated into $12$ parts that are then subdivided into $4$ recursively.
+Eventually, each of these $12$ part resembles a square grid. 
+To visually see it, we refer the reader to \figref{border_effects}.
+As the problem we are solving only involve one of these 12 parts, we can use this natural structure to simply re-assign each HEALPix pixel to one of a 2 dimensional grid of size $N_{sides} \times N_{sides}$. 
+This operation is computationally very cheap and probably spread quite evenly across the resulting image. 
+This projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.  
+}
 
 \section{Augmentation of the dataset for the SVM classifier}
 \label{sec:dataset_augmentation}
