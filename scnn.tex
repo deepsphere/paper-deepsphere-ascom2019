@@ -998,13 +998,14 @@ The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $
 Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
 Its eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
 We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
-In order to push the comparison one step further, we show the correspondence (scalar product) between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
+In order to push the comparison one step further, we show the correspondence (scalar product) between the subspaces spanned by the graph Fourier modes and the spherical ha, however, out of the scope of this contribution.rmonics in \figref{subspace_harmonics_eigenvectors}.
 The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 
 While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
 First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}.
 Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
-We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
+% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
+The theoretical study of the convergence is, however, out of the scope of this contribution.
 Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
 Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
 Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
@@ -1083,7 +1084,8 @@ Note that, because of the small irregularities in the HEALPix sampling, the seco
 The graph setting used throughout this contribution corresponds to assuming reflective border conditions.
 While that is irrelevant when working on the complete sphere (as it has no border), it slightly affects the convolution operation when only a part of the sphere is considered.
 As depicted in \figref{border_effects}, a filter localized near a border (via $h(\L) \b \delta_i$) is no longer isotropic.
-These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest. 
+In this case, they are similar to the border effects in traditional CNNs.
 We however do not expect these effects to cause any problem as long as the data samples cover the same area.
 
 \begin{figure}[ht!]

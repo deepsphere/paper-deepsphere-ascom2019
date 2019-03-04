@@ -774,7 +774,7 @@ Coarsening can be naturally designed for hierarchical pixelisation schemes, as e
 \end{mdframed}
 % \todo{Assigned: @tomek}
 % \nati{I think the "as" is correct here. We use it for "because". Not sure...}
-\TK{Thank you for the suggestion, we adopted it.}
+Thank you for the suggestion, we adopted it.
 
 \begin{mdframed}[style=comment]
 Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
@@ -783,7 +783,7 @@ Coarsening is the reverse operation: merging the sub-cells toward the goal of su
 \end{mdframed}
 % \todo{Assigned: @tomek}
 % \nati{I prefer the version we have. But I leave it up to you to decide.}
-\TK{We updated the text as suggested.}
+We updated the text as suggested.
 
 \begin{mdframed}[style=comment]
 Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R}^{N'_{pix}}$ such as
@@ -955,7 +955,7 @@ Implementation of full cosmological inference requires, however, many more simul
 
 - Unless you have a cheap neural network based likelihood-free method ;)
 \end{mdframed}
-\TK{Indeed. We added a word "typically" to reflect that there may be cases like this.}
+Indeed. We added a word "typically" to reflect that there may be cases like this.
 
 \begin{mdframed}[style=comment]
 For each class, we generate 30 simulations.
@@ -1021,8 +1021,9 @@ The fact that a graph representation of the disretised sphere enables an efficie
 
 - It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
 \end{mdframed}
-\todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
-\TK{Sounds good to me.}
+We followed the reviewer suggestion (and we went for ``which''). 
+% \todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
+% \TK{Sounds good to me.}
 
 \begin{mdframed}[style=comment]
 In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
@@ -1037,15 +1038,16 @@ We believe that it might be the case for a different construction of the graph (
 - What makes you believe this? If you don't want to mention it in this paper, please don't speculate a "belief". I might just be reading the sentence incorrectly, but it makes me a little uncomfortable when there is no evidence backing that up. If you have some evidence then it's worth presenting it.
 \end{mdframed}
 \todo{Assign: @nati, @michael}
-
+As already mentioned in this rebuttal, our belief comes from the fact that we are working on this. 
+Nevertheless, we agree with the reviewer that a scientific article should not contains speculations. 
+Hence, we removed that suggestion from the manuscript.
 
 \begin{mdframed}[style=comment]
 In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
 
 - It should be "assumed". "In this case, the graph setting used through this contribution correspond to assumed reflective border conditions."
 \end{mdframed}
-\todo{@assign: Tomek}
-\TK{Thank you for pointing it out, we believe that the original intended meaning is better reflected as is now.}
+Thank you for pointing it out, we believe that the original intended meaning is better reflected as is now.
 
 \begin{mdframed}[style=comment]
 Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
@@ -1055,12 +1057,13 @@ Nevertheless, dealing working with a subpart of the sphere, its border slightly 
 We have corrected this mistake according to the reviewer suggestion.
 
 \begin{mdframed}[style=comment]
-These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest. 
 
 - Are they really mitigated? Surely there are still effects but you are happy with the level?
 \end{mdframed}
 \todo{Assign: @nati, @michael}
-
+With the zero padding, the border effects become similar to the ones in traditional CNNs. 
+This information has been added to the manuscript.
 
 \begin{mdframed}[style=comment]
 Furthermore, this result is another sign that the constructed graph is able to capture the spherical structure of the HEALPix sampling.
