@@ -206,12 +206,13 @@ Thank you for submitting your manuscript to Astronomy and Computing. I have rece
 Though this is designated a minor revision, there are quite a few points that need to be addressed before the paper is acceptable for publication.  When resubmitting your manuscript, please carefully consider all issues mentioned in the reviewers' comments, outline every change made point by point, and provide suitable rebuttals for any comments not addressed.
 \end{mdframed}
 
-Dear Editor,
+We thank the editor for handling our submission and organizing the peer-review process.
+We have revised our manuscript following the suggestions of the reviewers.
+We believe that we addressed most requests and that the manuscript is now ready for publication.
+We thank the reviewers for taking the time to review our manuscript and provide constructive comments that improved the quality of our contribution.
 
-Thanks for handling our submission. We have revised our manuscript following many of the reviewer suggestions. We believe that it is now ready for publication. Currently, the dataset can be accessed simply via Zenodo. While this process is not anonymous, we provide in this rebuttal (Comment \#2) a special link for the reviewers to access it is anonymously.
-
-We thank the reviewers for taking the time to review our manuscript and for their constructive comments. We have answered
-
+Currently, access to the dataset can be requested via Zenodo.
+As this process is not anonymous, we provide in this rebuttal (comment \#2) a link for the reviewers to access it anonymously.
 
 \newpage
 
@@ -225,9 +226,7 @@ I have read with great interest the paper by Perraudin and collaborators present
 The paper is well-written, and the results are clearly presented. The literature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
-Dear reviewer,
-
-we thank you for your time and thorough comments.
+Dear reviewer, we thank you for your time and thorough comments.
 The manuscript improved thanks to your feedback.
 You'll find an answer to all the points you mentioned in this rebuttal.
 
@@ -262,6 +261,7 @@ In practice, the large number of parameters required by a FCNN severely restrict
 
 
 \subsection{}
+
 \begin{mdframed}[style=comment]
 Page 4: "There is no known point set that achieves the analogue of uniform sampling in Euclidean space and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions." This is ambiguous. There exists multiple schemes for performing exact SHT on band-limited signals. Those sampling are more efficient than healpix - often in terms of number of pixels, and sometimes in terms of performance of the spherical harmonic transforms - and more accurate since the transform is exact (at least numerically - so typical errors are machine precision). Healpix transforms are only exact to 1e-7 when using iterative schemes, and that depends on Nside and lmax. Please clarify this paragraph. Obviously healpix is very advantageous for the pooling and other operations that take advantage of its hierarchical nature. This is well discussed in the paper - in particular how the fast graph algorithms could accommodate other sampling schemes.
 \end{mdframed}
@@ -429,13 +429,13 @@ Similarly, I think it would useful to check how well the DeepSphere CNN does aga
 
 % That comparison is not warranted.
 % or justified. pointless is maybe too aggressive
-We do not believe this comparison is useful because of the following theoretical reason.
+We do not believe this comparison is useful because of the following reason.
 There are two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture of the model, or (ii) augment the dataset such that a (more general) model learns them ``brute-force''.
 With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
-Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
+Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant or equivariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
 % That is a waste of resources which is only justified if it's not possible to back the desired invariance in the architecture.
 Augmentation is only justified if it's not possible to back the desired invariance in the architecture.
-% The reviewer himself makes that point in comment 2.8: ``building a NN to suit your purposes''.
+As the reviewer writes in comment 2.8, we should be ``building a NN to suit [our] purposes''.
 We updated the manuscript to more precisely reflect this argumentation.
 
 %\TK{Seems a bit strong to me.. maybe we would write it in a softer language?}
@@ -445,7 +445,7 @@ We updated the manuscript to more precisely reflect this argumentation.
 % @Michael: what do you think?}
 % \mdeff{Agreed.}
 
-\subsection*{Minor comment}
+\subsection*{Minor comments}
 
 \begin{mdframed}[style=comment]
 I should say, even though I made the above comments, I thought the paper was really excellent and well written. There were a couple of very minor points which I would like the authors to expand slightly on or consider.
@@ -565,7 +565,8 @@ We cannot compare individual eigenvectors and spherical harmonics because of arb
 While any rotation of the basis of a subspace (the space spanned by the eigenvectors and harmonics corresponding to a given degree $\ell$) doesn't alter the spanned subspace, the difference between the basis vectors before and after the rotation can be 100\%.
 
 Your suggestion however made us realize that figure A.12 was not ideal in comparing the eigenvectors to the spherical harmonics.
-As such, we replaced it with another that we hope is clearer. This new figures probably satisfies your the request of your comment.
+As such, we replaced it with another that we hope is clearer.
+This new figure should satisfy your request.
 We also moved Figure A.12 in the correct subsection.
 
 \subsection{}
@@ -582,7 +583,8 @@ In theory, there should be a connection between the two values providing the gra
 A question that I would like to know personally, are you thinking about a future upgrade to non-radial kernels?
 \end{mdframed}
 
-We thought about it but are not sure that it would be beneficial. We are also unsure howto do it in practice.
+We thought about it but are not sure that it would be beneficial.
+We are also unsure about the proper way to do it.
 %The main difficulty is that a graph is not intrinsically oriented.
 %However, as the graph framework we are using only works with radial filters, it is not a simple question.
 %A simple trick to make the network sensitive to direction is to add a per-channel fully connected layer.
@@ -590,6 +592,7 @@ We thought about it but are not sure that it would be beneficial. We are also un
 
 
 \subsection{Details}
+
 \begin{mdframed}[style=comment]
 Finally, I noticed a few points in the text where there were typos or things which were difficult to follow and I have put a note of them below and tried to correct them as much as I can so that you don't have to put too much effort in - I can't wait to see this paper published. Sorry that the list is so extensive (I'm a bit of a stickler for details and trying to write papers concisely):
 \end{mdframed}
