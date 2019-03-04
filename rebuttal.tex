@@ -429,7 +429,7 @@ Similarly, I think it would useful to check how well the DeepSphere CNN does aga
 
 % That comparison is not warranted.
 % or justified. pointless is maybe too aggressive
-We do not believe this comparison is useful because of the following theoretical reason
+We do not believe this comparison is useful because of the following theoretical reason.
 There are two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture of the model, or (ii) augment the dataset such that a (more general) model learns them ``brute-force''.
 With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
 Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
@@ -438,8 +438,8 @@ Augmentation is only justified if it's not possible to back the desired invarian
 % The reviewer himself makes that point in comment 2.8: ``building a NN to suit your purposes''.
 We updated the manuscript to more precisely reflect this argumentation.
 
-\TK{Seems a bit strong to me.. maybe we would write it in a softer language?}
-\nati{Now it is OK. But is it still strong enough. We should only point reviewer incoherence if necessary.}
+%\TK{Seems a bit strong to me.. maybe we would write it in a softer language?}
+%\nati{Now it is OK. But is it still strong enough. We should only point reviewer incoherence if necessary.}
 
 % \nati{Technically, testing this is complicated as rotation on HEALPix are complicated and expensive. We probably will have to break a lot of code to do it.
 % @Michael: what do you think?}
@@ -464,13 +464,13 @@ Good point.
 To experimentally show convergence, we would need to build a series of graph Laplacians that converges to the Laplace-Beltrami operator.
 This is complicated and requires to solve the theoretical problem first.
 Hence, we built one Laplacian and observed some similarities between the two operators instead.
-We agree that our wording was unfortunate and have modified the manuscript to mean that we empirically observed a strong correspondence rather than a proper convergence.
+We agree that our wording was unfortunate and we have modified the manuscript to mean that we empirically observed a strong correspondence rather than a proper convergence.
 The convergence (or even exact correspondence) is a problem we are currently investigating and plan to release as a separate contribution.
 See also comment 1.4 and our answer there.
 
-\todo{the new figure A.12 is maybe a weak proof of convergence}
+%\todo{the new figure A.12 is maybe a weak proof of convergence}
 
-\mdeff{@nati, what do you think?} \nati{I like it. I totally agree with the new wording.}
+%\mdeff{@nati, what do you think?} \nati{I like it. I totally agree with the new wording.}
 
 
 \subsection{}
@@ -524,7 +524,7 @@ Than can be seen as intrinsic data augmentation, as a CNN would need to see many
 \end{mdframed}
 
 Thanks for pointing out the typo, we fixed it.
-We do realize it's an important point, and agree that some people apply architectures to a different problem they have been devised for without much thoughts.
+We do realize it's an important point, and agree that some people apply architectures to a different problem they have been devised for without much thought.
 A large chunk of our paper is actually about using an appropriate NN architecture.
 The point you suggest us adding is actually made in the Experiments section, where we describe the data and task, and motivate the architecture choice.
 We wanted the Method section to be more generic.
@@ -552,7 +552,7 @@ When mentioning that you are 10 to 20 times faster than the SHT it should be not
 
 True.
 In the experiment, both were compared on a single core.
-They might however scale differently given one can be distributed through MPI and the other on a GPU.
+They might, however, scale differently given one can be distributed through MPI and the other on a GPU.
 The manuscript was updated.
 
 \subsection{}
