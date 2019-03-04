@@ -523,7 +523,7 @@ That operation is often taken to be the maximum value, but it can be any permuta
 
 Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to some predictions.
 The general DeepSphere architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers ($GC$), pooling layers ($P$), and batch normalization layers ($BN$). The tail is composed of multiple fully connected layers ($FC$) followed by an optional softmax layer ($SM$) if the network is used for discrete classification.
-A non-linear function $\sigma(\cdot)$ is applied after every linear $GC$ and $FC$ layer, except for the last $FC$ layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
+A non-linear function $\sigma(\cdot)$ is applied after every linear $GC$ and $FC$ layer, except for the last $FC$ layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice and is the one we adopted for this contribution.
 
 Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a $GC$ layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and vertices), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
 Using the efficient graph convolution from \eqnref{graph_convolution_cheby}, each output feature map is computed as
@@ -591,7 +591,7 @@ If P layers are used, they have to be inverted via up-sampling in an encoder-dec
 
 The set of input pixels which influence the value of an output pixel forms a \textit{receptive field}.
 That field is isotropic and local, i.e., it forms a disk centered around the output pixel.
-Its radius is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of P layers if any.
+Its radius is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of $P$ layers if any.
 Its radius should be large enough to capture statistics of interest.
 For example, a partial sky observation can provide only limited information of cosmological relevance.
 On the other hand, looking at the whole sky is often superfluous and waste computations, as most interactions are local.
@@ -720,7 +720,8 @@ See \citep{kondor2018equivariance} for a rigorous treatment of convolution and e
 
 While defining the convolution in the spectral domain avoids all sampling issues, filters so defined are not naturally localized in the original domain.
 Localization is desired for the transformation to be stable to local deformation \citep{mallat2012scattering}, and most interactions in the data are local anyway.
-A straightforward way to impose locality in the original domain is to impose smoothness in the spectral domain, by Heisenberg's uncertainty principle.
+A straightforward way to impose locality in the original domain is to impose smoothness in the spectral domain.
+% , by Heisenberg's uncertainty principle.
 A more elegant approach is to define filters that are provably localized.
 The filters defined in \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby}, by being polynomials of the Laplacian, are of this kind.
 
@@ -746,7 +747,7 @@ For this contribution, we chose the formulation of \citep{defferrard2016convolut
 As the convolution is motivated by a multiplication in the graph Fourier spectrum, it is close in spirit, and empirically, to the formulation based on the spherical harmonics, which is the ideal rotation equivariant formulation.
 
 Thanks to their versatility, graph neural networks have been used in a variety of tasks, such as identifying diseases from brain connectivity networks \citep{ktena2018metriclearning} or population graphs \citep{parisot2017disease}, designing drugs using molecular graphs \citep{hop2018drugdesign}, segmenting 3D point clouds \citep{qi2017pointcloudsegmentation}, optimizing shapes to be aerodynamic \citep{baque2018shape}, and many more.
-By interwinding graph convolutional layers and recurrent layers \citep{seo2016gcrn}, they can for example model structured time series such as traffic on road networks \citep{li2018traffic}, or recursively complete matrices for recommendation \citep{monti2017recommendation}.
+By combining graph convolutional layers and recurrent layers \citep{seo2016gcrn}, they can, for example, model structured time series such as traffic on road networks \citep{li2018traffic}, or recursively complete matrices for recommendation \citep{monti2017recommendation}.
 Another trend, parallel to the modeling of structured data, is the use of graph neural networks for relational reasoning \citep{battaglia2018review}.
 
 \section{Experiments}
@@ -856,7 +857,7 @@ with \hspace{0.5cm} \begin{tabular}{lll}
 \end{tabular}
 \end{center}
 where $GC_F$ indicates a graph convolutional layer with $F$ output feature maps, $P_4$ is a pooling layer that divides the number of pixels by 4, $\sigma$ is a ReLU, and the Chebyshev polynomials in \eqnref{graph_convolution_cheby} are of degree $K=5$.
-The layers $L_1$ to $L_5$ build the statistical evidence to classify each pixel of a down-sampled sphere. The last $GC$ layer acts as a linear classifier and outputs two (non-normalized) predictions. The $AV$ layer averages these predictions. Probabilities are computed by the $SM$ layer.
+The layers $L_1$ to $L_5$ build the statistical evidence to classify each pixel of a down-sampled sphere. The last $GC$ layer acts as a linear classifier and outputs two (non-normalized) predictions. The $AV$ layer averages these predictions. The normalized network scores are computed by the $SM$ layer.
 
 For comparison, we tried the more conventional CNN architecture, where the classification is performed by a fully connected layer from the last feature maps instead of the average of local classifications. This architecture is not invariant to rotation. The selected network is defined as
 \begin{equation*}
@@ -924,7 +925,7 @@ While testing the FCN and CNN variants, we made the following empirical observat
 First, training was more stable (in the sense that the loss decreased more smoothly) when using Chebyshev polynomials, as in \eqnref{graph_convolution_cheby}, rather than monomials, as in \eqnref{graph_convolution_monomial}.
 Nevertheless, we could not observe a significant difference in accuracy after convergence.
 Second, using $\ell_2$ regularization does not help either with performance or training of the models, mostly because the models are not over-fitting.
-Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property of keeping the energy of the signal more or less constant across layers\footnote{We derived this rule from the Chebyshev polynomial equations and some empirical experiments.}.
+Third, we recommend initializing the Chebyshev coefficients with a centered Gaussian distribution with standard deviation $\sqrt{2/(F_{in} \times (K + 0.5))}$, where $K$ is the degree of the Chebyshev polynomials and $F_{in}$ the number of input channels. This standard deviation has the property of keeping the energy of the signal more or less constant across layers\footnote{We derived this rule from the Chebyshev polynomial equations and some empirical experiments. \nati{Following the principle presented in \cite{glorot2010understanding}, we searched for the initialisation scheme keeping the expected amplitude of the signal constant through the different layers of the neural network.}}.
 % Nati to Michael: The problem with the previous claim is that it depends on the non-linarity. Furthermore, does it make sense to make such a claim if we use batch norm?
 Finally, we observe that scaling the Laplacian's eigenvalues between $[-a, a]$, where $0 < a \leq 1$, significantly helps in stabilizing the optimization. We use $a = 0.75$ in our experiments.
 

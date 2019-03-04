@@ -821,7 +821,7 @@ The rectified linear unit (ReLU) $\sigma(\cdot) = \textrm{max}(\cdot, 0)$ is a c
 
 - Is this the choice you adopt? You should mention that you do, if you indeed do.
 \end{mdframed}
-\todo{Assigned: @michael}
+We followed the reviewer suggestion.
 
 \begin{mdframed}[style=comment]
 Note that the output $\bf{Y}\in\mathbb{R}^{N_{pix}\times F_{out}}$ of the last GC (or the output $\bf{Y}\in\mathbb{R}^{N_{stat}\times F_{out}}$ of the ST), ...
@@ -842,7 +842,8 @@ Its radius should be large enough to capture statistics of interest.
 
 - I think you mean the radius of the kernel. Perhaps this could be rewritten.
 \end{mdframed}
-\todo{Assigned: @all}
+\todo{Assign: @tomek}
+\todo{To check: @all}
 \nati{The manuscript seems clear to me. But let me know if you think otherwise.}
 
 \begin{mdframed}[style=comment]
@@ -857,8 +858,9 @@ The cost (or loss) function $C(\bf{Y},\bar{\bf{Y}}) = C(NN_\theta(\bf{X}),\bar{\
 
 - This is true for supervised learning only and should be stated.
 \end{mdframed}
-\todo{Assigned: @michael, @nati}
-\nati{In an unsupervised setting, this can just not be computed... Specifying it seems redundant to me.}
+\todo{To check: @michael}
+We are not sure this specification is necessary as this cost cannot be computed in an unsupervised setting. We decided to not change the text.
+% \nati{In an unsupervised setting, this can just not be computed... Specifying it seems redundant to me.}
 
 \begin{mdframed}[style=comment]
 For global prediction, the cost is as if $N_{pix} = 1$.
@@ -866,6 +868,17 @@ For global prediction, the cost is as if $N_{pix} = 1$.
 - I think this should be "For global prediction $N_{pix} = 1$."
 \end{mdframed}
 \todo{Assigned: @michael}
+\nati{Here I do really understand this: the text reads:
+
+\textit{For a classification task, the cost is usually taken to be the cross-entropy
+\begin{equation*}
+	C(\Y, \bar \Y) = - \sum_{i=1}^{N_{pix}} \sum_{j=1}^{N_{classes}} \bar y_{ij} \log(y_{ij}),
+\end{equation*}
+where $\bar \Y \in \R^{N_{pix} \times N_{classes}}$ is the ground truth label indicator, i.e., $\bar y_{ij} = 1$ if pixel $i$ of sample $\X$ belongs to class $j$ and is zero otherwise. For global prediction, the cost is as if $N_{pix} = 1$.
+For a regression task, a common choice is the mean squared error (MSE)}
+
+If you do a global prediction, you ar for sure in a regression task right? So I guess the two last sentence should be merged.
+}
 
 \begin{mdframed}[style=comment]
 We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
@@ -879,7 +892,7 @@ The goal of learning is to find the parameters $\theta$ of the neural network th
 
 - It is the goal of training, not of learning (in common parlance anyway). Also, you should say that E[] is the expectation rather than leaving people to guess according to the next sentence.
 \end{mdframed}
-\todo{Assign:  @nati, @michael. \nati{@micheal, please check this one carefully, also in the text, I am not sure my notation is correct}}
+\todo{Assign:  @nati, @michael. \nati{@Michael, please check this one carefully, also in the text, I am not sure my notation is correct}}
 
 According to us, the goal of training is to minimize the empirical risk, which does not contain the expectation. On the contrary, the goal of learning is to minimize the expected risk, i.e. we additionally do not want to overfit the training set. Hence we left "learning" in the text. Nevertheless, we specified the expectation operator.
 
@@ -888,7 +901,7 @@ The optimization is performed by computing an error gradient w.r.t. all the para
 
 - This sentence is just a bit turned upside-down, it should be "The optimisation is performed by computing an error gradient w.r.t. all the parameters and updating each parameter via back propagation using a form of stochastic gradient descent (SGD):"
 \end{mdframed}
-\todo{Assign: @nati, @michael, \nati{again I disagree with the reviewer}}
+\todo{To check: @michael, \nati{again I disagree with the reviewer}}
 
 We are not sure, we understand the reviewer. Back-propagation is a technique to compute the gradients and not to perform the update of the parameter. The latter is done with SGD. So we believe that the original formulation of our sentence is more accurate than the reviewer proposition.
 
@@ -905,21 +918,24 @@ A straightforward way to impose locality in the original domain is to impose smo
 
 - What do you mean by "by Heisenberg’s uncertainty principle." That seemed to come out of nowhere. This needs explaining further.
 \end{mdframed}
-\todo{Assigned: @all}
+\todo{To check: @all}
 
-\nati{The reviewer is correct. Our justification is shady. I am not sure how to make this clear, without writing too much. It is kind of a general consent that smoothness in one domain implies localization in the other. The reason is that for the continuous Fourier transform, we have:
-\begin{equation*}
-\widehat{f(t\cdot)}(\omega)=\frac{1}{t}\hat{f}\left(\frac{\omega}{t}\right).
-\end{equation*}
-Hence by concentrating $f$ in the time domain, i.e. making $t$ smaller, we also reduce the derivative of $\widehat{f(t\cdot)}$ in the spectral domain, making it smoother.
-Heisenberg uncertainty principle bounds the concentration in both domains simultaneously, i.e. we have (to be checked if added to the paper)
-\begin{equation*}
-\text{var}({f})\text{var}({\hat{f}}) \geq \frac{1}{16 \pi^2}
-\end{equation*}
-Hence the theorem says that you cannot concentrate arbitrarily in one domain without de-concentrating in the other.
+The link with the Heisenberg's uncertainty principle does exist but it too complex to explain shortly. Hence we decided to remove the ``by Heisenberg’s uncertainty principle'' and keep the rest of the sentence as a general Fourier analysis recipe.
+% \todo{Assigned: @all}
 
-Now the question is: how do we fix the text? Also Heisenberg does not exist in the discrete case...
-}
+% \nati{The reviewer is correct. Our justification is shady. I am not sure how to make this clear, without writing too much. It is kind of a general consent that smoothness in one domain implies localization in the other. The reason is that for the continuous Fourier transform, we have:
+% \begin{equation*}
+% \widehat{f(t\cdot)}(\omega)=\frac{1}{t}\hat{f}\left(\frac{\omega}{t}\right).
+% \end{equation*}
+% Hence by concentrating $f$ in the time domain, i.e. making $t$ smaller, we also reduce the derivative of $\widehat{f(t\cdot)}$ in the spectral domain, making it smoother.
+% Heisenberg uncertainty principle bounds the concentration in both domains simultaneously, i.e. we have (to be checked if added to the paper)
+% \begin{equation*}
+% \text{var}({f})\text{var}({\hat{f}}) \geq \frac{1}{16 \pi^2}
+% \end{equation*}
+% Hence the theorem says that you cannot concentrate arbitrarily in one domain without de-concentrating in the other.
+
+% Now the question is: how do we fix the text? Also Heisenberg does not exist in the discrete case...
+% }
 
 \begin{mdframed}[style=comment]
 All the above methods cannot be easily accelerated when the data lies on a part of the sphere only.
@@ -933,7 +949,7 @@ By interwinding graph convolutional layers and recurrent layers [65], they can f
 
 - I'm not sure what interwinding is, I guess you mean by making GC recurrent, or do you mean using GC and then RL separately? Either way there should be commas around "for example".
 \end{mdframed}
-\todo{Assign @michael}
+Thank you for spotting this. We added the necessary commas. We also change the word ``interwinding'' with ``combining''.
 
 
 \begin{mdframed}[style=comment]
@@ -963,26 +979,34 @@ For each class, we generate 30 simulations.
 - Just mention that there are two classes again, to make it clear that "class" means "cosmology".
 \end{mdframed}
 % \todo{Assign: @Tomek}
-\TK{Updated the sentence.}
+We updated the sentence following the reviewer suggestion.
+\nati{@Tomek, do you think it is fine that we do not say that class==comoslogy? It think so.}
 
 \begin{mdframed}[style=comment]
 That is a data augmentation scheme, as it creates more training examples than we have simulations.
 
 - I think that you should introduce the Gaussian noise paragraph by stating that you perform data augmentation via the addition of randomly drawn Gaussian noise, rather than talking about the random noise first and then explaining that the reason is for data augmentation. ML specialists in particular will be happier with the addition of noise for DA (as will cosmologists I think).
 \end{mdframed}
-\todo{Assign: @all}
-\nati{I think that the primary goal of adding noise is the make the problem harder, and show robust prediction, not the make the dataset larger... Hence I disagree with the reviewer. What do you think?}
-\TK{This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem easier to solve. As these two facts are connected, we prefer to leave the sentence as is.}
+\todo{To check: @all}
+% \nati{I think that the primary goal of adding noise is the make the problem harder, and show robust prediction, not the make the dataset larger... Hence I disagree with the reviewer. What do you think?}
+% \TK{This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem easier to solve. As these two facts are connected, we prefer to leave the sentence as is.}
 
-The primary goal of the noise addition is the make the problem harder and show robust prediction. We use it to augment our dataset as well. Hence we believe that the correct formulation is suitable.
+% The primary goal of the noise addition is the make the problem harder and show robust prediction. We use it to augment our dataset as well. Hence we believe that the correct formulation is suitable.
+
+This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem solvable even with a small amount of initial simulation. As these two facts are connected, we prefer to leave the sentence as is.
 
 \begin{mdframed}[style=comment]
 Probabilities are computed by the SM layer.
 
 - As explained above, these are not probabilities, they are class predictions from the network.
 \end{mdframed}
-\todo{Assigned @michael}
-\nati{Should we simply say "normalized network score"? I do not know...}
+\todo{To check: @michael}
+% \nati{Should we simply say "normalized network score"? I do not know...}
+
+We changed the manuscript to:
+\begin{mdframed}[style=comment]
+The normalized network scores are computed by the $SM$ layer.
+\end{mdframed}
 
 \begin{mdframed}[style=comment]
 As less pixels are available to make a decision about a sample, the algorithms have access to less information and make more mistakes.
@@ -1003,8 +1027,12 @@ We derived this rule from the Chebyshev polynomial equations and some empirical 
 
 - This is a bit loose, can you explain further and add a citation if you didn't do the experiments yourself?
 \end{mdframed}
-\todo{Assign: @nati, @michael}
-\nati{We would need an appendix to do that. It is the last figure of the figure’s notebook (expected filter). I could spend two hours and write some equation... @michael, what do you think?}
+% \todo{Assign: @nati, @michael}
+% \nati{We would need an appendix to do that. It is the last figure of the figure’s notebook (expected filter). I could spend two hours and write some equation... @michael, what do you think?}
+We updated the section with a citation and some extra information.
+\begin{mdframed}[style=manuscript]
+We derived this rule from the Chebyshev polynomial equations and some empirical experiments. Following the principle presented in \cite{glorot2010understanding}, we searched for the initialisation scheme keeping the expected amplitude of the signal constant through the different layers of the neural network.
+\end{mdframed}
 
 \begin{mdframed}[style=comment]
 Figure 10: Random selection of 24 learned filters from the fifth spherical convolutional layer L5. Top: section. Bottom: gnomonic projection.
