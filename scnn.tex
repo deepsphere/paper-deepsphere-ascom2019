@@ -228,7 +228,7 @@ Mass mapping
 Cosmological and astrophysical data often come in the form of spherical sky maps.
 Observables that cover large parts of the sky, such as the Cosmic Microwave Background (CMB) \citep{planck2015cosmologicalparameters,komatsu2011sevenyear,staggs2018recentdiscoveries}, neutral hydrogen \citep{santos2015cosmologySKA,HI4PI2016fullskyHI}, galaxy clustering \citep{alam2017clusteringgalaxies}, gravitational lensing \citep{troxel2017darkenergy,hildebrandt2017kidscosmological}, and others, have been used to constrain cosmological and astrophysical models.
 Cosmological information contained in these maps is usually extracted using summary statistics, such as the power spectra or higher order correlation functions.
-Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation
+Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision\footnote{Here, the word ``precision'' is to be understood as the final size of the posterior distribution on the measured parameters (including systematic errors).} of the parameter estimation
 \citep{schmelze2017cosmologicalmodel,luciesmith2018machinelearning,gupta2018nongaussianinformation,gillet2018deeplearning,hassan2018reionizationmodels,aragoncalvo2018classyfyinglarge,ciuca2017cnnstring,ravanbakhsh2017estimating}, while maintaining robustness to noise.
 This is possible as neural networks have the capacity to build rich models and capture complicated non-linear patterns often present in the data.
 CNNs are particularly well suited for the analysis of cosmological data as their trainable weights are shared across the domain, i.e., the network does not have to relearn to detect objects or features at every spatial location.
@@ -836,11 +836,11 @@ As for DeepSphere, the SVM regularization hyper-parameter was tuned based on the
 The classification accuracy of DeepSphere and both baselines was checked as a function of the used area (the order $o$), and the relative level of additive noise.
 
 \nati{
-Additionally, we compare DeepSphere to a traditional 2-dimensional convolutional neural network (2DCNN).
-To do so, the samples are first transformed into a square image before being fed into the 2DCNN.
+Additionally, we compare DeepSphere to a traditional 2-dimensional convolutional neural network (2D ConvNet).
+To do so, the samples are first transformed into a square image before being fed into the 2D ConvNet.
 As described in \ref{sec:projection}, we use the geometrical properties of HEALPix to construct an efficient and simple projection of the samples.
 Note that during the review process another spherical CNN architecture using exploiting this property appeared \cite{krachmalnicoff2019convolutional}.
-We used convolution kernel of size $5\times 5$ and reduced the number of filters in order to match the number of variables between DeepSphere and the 2DCNN.
+We used convolution kernel of size $5\times 5$ and reduced the number of filters in order to match the number of variables between DeepSphere and the 2D ConvNet.
 }
 
 \subsection{Network architecture and hyper-parameters}
@@ -882,7 +882,7 @@ Training took approximately $1.5$ hour using a single Nvidia GeForce GTX 1080 Ti
 	\hfill
 	\includegraphics[width=0.32\linewidth]{result_order4}
 	\caption{
-		Classification accuracy of the fully convolutional (FCN) variant of DeepSphere, the standard convolutional (CNN) variant of DeepSphere, the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
+		Classification accuracy of the fully convolutional (DeepSphere FCN) variant of DeepSphere, the standard convolutional (DeepSphere CNN) variant of DeepSphere, the fully convolutional ConvNet (2D ConvNet FCN), the standard convolutional ConvNet (2D ConvNet CNN), the support vector machine (SVM) with the power spectral density (PSD) as features, and the SVM with the histogram as features.
 		The difficulty of the task depends on the level of noise and the size of a sample (that is, the number of pixels that constitute the sample to classify). Order $o=1$ corresponds to samples which area is $\frac{1}{12}=8.1\%$ of the sphere, order $o=2$ to $\frac{1}{12 \times 2^2} = 2.1\%$, and order $o=4$ to $\frac{1}{12 \times 4^2} = 0.5\%$. The standard deviation of the added Gaussian noise varies from zero to $2\times$ the standard deviation of pixel's values in the noiseless maps.
 		It is clear from those results that the noise makes the problem harder, and that having more pixels available to classify a sample makes the problem easier (the classifier having more evidence to make a decision). The FCN variant of DeepSphere beats the CNN variant by being invariant to rotation. Both variants largely beat the two SVM baselines.
 	}
@@ -1017,11 +1017,13 @@ In order to push the comparison one step further, we show the correspondence bet
 	\centering
 	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors_v2}
 	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics.
+		The correspondance is computed in two steps. (i) We compute the PSD of each graph eigenvector.
+		(ii) As, for each harmonic index $\ell$, there is $2\ell+1$ spherical harmonics, we sum the contribution of the corresponding $2\ell+1$ graph eigenvectors. 
 		% No real convergence with increasing Nside.
-		Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
-		(\figref{graph_eigenvalues} shows how Fourier modes can be identified to spherical degrees.)
-		The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
-		Pixel $k$ in row $j$ measures the energy in frequency band $k$ of the graph Fourier modes identified to be part of band $j$.
+		% Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
+		% (\figref{graph_eigenvalues} shows how Fourier modes can be identified to spherical degrees.)
+		% The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
+		% Pixel $k$ in row $j$ measures the energy in frequency band $k$ of the graph Fourier modes identified to be part of band $j$.
 		The matrix should ideally be the identity.
 		While not the case, the plot shows how the subspaces agree: the subspaces spanned by the Fourier modes correspond to those spanned by the spherical harmonics in the low frequencies, while the Fourier modes leak towards adjacent frequency bands in the high frequencies.
 		While there is a systematic error, the Fourier modes agree at higher frequencies as $N_{side}$ increases.}
