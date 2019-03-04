@@ -325,8 +325,6 @@ The paper contains an extremely well described technique for performing convolut
 I will happily recommend this paper for publication. Firstly though, I would like access to the data (privately rather than via emailing the group) so that I can check the notebooks thoroughly. The notebooks are extremely well written but I would like to run them first. As well as this I think there are a few extra applications which will improve the manuscript further, and make the method more appealing for users. I would recommend that these ideas are at least seriously considered by the authors and hopefully implemented:
 \end{mdframed}
 
-
-
 Dear reviewer, we would like to thank you back for your time, your good words, and your thorough review.
 The manuscript substantially improved thanks to your work.
 You'll find an answer to all the points you mentioned in this rebuttal.
@@ -450,6 +448,7 @@ We updated the manuscript to more precisely reflect this argumentation.
 \begin{mdframed}[style=comment]
 I should say, even though I made the above comments, I thought the paper was really excellent and well written. There were a couple of very minor points which I would like the authors to expand slightly on or consider.
 \end{mdframed}
+
 Thank you very much for your comments. We addressed them to the best we could.
 
 \subsection{}
@@ -580,6 +579,7 @@ Again, this is left for a future contribution.
 \begin{mdframed}[style=comment]
 A question that I would like to know personally, are you thinking about a future upgrade to non-radial kernels?
 \end{mdframed}
+
 We thought about it but are not sure that it would be beneficial.
 %The main difficulty is that a graph is not intrinsically oriented.
 %However, as the graph framework we are using only works with radial filters, it is not a simple question.
@@ -630,6 +630,7 @@ As such, we decided to replace all occurrences of ``node'' with ``vertex'' but k
 \begin{mdframed}[style=comment]
 You change between math font and text font for the names of your layers when inside and outside of equations. It would look a lot neater sticking with one choice. (Sorry, that seems quite petty and I don't mean it to be).
 \end{mdframed}
+
 We have made the paper consistent by using a math font for layer names.
 %\nati{@all, when you read the paper, please check that I did not forget some of them. Every layer has been changed to math symbols as we use them like function. For example, SM becomes $SM$.}
 %\mdeff{Agreed. I checked and fixed one missing.}
@@ -637,12 +638,14 @@ We have made the paper consistent by using a math font for layer names.
 \begin{mdframed}[style=comment]
 In Appendix C. you talk about Kroneker a lot, but earlier you talk about Kroneker $\delta$ (which is it's correct name). It's probably worth sticking with the full name.
 \end{mdframed}
+
 We have modified the manuscript according to the suggestion.
 
 \begin{mdframed}[style=comment]
 Sky maps are rotation invariant: rotating maps on the sphere doesn’t change their interpretation, as only the statistics of the maps are relevant.
 - I think that you mean that rotating maps on the sphere doesn't change their interpretation *when* only the statistics of the maps are relevant. Say you wanted to compare the NGC against the SGC, then rotating the map would obviously change the results.
 \end{mdframed}
+
 True.
 Equivariance is desired in such a case (rather than invariance).
 We clarified the sentence.
@@ -652,6 +655,7 @@ The flexibility of modelling the data domain with a graph allows to easily model
 
 - I think you're missing a "one" after allows. "The flexibility of modelling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled."
 \end{mdframed}
+
 Thank you for the suggestion. We updated the text.
 
 \begin{mdframed}[style=comment]
@@ -659,6 +663,7 @@ This kind of maps can be created using the gravitational lensing technique [see 
 
 - It should be "These" and not "This". "These kind of maps can be created using the gravitational lensing technique [see 29, for review]"
 \end{mdframed}
+
 Thank you for spotting this mistake. We updated the manuscript.
 
 \begin{mdframed}[style=comment]
@@ -666,6 +671,7 @@ A CNN is composed of the following main building blocks [31]: (i) a convolution,
 
 - I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
 \end{mdframed}
+
 We agree that (iii) and (iv) are optional and updated the sentence accordingly.
 
 \begin{mdframed}[style=comment]
@@ -673,6 +679,7 @@ Likewise, down-sampling can be achieved by taking one pixel out of n.
 
 - I'm afraid I don't understand what this means at all, could you rephrase it?
 \end{mdframed}
+
 We rephrased it.
 
 \begin{mdframed}[style=comment]
@@ -680,6 +687,7 @@ A rhombus is a quadrilateral whose four sides all have the same length.
 
 - I'm not sure that this really needs to be said.
 \end{mdframed}
+
 Agreed. We removed the footnote.
 
 \begin{mdframed}[style=comment]
@@ -687,6 +695,7 @@ As each pixel is subdivided in four, the second coarser resolution is $N_{pix} =
 
 - Might it be more concise to write "The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$."
 \end{mdframed}
+
 Thank you for the suggestion, we updated the text.
 
 \begin{mdframed}[style=comment]
@@ -694,6 +703,7 @@ Thank you for the suggestion, we updated the text.
 
  - I don't think the "is" after $\bf{u}_i$ should be there.
 \end{mdframed}
+
 This has been corrected.
 
 \begin{mdframed}[style=comment]
@@ -701,6 +711,7 @@ Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$, a signal $f\in\mat
 
 - You don't mention what $\mathbb{R}_+$ is or why $h$ defines that map.
 \end{mdframed}
+
 We are not sure what the reviewer means here.
 $\mathbb{R}_+$ is the ensemble of the real positive numbers and $h$ is a function that maps any positive real number to a real number.
 We think that $\mathbb{R}_+$ is a common enough notation to not require being explicitly defined.
@@ -713,6 +724,7 @@ This localization of the kernel $h$ can be useful to visualize kernels, as expla
 
  - Most of Appendix C is not involved with the localisation of the kernel so it might be worth expanding this sentence to "This localisation of the kernel $h$ can be useful to visualise kernels, as shown in an example of heat diffusion presented Appendix C. " Also, it is a little odd that Appendix C is mentioned before Appendix B in the text.
 \end{mdframed}
+
 We followed both suggestions.
 
 \begin{mdframed}[style=comment]
@@ -720,6 +732,7 @@ However, when considering only parts of the sphere, one can observe important bo
 
 - I would just refer the reader to the appendix rather than the figure and the appendix. It is a bit more concise. "However, when considering only parts of the sphere, one can observe important border effects (see Appendix B)."
 \end{mdframed}
+
 We followed the suggestion.
 
 \begin{mdframed}[style=comment]
@@ -727,6 +740,7 @@ We followed the suggestion.
 
  - I don't understand what you mean by a "flip", a change of sign, the inversion of the kernel?
 \end{mdframed}
+
 We precised the meaning of a flip.
 
 \begin{mdframed}[style=comment]
@@ -734,6 +748,7 @@ Similarly as (2), the convolution of the signal $f$ by a kernel $g$ is the scala
 
 - I think this should be "As with equation (2)" or "Similarly, as in equation (2)" but I can't tell which. Also, it would be really useful if you referred to equations by "equation (x)" rather than just "(x)" throughout - much easier to read that way.
 \end{mdframed}
+
 % \nati{I do not know what we should do.}
 Ideally we would replace equation references such as "(1)" with "Equation (1)", but given the large number of equation references, we would prefer to stick with a short-form to avoid lengthening the paper further.
 % \mdeff{Agree to not introduce more words.}
@@ -754,6 +769,7 @@ Similarly, each line of the matrix $\sum_{k=0}^K\theta_k\bf{L}^k$ defines an irr
 
  - What do you mean by "line"? Is it a row or a column or something else which I've misunderstood?
 \end{mdframed}
+
 We mean ``column'' and have updated the manuscript.
 
 \begin{mdframed}[style=comment]
@@ -761,6 +777,7 @@ We mean ``column'' and have updated the manuscript.
 
  - Could you put the equation in its own 2 line align environment to make it easier to read?
 \end{mdframed}
+
 Inspired by the reviewer suggestion, we changed the layout of that equation.
 
 \begin{mdframed}[style=comment]
@@ -768,6 +785,7 @@ By construction of our graph, $|\mathcal{E}| < 8N_{pix}$ and the overall computa
 
 - This could be written as "By construction of our graph, $|\mathcal{E}| < 8N_{pix}$ and the overall computational cost of the convolution reduces to $\mathcal{O}(N_{pix})$ operations and as such is much more efficient than filtering with spherical harmonics, even though HEALPix was designed as an iso-latitude sampling that has a fast spherical transform." to make it easier to read.
 \end{mdframed}
+
 Thanks for the suggestion. We changed the manuscript.
 
 \begin{mdframed}[style=comment]
@@ -775,6 +793,7 @@ That is especially true for smooth kernels which require a low polynomial degree
 
 - It is unclear what "That" refers to. If making the above change then "That" could be changed to "This" and it would make sense.
 \end{mdframed}
+
 Thanks for spotting this.
 
 \begin{mdframed}[style=comment]
@@ -782,6 +801,7 @@ Coarsening can be naturally designed for hierarchical pixelisation schemes, as e
 
 - I think you mean "where" instead of "as"
 \end{mdframed}
+
 % \todo{Assigned: @tomek}
 % \nati{I think the "as" is correct here. We use it for "because". Not sure...}
 Thank you for the suggestion, we adopted it.
@@ -791,6 +811,7 @@ Coarsening is the reverse operation: merging the sub-cells toward the goal of su
 
 - This has an unusual syntax which makes it difficult to follow. I think you mean something like "To coarsen, the sub-cells are merged to summarise the data supported on them."
 \end{mdframed}
+
 % \todo{Assigned: @tomek}
 % \nati{I prefer the version we have. But I leave it up to you to decide.}
 We updated the text as suggested.
@@ -800,6 +821,7 @@ Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R
 
 - It should be "such that" not "such as". "Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R}^{N'_{pix}}$ such that"
 \end{mdframed}
+
 Thank you for spotting this mistake. We have corrected the manuscript.
 
 \begin{mdframed}[style=comment]
@@ -807,6 +829,7 @@ Thank you for spotting this mistake. We have corrected the manuscript.
 
 - Can you explain what $p$ is and it would probably be worth splitting this equation into a multi-line align environment for clarity.
 \end{mdframed}
+
 $p$ was introduced to highlight the fact that the coarsening factor is a power of 4 by construction of HEALPix.
 It is defined as $p=\log_2(N_{side} / N'_{side})$.
 We have updated the manuscript with this clarification and with an equation environment.
@@ -816,6 +839,7 @@ The tail is composed of multiple fully connected layers (FC) followed by an opti
 
 - This needs to be expanded to state "The tail is composed of multiple fully connected layers (FC) followed by an optional softmax layer (SM) if the network is used for discrete classification."
 \end{mdframed}
+
 We followed the suggestion.
 
 \begin{mdframed}[style=comment]
@@ -823,6 +847,7 @@ A non-linear function $\sigma(\cdot)$ is applied after every linear GC and FC la
 
 - Why specify this is identity? It could take any activation - you have already mentioned that it could be a softmax.
 \end{mdframed}
+
 We have removed the identity specification.
 
 \begin{mdframed}[style=comment]
@@ -830,6 +855,7 @@ The rectified linear unit (ReLU) $\sigma(\cdot) = \textrm{max}(\cdot, 0)$ is a c
 
 - Is this the choice you adopt? You should mention that you do, if you indeed do.
 \end{mdframed}
+
 We followed the suggestion.
 
 \begin{mdframed}[style=comment]
@@ -837,6 +863,7 @@ Note that the output $\bf{Y}\in\mathbb{R}^{N_{pix}\times F_{out}}$ of the last G
 
 - What is ST, you don't mention it before and only once after?
 \end{mdframed}
+
 Thanks for spotting this.
 It was a leftover from an earlier draft.
 
@@ -845,6 +872,7 @@ The output’s size of the neural network depends on the task.
 
 - It would be more correct to write "The size of the output of the neural network depends on the task."
 \end{mdframed}
+
 We followed the suggestion.
 
 \begin{mdframed}[style=comment]
@@ -852,6 +880,7 @@ Its radius should be large enough to capture statistics of interest.
 
 - I think you mean the radius of the kernel. Perhaps this could be rewritten.
 \end{mdframed}
+
 % \todo{Assign: @tomek}
 % \todo{To check: @all}
 % \nati{The manuscript seems clear to me. But let me know if you think otherwise.}
@@ -863,6 +892,7 @@ For example, a small a partial sky observation can provide only limited informat
 
 - There is just a little mix up in this sentence, maybe a copy and paste accident.
 \end{mdframed}
+
 Thanks for spotting it. We have fixed this mistake.
 
 \begin{mdframed}[style=comment]
@@ -870,53 +900,69 @@ The cost (or loss) function $C(\bf{Y},\bar{\bf{Y}}) = C(NN_\theta(\bf{X}),\bar{\
 
 - This is true for supervised learning only and should be stated.
 \end{mdframed}
-\todo{To check: @michael}
-We are not sure this specification is necessary as this cost cannot be computed in an unsupervised setting. We decided to not change the text.
+
+We do not think it is necessary to specify that this is true for supervised learning only.
+The phrase ``ground truth'' should be sufficient to indicate that.
+%This cost cannot be computed in an unsupervised setting anyway.
 % \nati{In an unsupervised setting, this can just not be computed... Specifying it seems redundant to me.}
+% \todo{To check: @michael}
+% \mdeff{Agreed. The whole paper is about supervized learning anyway.}
 
 \begin{mdframed}[style=comment]
 For global prediction, the cost is as if $N_{pix} = 1$.
 
 - I think this should be "For global prediction $N_{pix} = 1$."
 \end{mdframed}
-\todo{To check: @michael}
 
-We changed the text as:
+We changed the text to:
 \begin{mdframed}[style=manuscript]
-For global prediction, we have $N_{pix} = 1$.
+	For global prediction, we have $N_{pix} = 1$.
 \end{mdframed}
+
+%\todo{To check: @michael}
+%\mdeff{Agreed.}
 
 \begin{mdframed}[style=comment]
 We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
 
 - This should be "We emphasise that the cost function and the SM layer are the sole differences between a neural network engineered for classification or regression."
 \end{mdframed}
-We thank the reviewer for spotting this mistake. We have updated the manuscript.
+
+We followed the suggestion.
 
 \begin{mdframed}[style=comment]
 The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = E\left[C\left(NN_\theta(\bf{X}),\bar{\bf{Y}}\right)\right]$.
 
 - It is the goal of training, not of learning (in common parlance anyway). Also, you should say that E[] is the expectation rather than leaving people to guess according to the next sentence.
 \end{mdframed}
-\todo{Assign:  @nati, @michael. \nati{@Michael, please check this one carefully, also in the text, I am not sure my notation is correct}}
 
-According to us, the goal of training is to minimize the empirical risk, which does not contain the expectation. On the contrary, the goal of learning is to minimize the expected risk, i.e. we additionally do not want to overfit the training set. Hence we left "learning" in the text. Nevertheless, we specified the expectation operator.
+% According to us, the goal of training is to minimize the empirical risk, which does not contain the expectation.
+% On the contrary, the goal of learning is to minimize the expected risk, i.e., we additionally do not want to overfit the training set.
+% Hence we left ``learning'' in the text.
+% Nevertheless, we specified the expectation operator.
+% \nati{@Michael, please check this one carefully, also in the text, I am not sure my notation is correct}
+% \mdeff{Debatable. I can see overfitting as an anti-goal of training. Doesn't matter much to me. Agreeing with him is simpler. Hence:}
+We followed the suggestions.
 
 \begin{mdframed}[style=comment]
 The optimization is performed by computing an error gradient w.r.t. all the parameters by back-propagation and updating them with a form of stochastic gradient descent (SGD):
 
 - This sentence is just a bit turned upside-down, it should be "The optimisation is performed by computing an error gradient w.r.t. all the parameters and updating each parameter via back propagation using a form of stochastic gradient descent (SGD):"
 \end{mdframed}
-\todo{To check: @michael, \nati{again I disagree with the reviewer}}
 
-We are not sure, we understand the reviewer. Back-propagation is a technique to compute the gradients and not to perform the update of the parameter. The latter is done with SGD. So we believe that the original formulation of our sentence is more accurate than the reviewer proposition.
-
+% \todo{To check: @michael, \nati{again I disagree with the reviewer}}
+% \mdeff{Agree with Nathanaël.}
+We are not sure, we understand the reviewer.
+Back-propagation is a technique to compute gradients, not to update the parameters.
+The latter is done with SGD.
+We believe that the original formulation is more accurate than proposition.
 
 \begin{mdframed}[style=comment]
 As this formulation uses the standard 2D convolution, all the optimizations developed for images can be applied, what makes it computationally efficient.
 
 - It should be "which makes it computationally efficient" instead of "what". (It's possibly "that" and not "which", but I'm never sure which ;))
 \end{mdframed}
+
 This mistake has been corrected.
 
 \begin{mdframed}[style=comment]
@@ -924,10 +970,12 @@ A straightforward way to impose locality in the original domain is to impose smo
 
 - What do you mean by "by Heisenberg’s uncertainty principle." That seemed to come out of nowhere. This needs explaining further.
 \end{mdframed}
-\todo{To check: @all}
 
-The link with the Heisenberg's uncertainty principle does exist but it too complex to explain shortly. Hence we decided to remove the ``by Heisenberg’s uncertainty principle'' and keep the rest of the sentence as a general Fourier analysis recipe.
-% \todo{Assigned: @all}
+We added the general idea behind the Heisenberg's uncertainty principle.
+% \mdeff{I prefer to leave "by Heisenberg [...]". Readers will otherwise wonder why the recipe... I borrowed the text from your below justification.}
+
+% The link with the Heisenberg's uncertainty principle does exist but is too complex to explain shortly.
+% We decided to remove ``by Heisenberg’s uncertainty principle'' and keep the rest of the sentence as a general Fourier analysis recipe.
 
 % \nati{The reviewer is correct. Our justification is shady. I am not sure how to make this clear, without writing too much. It is kind of a general consent that smoothness in one domain implies localization in the other. The reason is that for the continuous Fourier transform, we have:
 % \begin{equation*}
@@ -948,14 +996,18 @@ All the above methods cannot be easily accelerated when the data lies on a part 
 
 - You mention your method as part of the "above methods", but then you go on to say that using graphs does allow you to accelerate the method when data is only on part of the sphere.
 \end{mdframed}
-Indeed, our method can be applied only on a part or the sphere. We have corrected the text.
+
+Indeed.
+We corrected the text.
 
 \begin{mdframed}[style=comment]
 By interwinding graph convolutional layers and recurrent layers [65], they can for example model structured time series such as traffic on road networks [66], or recursively complete matrices for recommendation [67].
 
 - I'm not sure what interwinding is, I guess you mean by making GC recurrent, or do you mean using GC and then RL separately? Either way there should be commas around "for example".
 \end{mdframed}
-Thank you for spotting this. We added the necessary commas. We also change the word ``interwinding'' with ``combining''.
+
+Thanks for spotting this.
+We added the necessary commas and changed ``interwinding'' for ``combining''.
 
 
 \begin{mdframed}[style=comment]
@@ -963,6 +1015,7 @@ To prevent the cosmological models to be distinguished by their power spectra al
 
 - This should be "To prevent the cosmological models from being distinguished by their power spectra alone the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell> 1000$ ).
 \end{mdframed}
+
 We have corrected this formulation according to the reviewer suggestion.
 
 \begin{mdframed}[style=comment]
@@ -970,6 +1023,7 @@ The two sets of maps were created using the standard cosmological model with two
 
 - Can you add that you are going to describe the details more thoroughly in section 4.1.
 \end{mdframed}
+
 We have updated the manuscript accordingly.
 
 \begin{mdframed}[style=comment]
@@ -977,6 +1031,7 @@ Implementation of full cosmological inference requires, however, many more simul
 
 - Unless you have a cheap neural network based likelihood-free method ;)
 \end{mdframed}
+
 Indeed. We added a word "typically" to reflect that there may be cases like this.
 
 \begin{mdframed}[style=comment]
@@ -984,6 +1039,7 @@ For each class, we generate 30 simulations.
 
 - Just mention that there are two classes again, to make it clear that "class" means "cosmology".
 \end{mdframed}
+
 % \todo{Assign: @Tomek}
 We updated the sentence following the reviewer suggestion.
 \nati{@Tomek, do you think it is fine that we do not say that class==comoslogy? It think so.}
@@ -993,6 +1049,7 @@ That is a data augmentation scheme, as it creates more training examples than we
 
 - I think that you should introduce the Gaussian noise paragraph by stating that you perform data augmentation via the addition of randomly drawn Gaussian noise, rather than talking about the random noise first and then explaining that the reason is for data augmentation. ML specialists in particular will be happier with the addition of noise for DA (as will cosmologists I think).
 \end{mdframed}
+
 \todo{To check: @all}
 % \nati{I think that the primary goal of adding noise is the make the problem harder, and show robust prediction, not the make the dataset larger... Hence I disagree with the reviewer. What do you think?}
 % \TK{This is an interesting observation. The noise is introduced to make the case realistic, as the mass map data in reality is always very noisy. It is convenient that this fact can be used for data augmentation too and make the ML problem easier to solve. As these two facts are connected, we prefer to leave the sentence as is.}
@@ -1006,6 +1063,7 @@ Probabilities are computed by the SM layer.
 
 - As explained above, these are not probabilities, they are class predictions from the network.
 \end{mdframed}
+
 \todo{To check: @michael}
 % \nati{Should we simply say "normalized network score"? I do not know...}
 
@@ -1019,6 +1077,7 @@ As less pixels are available to make a decision about a sample, the algorithms h
 
 - Should be "As fewer pixels...". Also, "makes more mistakes" kind of anthropomorphises the network too much. Perhaps "have access to less information and thus cannot classify as well".
 \end{mdframed}
+
 We followed the reviewer suggestions.
 
 \begin{mdframed}[style=comment]
@@ -1026,6 +1085,7 @@ This standard deviation has the property to keep the energy of the signal more o
 
 - Should be "of keeping" instead of "to keep". "This standard deviation has the property of keeping the energy of the signal more or less constant across layers"
 \end{mdframed}
+
 We corrected the manuscript.
 
 \begin{mdframed}[style=comment]
@@ -1033,6 +1093,7 @@ We derived this rule from the Chebyshev polynomial equations and some empirical 
 
 - This is a bit loose, can you explain further and add a citation if you didn't do the experiments yourself?
 \end{mdframed}
+
 % \todo{Assign: @nati, @michael}
 % \nati{We would need an appendix to do that. It is the last figure of the figure’s notebook (expected filter). I could spend two hours and write some equation... @michael, what do you think?}
 We updated the section with a citation and some extra information.
@@ -1045,6 +1106,7 @@ Figure 10: Random selection of 24 learned filters from the fifth spherical convo
 
 - There is not enough information in this caption. Can you explain that there is some obvious peak structure. I think a colourbar on the gnomonic projection would be useful too.
 \end{mdframed}
+
 \todo{Assign: @all}
 % \nati{The problem is that random filters are picky as well and look very similar. Should we say that? I do not think a colorbar is necessary since there are numbered axes on the top plots. Do you agree?}
 % \TK{Added sentence}
@@ -1060,6 +1122,7 @@ The fact that a graph representation of the disretised sphere enables an efficie
 
 - It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
 \end{mdframed}
+
 We followed the reviewer suggestion (and we went for ``which'').
 % \todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
 % \TK{Sounds good to me.}
@@ -1069,6 +1132,7 @@ In the long term, it might enable researchers to consider sampling schemes with 
 
 - What is "it" here? DeepSphere or graph networks or something else?
 \end{mdframed}
+
 "it" refer to "graphs" in general. We have updated the manuscript.
 
 \begin{mdframed}[style=comment]

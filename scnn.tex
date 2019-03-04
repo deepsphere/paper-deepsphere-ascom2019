@@ -661,7 +661,7 @@ For a regression task, a common choice is the mean squared error (MSE)
 \end{equation*}
 where $\bar{\Y}$ is the desired output. Again, take $N_{pix} = 1$ for global regression. We emphasize that the cost function and the $SM$ layer are the sole differences between a neural network engineered for classification or regression.
 
-\nati{The goal of learning is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ C \left( NN_\theta(\X), \bar \Y \right) \right]$, where $\esp$ is the expectation over the joint distribution $(\X, \bar \Y)$.}
+The goal of training is to find the parameters $\theta$ of the neural network that minimize the risk $R(\theta) = \esp \left[ C \left( NN_\theta(\X), \bar \Y \right) \right]$, where $\esp$ is the expectation over the joint distribution $(\X, \bar \Y)$.
 In general, that expectation cannot be computed as the data distribution is unknown. We can however minimize an approximation, the empirical risk over the training set $\left\{ \left( \X_i, \bar \Y_i \right) \right\}_{i=1}^{N_{samples}}$:
 \begin{equation*}
 	\hat{\theta} = \argmin_\theta \sum_{i=1}^{N_{samples}} C \left(NN_\theta(\X_i), \bar \Y_i \right).
@@ -727,12 +727,11 @@ See \citep{kondor2018equivariance} for a rigorous treatment of convolution and e
 
 While defining the convolution in the spectral domain avoids all sampling issues, filters so defined are not naturally localized in the original domain.
 Localization is desired for the transformation to be stable to local deformation \citep{mallat2012scattering}, and most interactions in the data are local anyway.
-A straightforward way to impose locality in the original domain is to impose smoothness in the spectral domain.
-% , by Heisenberg's uncertainty principle.
+A straightforward way to impose locality in the original domain is to impose smoothness in the spectral domain, by Heisenberg's uncertainty principle.\footnote{Heisenberg's uncertainty principle states that a filter cannot be arbitrarily concentrated in one domain without being de-concentrated in the other.}
 A more elegant approach is to define filters that are provably localized.
 The filters defined in \eqnref{graph_convolution_monomial} and \eqnref{graph_convolution_cheby}, by being polynomials of the Laplacian, are of this kind.
 
-\nati{All the presented methods, but our, cannot be easily accelerated when the data lies on a part of the sphere only.}
+All the presented 2D and spherical CNNs cannot be easily accelerated when the data lies on a part of the sphere only.
 That is an important use case in cosmology as measurements are often partial, i.e., whole sky maps are rare.
 One could still fill the unseen part of the sphere with zeros, and avoid computing empty integrals.
 It is, however, not straightforward to identify empty space, and computations would still be wasted (for example on a ring that mostly contains zeros but a few measurements).
