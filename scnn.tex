@@ -592,8 +592,8 @@ If P layers are used, they have to be inverted via up-sampling in an encoder-dec
 
 The set of input pixels which influence the value of an output pixel forms a \textit{receptive field}.
 That field is isotropic and local, i.e., it forms a disk centered around the output pixel.
-Its radius is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of $P$ layers if any.
-Its radius should be large enough to capture statistics of interest.
+The radius of this filter is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of $P$ layers, if any.
+This radius should be large enough to capture statistics of interest.
 For example, a partial sky observation can provide only limited information of cosmological relevance.
 On the other hand, looking at the whole sky is often superfluous and waste computations, as most interactions are local.
 A data and task dependent trade-off is to be found.
@@ -1087,7 +1087,7 @@ Note that, because of the small irregularities in the HEALPix sampling, the seco
 The graph setting used throughout this contribution corresponds to assuming reflective border conditions.
 While that is irrelevant when working on the complete sphere (as it has no border), it slightly affects the convolution operation when only a part of the sphere is considered.
 As depicted in \figref{border_effects}, a filter localized near a border (via $h(\L) \b \delta_i$) is no longer isotropic.
-These border effects can, however, be mitigated by padding with zeros a small area around the part of interest. 
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
 In this case, they are similar to the border effects in traditional CNNs.
 We however do not expect these effects to cause any problem as long as the data samples cover the same area.
 
