@@ -678,7 +678,7 @@ As each pixel is subdivided in four, the second coarser resolution is $N_{pix} =
 
 - Might it be more concise to write "The resolution changes as $N_{pix} = N^2_{side}\times12$ such that $N_{pix} = 48$ for $N_{side} = 2$ and $N_{pix} = 192$ with $N_{side}=3$."
 \end{mdframed}
-\TK{Thank you for the suggestion, we updated the text.}
+Thank you for the suggestion, we updated the text.
 
 \begin{mdframed}[style=comment]
 ... is a measure of the variation of the eigenvector $\bf{u}_i$ is on the graph defined by the Laplacian L.
@@ -692,7 +692,9 @@ Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$,a signal $f\in\math
 
 - You don't mention what $\mathbb{R}_+$ is or why $h$ defines that map.
 \end{mdframed}
-\nati{This seems clear to me. Specifying what $\mathbb{R}_+$ is would be a bit too much I believe. @all -> is it also for you?}
+We are not sure what the reviewer means here. $\mathbb{R}_+$ is the ensemble of the real positive numbers and $h$ is simply a function that maps any positive real numbers to another real number.
+
+\nati{This seems clear to me. Specifying what $\mathbb{R}_+$ is would be a bit too much I believe. @all, is it also for you?}
 
 \begin{mdframed}[style=comment]
 This localization of the kernel $h$ can be useful to visualize kernels, as explained in Appendix C.
@@ -733,6 +735,8 @@ The 1-neighborhood of a node is the set of nodes that are directly connected to 
 
 - I'm a little confused here, I think the neighbourhood is every pixel which is closer than the distance of some pixel. The value of k would then be the length of the set of ordered distances for all pixels up to this pixel. Is that correct? For example, take a 3x3 square (on Euclidean space for simplicity), if the central pixel has coordinates (0, 0) then the 1-neighbourhood would be all pixels at a length of 1 pixel or less, i.e. (-1, 0), (+1, 0), (0, -1) and (0, +1) who are all at the same distance so the set of distances is {1} pixel and the length of the set is 1. The 2-neighbourhood would then be all pixels which were a distance $\sqrt{2}$ pixels or less away, i.e. (-1, 0), (+1, 0), (0, -1), (0, +1), (-1, -1), (-1, +1), (+1, -1), (+1, +1) so the set of distances would be {1, $\sqrt{2}$} pixels and the length of the set is 2. Is this correct? If so k is not a length. If this is not correct, I think I misunderstand something and so this should be updated in the text.
 \end{mdframed}
+% Here the notion of neighboorhood is defined in the context of graphs. Hence there is no coordinates to compute distances.
+
 \todo{Assigned: @michael}
 
 \begin{mdframed}[style=comment]
@@ -770,7 +774,7 @@ Coarsening can be naturally designed for hierarchical pixelisation schemes, as e
 \end{mdframed}
 % \todo{Assigned: @tomek}
 % \nati{I think the "as" is correct here. We use it for "because". Not sure...}
-\TK{Thank you for the suggestion, we adopted it.}
+Thank you for the suggestion, we adopted it.
 
 \begin{mdframed}[style=comment]
 Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
@@ -779,7 +783,7 @@ Coarsening is the reverse operation: merging the sub-cells toward the goal of su
 \end{mdframed}
 % \todo{Assigned: @tomek}
 % \nati{I prefer the version we have. But I leave it up to you to decide.}
-\TK{We updated the text as suggested.}
+We updated the text as suggested.
 
 \begin{mdframed}[style=comment]
 Given a map $\bf{x}\in\mathbb{R}^{N_{pix}}$, pooling defines $\bf{y}\in\mathbb{R}^{N'_{pix}}$ such as
@@ -931,10 +935,11 @@ By interwinding graph convolutional layers and recurrent layers [65], they can f
 \end{mdframed}
 \todo{Assign @michael}
 
-\begin{mdframed}[style=comment]
-To prevent the cosmological models to be distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell$ > 1000).
 
-- This should be "To prevent the cosmological models from being distinguished by their power spectra alone the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell$ > 1000).
+\begin{mdframed}[style=comment]
+To prevent the cosmological models to be distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell> 1000$ ).
+
+- This should be "To prevent the cosmological models from being distinguished by their power spectra alone the maps have been smoothed with a Gaussian kernel of radius 3 arcmins to remove high frequencies ($\ell> 1000$ ).
 \end{mdframed}
 We have corrected this formulation according to the reviewer suggestion.
 
@@ -950,7 +955,7 @@ Implementation of full cosmological inference requires, however, many more simul
 
 - Unless you have a cheap neural network based likelihood-free method ;)
 \end{mdframed}
-\TK{Indeed. We added a word "typically" to reflect that there may be cases like this.}
+Indeed. We added a word "typically" to reflect that there may be cases like this.
 
 \begin{mdframed}[style=comment]
 For each class, we generate 30 simulations.
@@ -1016,8 +1021,9 @@ The fact that a graph representation of the disretised sphere enables an efficie
 
 - It should be "discretised" and also "who" should be "which" (or "that", I'm not actually sure myself)
 \end{mdframed}
-\todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
-\TK{Sounds good to me.}
+We followed the reviewer suggestion (and we went for ``which''). 
+% \todo{Assign: @tomek -> \nati{I corrected it with "which". Do you agree? }}
+% \TK{Sounds good to me.}
 
 \begin{mdframed}[style=comment]
 In the long term, it might enable researchers to consider sampling schemes with different trade-offs, or remove the need for schemes and interpolation altogether and simply consider the positions at which measures were taken.
@@ -1032,15 +1038,16 @@ We believe that it might be the case for a different construction of the graph (
 - What makes you believe this? If you don't want to mention it in this paper, please don't speculate a "belief". I might just be reading the sentence incorrectly, but it makes me a little uncomfortable when there is no evidence backing that up. If you have some evidence then it's worth presenting it.
 \end{mdframed}
 \todo{Assign: @nati, @michael}
-
+As already mentioned in this rebuttal, our belief comes from the fact that we are working on this. 
+Nevertheless, we agree with the reviewer that a scientific article should not contains speculations. 
+Hence, we removed that suggestion from the manuscript.
 
 \begin{mdframed}[style=comment]
 In this case, the graph setting used through this contribution correspond to assume reflective border conditions.
 
 - It should be "assumed". "In this case, the graph setting used through this contribution correspond to assumed reflective border conditions."
 \end{mdframed}
-\todo{@assign: Tomek}
-\TK{Thank you for pointing it out, we believe that the original intended meaning is better reflected as is now.}
+Thank you for pointing it out, we believe that the original intended meaning is better reflected as is now.
 
 \begin{mdframed}[style=comment]
 Nevertheless, dealing working with a subpart of the sphere, its border slightly affects the convolution.
@@ -1050,12 +1057,13 @@ Nevertheless, dealing working with a subpart of the sphere, its border slightly 
 We have corrected this mistake according to the reviewer suggestion.
 
 \begin{mdframed}[style=comment]
-These border effects can, however, be mitigated by padding with zeros a small area around the part of interest.
+These border effects can, however, be mitigated by padding with zeros a small area around the part of interest. 
 
 - Are they really mitigated? Surely there are still effects but you are happy with the level?
 \end{mdframed}
 \todo{Assign: @nati, @michael}
-
+With the zero padding, the border effects become similar to the ones in traditional CNNs. 
+This information has been added to the manuscript.
 
 \begin{mdframed}[style=comment]
 Furthermore, this result is another sign that the constructed graph is able to capture the spherical structure of the HEALPix sampling.
