@@ -390,7 +390,7 @@ This projection has recently been used for a CNN in cosmology in the very recent
 
 As we believe that this projection is the optimal one to use a traditonal CNN for application, we performed the experiment using it. 
 
-Our expectation were similar with the one of the reviewer, but the results did surprise us as the performance of the traditional CNN did in general not match DeepSphere, \nati{(see Figure 9 of the manuscript)}.
+Our expectation were similar with the one of the reviewer, but the results did surprise us as the performance of the traditional CNN did in general not match DeepSphere, (see Figure 9 of the manuscript).
 It can probably be explained by the fact that 2DCNN breaks the rotational invariance of the data. 
 The problem comes from the fact that the projection introduce a distortion in the geometry and the network has to learn a correct weighting scheme to compensate for it. 
 Unfortunately, this operation waste many parameters, reducing the modelization power of the network and requires large amount of training data which is not fully available.
@@ -426,15 +426,19 @@ Note that, when visualizing the learned convolution kernels, we observed that th
 Similarly, I think it would useful to check how well the DeepSphere CNN does against the FCN when the input data is rotated randomly during training - I imagine that the results should match or probably exceed the FCN results and I think this would be a neat little test which doesn't involve needing extra data, just more augmentation.
 \end{mdframed}
 
-That comparison is not warranted.
+% That comparison is not warranted.
 % or justified. pointless is maybe too aggressive
+We do not believe this comparizon is useful because of the following theoretical reason
 There are two ways to deal with symmetries one wants to be invariant to: (i) build them into the architecture of the model, or (ii) augment the dataset such that a (more general) model learns them ``brute-force''.
 With respect to rotation invariance, the FCN architecture is of the first kind, while the CNN is of the second kind.
 Assuming the task is truly invariant to said symmetry,\footnote{As argued in the introduction, cosmological maps are rotation invariant.} the performance of the first kind of models would be exactly the same as without augmentation, while the second kind would only catch up after seeing enough data to learn the invariance.
-That is a waste of resources which is only justified if it's not possible to back the desired invariance in the architecture.
-The reviewer himself makes that point in comment 2.8: ``building a NN to suit your purposes''.
+% That is a waste of resources which is only justified if it's not possible to back the desired invariance in the architecture.
+Augmentation is only justified if it's not possible to back the desired invariance in the architecture.
+% The reviewer himself makes that point in comment 2.8: ``building a NN to suit your purposes''.
 We updated the manuscript to more precisely reflect this argumentation.
+
 \TK{Seems a bit strong to me.. maybe we would write it in a softer language?}
+\nati{Now it is OK. But is it still strong enough. We should only point reviewer incoherence if necessary.}
 
 % \nati{Technically, testing this is complicated as rotation on HEALPix are complicated and expensive. We probably will have to break a lot of code to do it.
 % @Michael: what do you think?}
@@ -464,7 +468,7 @@ See also comment 1.4 and our answer there.
 
 \todo{the new figure A.12 is maybe a weak proof of convergence}
 
-\mdeff{@nati, what do you think?}
+\mdeff{@nati, what do you think?} \nati{I like it. I totally agree with the new wording.}
 
 
 \subsection{}
@@ -578,32 +582,31 @@ We are thinking about it. However, as the graph framework we are using only work
 \begin{mdframed}[style=comment]
 Finally, I noticed a few points in the text where there were typos or things which were difficult to follow and I have put a note of them below and tried to correct them as much as I can so that you don't have to put too much effort in - I can't wait to see this paper published. Sorry that the list is so extensive (I'm a bit of a stickler for details and trying to write papers concisely):
 \end{mdframed}
-\todo{Assigned @tomek.
-This reviewer really spend the time. Should we say something here?}
-\TK{Thank you very much for taking the time for making these corrections. We find them very helpful and improving the quality of the paper.
-We implemented most of them, see below.}
+Thank you very much for taking the time for making these corrections. We find them very helpful and improving the quality of the paper.
+We implemented most of them, see below.
 
 \begin{mdframed}[style=comment]
 Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation [9–16].
 
 - There are many of us in the community who are not overly keen on "precision" of parameter estimation being the target for machine learning. Rather, we would prefer robustness of parameter estimation. It might be worth changing this sentence a bit so as not to upset some of the referenced authors ;)
 \end{mdframed}
-\todo{Assigned: @tomek, @michael}
+\todo{Assigned: @tomek}
 \TK{not sure what do to here.. will people get upset? "Precision" is commonly used in cosmology}
 
 \begin{mdframed}[style=comment]
 When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
 \end{mdframed}
-\todo{Assigned: @tomek}
-\nati{I personally think it is better without separating the lines}
-\TK{Thank you for the suggestion, normally we would adopt it, but the paper is already quite long, and breaking up the lines in equations would make it even longer. So we decided against it.}
+Thank you for the suggestion, normally we would adopt it, but the paper is already quite long, and breaking up the lines in equations would make it even longer. So we decided against it.
 
 \begin{mdframed}[style=comment]
 You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
 \end{mdframed}
-\todo{Assigned: @all}
-\nati{What do you think? This avoid repetition. But we could be more consistent...}
-\TK{Agreed. Do you want to make the change @nati?}
+We agree with the reviewer that using different term for the same notion can be confusing for the reader. 
+Nevertheless, while ``a node'' and ``a vertex'' are synonyms refering to a graph part, ``a pixel'' is a different concept refering to a point of the (spherical) sampling.
+As a result, we decided to keep the ``vertex'' and ``pixel''.
+% \todo{Assigned: @all}
+% \nati{What do you think? This avoid repetition. But we could be more consistent...}
+% \TK{Agreed. Do you want to make the change @nati?}
 
 
 \begin{mdframed}[style=comment]
@@ -631,7 +634,7 @@ The flexibility of modelling the data domain with a graph allows to easily model
 
 - I think you're missing a "one" after allows. "The flexibility of modelling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled."
 \end{mdframed}
-\TK{Thank you for the suggestion, we updated the text.}
+Thank you for the suggestion, we updated the text.
 
 \begin{mdframed}[style=comment]
 This kind of maps can be created using the gravitational lensing technique [see 29, for review]

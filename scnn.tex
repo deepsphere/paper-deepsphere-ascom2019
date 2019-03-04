@@ -315,7 +315,7 @@ Before doing any numerical analysis on the sphere, one first has to choose a tes
 The simplicity of the spherical form belies the intricacy of global analysis on the sphere: there is no known point set that achieves the analogue of uniform sampling in Euclidean space.
 % and allows exact and invertible discrete spherical harmonic decompositions of arbitrary but band-limited functions.
 %Any existing proposition of practical schemes for the discrete treatment of such functions on the sphere introduces some systematic error dependent on the global properties of the point set.
-While our method is applicable to any pixelisation of the sphere, two details depend on the chosen sampling: (i) the choice of neighbours in the construction of the graph, and (ii) the choice of parent nodes when coarsening the graph.
+While our method is applicable to any pixelisation of the sphere, two details depend on the chosen sampling: (i) the choice of neighbours in the construction of the graph, and (ii) the choice of parent vertices when coarsening the graph.
 As HEALPix~\citep{gorski2005healpix} is our target application, we tailor the method to that particular sampling in the subsequent exposition.
 \figref{example_maps} shows three examples of HEALPix maps: the Cosmic Microwave Background \citep{planck2015overview}, galaxies found in Sloan Digital Sky Survey Data Release 14 \citep{abolfathi2017sdssDR14}, and an example simulated mass map on the footprint of Dark Energy Survey Data Release 1 \citep{des2018dr1}.
 
@@ -341,9 +341,9 @@ Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold 
 Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing random uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
 While our construction does not exactly respect their setting (the sampling is deterministic and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see \ref{sec:comparison_spherical_harmonics}).
 
-From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ nodes, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
-In our graph, each pixel $i$ is represented by a node (also called vertex) $v_i \in \V$.
-Each node $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \times 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} nodes $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
+From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ vertices, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
+In our graph, each pixel $i$ is represented by a vertex (also called vertex) $v_i \in \V$.
+Each vertex $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \times 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} vertices $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
 \begin{equation*}
 	\W_{ij} = \begin{cases}
 		\exp \left( -\frac{\|\x_i-\x_j\|_2^2}{\rho^2} \right) & \text{if pixels $i$ and $j$ are neighbors,} \\
@@ -364,7 +364,7 @@ Other weighting schemes are possible. For example,~\cite{khasanova2017graphomni}
 Following~\cite{shuman2013emerging}, the normalized graph Laplacian,
 defined as $\L = \I - \D^{-1/2} \W \D^{-1/2}$, is a second order differential operator
 that can be used to define a Fourier basis on the graph. Here $\D$ is the diagonal
-matrix where $\D_{ii} = \b{d}_i$ and $\b{d}_i = \sum_j \W_{ij}$ is the weighted degree of node $v_i$. By construction, the Laplacian is symmetric positive
+matrix where $\D_{ii} = \b{d}_i$ and $\b{d}_i = \sum_j \W_{ij}$ is the weighted degree of vertex $v_i$. By construction, the Laplacian is symmetric positive
 semi-definite and hence can be decomposed as $\L = \U \bLambda \U\trans$, where $\U = [\b u_1, \ldots, \b u_{N_{pix}}]$ is an
 orthonormal matrix of eigenvectors and $\bLambda$ is a diagonal matrix of
 eigenvalues. The graph Fourier basis is defined as the Laplacian eigenvectors, motivated by the fact that a Fourier basis should diagonalize the Laplacian operator.
@@ -408,7 +408,7 @@ where $h(\bLambda)$ is a diagonal matrix where $h(\bLambda)_{ii} = h(\bLambda_{i
 
 Contrary to classical signal processing on Euclidean domains, the kernel $h$ has no single representation in the vertex domain and cannot be translated on the graph. It can however be \textit{localized} on any vertex $v_i$ by the convolution with a Kronecker delta\footnote{A Kronecker delta is the signal $\b \delta^i \in \R^{N_{pix}}$ that is zero everywhere except on vertex $v_i$ where it takes the value one.} $\b \delta^i \in \R^{N_{pix}}$. The localization operator $\T_i$ reads $\T_i h = h(\L) \b \delta^i = (h(\L))_i$, the $i$th column of $h(\L)$.
 This localization of the kernel $h$ can be useful to visualize kernels, as shown in an example of heat diffusion presented in~\ref{sec:filter_visualization}.
-If the graph is not regular, i.e., all nodes do not have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one node to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see ~\ref{sec:border_effects}).
+If the graph is not regular, i.e., all vertices do not have the same number of neighbors, and all distances are not equal, the effect of the kernel will slightly differ from one vertex to another. While there is no perfect sampling of the sphere, these differences are negligible as the structure of the whole graph is very regular. However, when considering only parts of the sphere, one can observe important border effects (see ~\ref{sec:border_effects}).
 
 Finally, the graph convolution can be interpreted in the vertex domain as a scalar product with localizations $\T_i h$ of the kernel $h$. Indeed, the result of the convolution of the signal $\f$ with the kernel $h$ is
 \begin{equation} \label{eqn:graph_convolution_spatial}
@@ -450,16 +450,16 @@ The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_monomial}
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
-where $\L^k$ captures $k$-neighborhoods.\footnote{The 1-neighborhood of a node is the set of nodes that are directly connected to it. The $k$-neighborhood of a node is the set of nodes that are connected to it through paths of length $k$.}
-The entry $(\L^k)_{ij}$ is the sum of all weighted paths of length $k$ between nodes $v_i$ and $v_j$, where the weight of a path is the multiplication of all the edge weights on the path.
-Hence, it is non-zero if and only if nodes $v_i$ and $v_j$ are connected by at least one path of length $k$.
+where $\L^k$ captures $k$-neighborhoods.\footnote{The 1-neighborhood of a vertex is the set of vertices that are directly connected to it. The $k$-neighborhood of a vertex is the set of vertices that are connected to it through paths of length $k$.}
+The entry $(\L^k)_{ij}$ is the sum of all weighted paths of length $k$ between vertices $v_i$ and $v_j$, where the weight of a path is the multiplication of all the edge weights on the path.
+Hence, it is non-zero if and only if vertices $v_i$ and $v_j$ are connected by at least one path of length $k$.
 Filtering with a polynomial convolution kernel can thus be interpreted in the pixel (vertex) domain as a weighted linear combination of neighboring pixel values.
 In the classical setting, convolutions are also weighted local sums.
 The weights are however given by the filter coefficients only, and there is one coefficient per pixel in the patch.
-In the graph setting, the weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$, and there is one coefficient per neighborhood, not node.
+In the graph setting, the weights are determined by the filter coefficients $\theta$ and the Laplacian $\L$, and there is one coefficient per neighborhood, not vertex.
 That defines radial filters, values of which depend only on the distance to the center, and not on the direction.
-% It is required as there is no way to order and match nodes from the same neighborhood.
-% The number of nodes in a neighborhood most often even vary from node to node.
+% It is required as there is no way to order and match vertices from the same neighborhood.
+% The number of vertices in a neighborhood most often even vary from vertex to vertex.
 While it may seem odd to restrict filters to be 1D while the sphere is 2D, radial filters are direction-less and result in rotation equivariant convolutions.
 We note that restricting the graph convolutional kernel to a polynomial is similar to restricting the classical Euclidean convolution to a fixed-size patch.
 Similarly, each column of the matrix $\sum_{k=0}^K \theta_k \L^k$ defines an irregular patch of radius $K$.
@@ -494,7 +494,7 @@ Coarsening can be naturally designed for hierarchical pixelisation schemes, wher
 % Coarsening is the reverse operation: merging the sub-cells toward the goal of summarizing the data supported on them.
 To coarsen, the sub-cells are merged to summarise the data supported on them.
 Merging cells lead to a coarser graph.
-Coarsening defines $\C(i)$, the set of children of node $v_i$.
+Coarsening defines $\C(i)$, the set of children of vertex $v_i$.
 For the HEALPix subdivision scheme, the number of children is constant, i.e., $| \C(i) | = 4^p \ \forall i$, for some $p$.
 
 Pooling refers to the operation that summarizes the data supported on the merged sub-cells in one parent cell.
@@ -525,7 +525,7 @@ Neural networks are constructed as stacks of layers which sequentially transform
 The general DeepSphere architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers ($GC$), pooling layers ($P$), and batch normalization layers ($BN$). The tail is composed of multiple fully connected layers ($FC$) followed by an optional softmax layer ($SM$) if the network is used for discrete classification.
 A non-linear function $\sigma(\cdot)$ is applied after every linear $GC$ and $FC$ layer, except for the last $FC$ layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice.
 
-Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a $GC$ layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and nodes), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
+Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a $GC$ layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and vertices), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
 Using the efficient graph convolution from \eqnref{graph_convolution_cheby}, each output feature map is computed as
 \begin{equation*}
 	\y_i = \sum_{j=1}^{F_{in}} h_{\theta_{ij}}(\tL) \x_j + b_i \in \R^{N_{pix}}, \ \ \forall i \in [F_{out}].
@@ -631,7 +631,7 @@ For tasks that are rotation invariant, FCNs hence need less training data as the
 This can be seen as intrinsic data augmentation, as a CNN would need to see many rotated versions of the same data to learn the invariance.
 Moreover, FCNs can accommodate maps with a varying number of pixels.
 % agnostic to the size of the input data, i.e., it can classify maps which do not have the same number of pixels.
-Such global summarization as the $AV$ layer is commonly used along graph convolutions to classify graphs of varying sizes (as it is invariant to node permutation) \citep{duvenaud2015gcn, li2015gatedgnn}.
+Such global summarization as the $AV$ layer is commonly used along graph convolutions to classify graphs of varying sizes (as it is invariant to vertex permutation) \citep{duvenaud2015gcn, li2015gatedgnn}.
 As such, CNNs should only be used if rotation invariance is undesired.
 
 All the above architectures can be used for classification (instead of regression) by appending a $SM$ layer.
@@ -677,7 +677,7 @@ where $\eta$ is the learning rate, and $\B$ is the set of indices in a mini-batc
     \includegraphics[height=7em]{sphere_grid_cubedsphere}
     \hfill
     \includegraphics[height=7em]{half_graph_4}
-    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citep{ronchi1996cubed}. Right: graph built from a HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each node has eight neighbors, except the highlighted ones which have only seven.\footnotemark[4] Left and middle figures are taken from \citep{boomsma2017spherical}.}
+    \caption[]{Some pixelizations of the sphere. Left: the equirectangular grid, using equiangular spacing in a standard spherical-polar coordinate system. Middle: an equiangular cubed-sphere grid, as described in \citep{ronchi1996cubed}. Right: graph built from a HEALPix pixelization of half the sphere ($N_{side} = 4$). By construction, each vertex has eight neighbors, except the highlighted ones which have only seven.\footnotemark[4] Left and middle figures are taken from \citep{boomsma2017spherical}.}
     \label{fig:sphere_grids}
     \label{fig:healpix_graph_4}
 \end{figure}
@@ -1073,7 +1073,7 @@ We remember that the convolution kernel resulting from the heat diffusion is def
 at the graph eigenvalues $\text{diag}(\bLambda)$. Note that, the lower eigenvalues $\lambda$ correspond to the lower frequencies, i.e., the spectral mode with less variation.
 As a second visualization (middle), we observe the kernel directly on the sphere. As the kernel $K_t$ is defined in the graph spectral domain, we convolve a Kroneker $\delta$  to obtain a representation on the sphere. We then plot the result with a gnomonic projection.
 \nati{For our third visualization (bottom), our goal is to plot the section of a filter. This visualization might be convenient as we theoretically have spherical filters (up to the irregularities of the sampling). The idea is to plot the section of the convolved Kroneker $\delta$.}
-To do so, we convolve a Kroneker $\delta$ on the nodes along the equator and use the equator for our section.
+To do so, we convolve a Kroneker $\delta$ on the vertices along the equator and use the equator for our section.
 Note that, because of the small irregularities in the HEALPix sampling, the second and the third methods are subject to small variations depending on the chosen position of the Kroneker $\delta$ .
 
 
