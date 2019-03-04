@@ -1179,14 +1179,22 @@ In a neural network setting, the fact that the graph convolution is not exactly 
 
 - I think it might be another one of the most important points in the paper which allows you to justify why not being exact (like a spherical harmonic transform) is acceptable. If I were you I'd move this into the main body of the paper.
 \end{mdframed}
-We thank the reviewer for this suggestion. We agree it is an important point, especially when one discuss the rotation equivariance. Nevertheless, since almost all of this discussion is done in Appendix, it complicated to bring it to the main body of the paper without moving a significant part of the Appendix as well.
-\todo{To check: @all}
+
+Thanks for the suggestion.
+We adopted it.
+
+% \todo{To check: @all}
+% \mdeff{I added a similar sentence in the related work section.}
+
+% We agree it is an important point, especially when one discusses rotation equivariance.
+% However, since almost all of this discussion is done in the appendix, it is complicated to bring this point to the main body without moving a significant part of the appendix as well.
 
 \begin{mdframed}[style=comment]
 We then plot the result with a gnomonic projection.
 
 - Can you add in Figure C.16 here. "We then plot the result with a gnomonic projection, as shown in Figure C.16". Also, why do you choose a gnomonic projection? In fact, with plots C.16 and C.17 I would make them a single plot (as in Figure. 10),
 \end{mdframed}
+
 Inspired by the reviewer comment, we have merged the three plots in a single figure and adapted the text accordingly.
 
 \begin{mdframed}[style=comment]
@@ -1194,16 +1202,17 @@ We plot the section of the convoluted Kroneker.
 
 - It should be "convolved" and probably stick with "Kroneker $\delta$". Also, why are you plotting this? What does it show? Can you go into a bit more detail?
 \end{mdframed}
-We build this plot in order to show the section of the filter. We believe that it might be easier to read than the gnomonic projection. We have modified the text as:
-\begin{mdframed}[style=manuscript]
-For our third visualization (bottom), our goal is to plot the section of a filter. This visualization might be convenient as we theoretically have spherical filters (up to the irregularities of the sampling). The idea is to plot the section of the convolved Kroneker $\delta$.
-\end{mdframed}
+
+This plot shows the section of the filter.
+We believe that it might be easier to read than the gnomonic projection, as the filter is isotropic.
+We have modified the text.
 
 \begin{mdframed}[style=comment]
 The error clearly converged and adding more samples will not help.
 
 - I think this should be "converges such that" rather than "converged and". And rather than "help" I think "improve convergence further" is more descriptive.
 \end{mdframed}
+
 We changed the sentence to:
 \begin{mdframed}[style=manuscript]
 The error clearly converged such that adding more samples will not improve the classifier.
@@ -1214,18 +1223,20 @@ The validation error might be slightly below the training error as it is used to
 
 - I don't understand this statement. It could be that there is accidentally more correlation in the validation set, but I'm not sure what you mean by "it is used to select hyper-parameters" or why that would explain why there is less error in the validation set. Can you think about this further (and perhaps check for the amount of information in that data set compared to the training set)?
 \end{mdframed}
-\nati{
-We changed the sentence as:
-\begin{mdframed}[style=manuscript]
-The validation error might be slightly below the training error as the validation set is used to select hyper-parameters.
-\end{mdframed}
-For linear SVM, there is one hyper-parameter to tune. As we select the hyperparameter with the lowest validation error, it is possible that the validation error is lower than the training error.}
+
+% We changed the sentence as:
+% \begin{mdframed}[style=manuscript]
+% The validation error might be slightly below the training error as the validation set is used to select hyper-parameters.
+% \end{mdframed}
+
+For linear SVM, there is one hyper-parameter to tune. As we select the hyperparameter with the lowest validation error, it is possible that the validation error is lower than the training error.
 
 \begin{mdframed}[style=comment]
 The data is generated for the present analysis is based on the fast approximate N-Body simulation code L-PICOLA [71].
 
 - The first "is" is superfluous.
 \end{mdframed}
+
 This has been corrected.
 
 \subsection{}
@@ -1234,9 +1245,10 @@ This has been corrected.
 
 Finally, after all these little points, I just want to congratulate the authors again on a great paper. It was a pleasure reading it. I will be sure to be using this method in the near future!
 \end{mdframed}
-We would like to thank the reviewer again for his exceptionally detailed review. We really appreciate his effort and the time he invested in his answers.
-He is welcome to contact us for additional information or discussion when the publication process will be over.
 
+We would like to thank the reviewer again for his exceptionally detailed review.
+We really appreciate his effort and the time he invested in his answers.
+He is welcome to contact us again for additional information or for a discussion post-publication.
 
 
 \clearpage
