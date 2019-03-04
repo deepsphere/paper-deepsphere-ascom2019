@@ -591,7 +591,9 @@ We thought about it but are not sure that it would be beneficial.
 \begin{mdframed}[style=comment]
 Finally, I noticed a few points in the text where there were typos or things which were difficult to follow and I have put a note of them below and tried to correct them as much as I can so that you don't have to put too much effort in - I can't wait to see this paper published. Sorry that the list is so extensive (I'm a bit of a stickler for details and trying to write papers concisely):
 \end{mdframed}
-Thank you very much for taking the time for making these corrections. We find them very helpful and improving the quality of the paper.
+
+Thank you very much for taking the time for making these corrections.
+We found them very helpful in improving the quality of the paper.
 We implemented most of them, see below.
 
 \begin{mdframed}[style=comment]
@@ -600,54 +602,57 @@ Convolutional Neural Networks (CNNs) have been proposed as an alternative analys
 - There are many of us in the community who are not overly keen on "precision" of parameter estimation being the target for machine learning. Rather, we would prefer robustness of parameter estimation. It might be worth changing this sentence a bit so as not to upset some of the referenced authors ;)
 \end{mdframed}
 
-Thank you for this comment. Precision, understood as the final size of the posterior distribution on the measured parameters (including systematic errors), is the key interest of cosmology analysis.
-The robustness to noise is also crucial, as demonstrated in [9]. We added a footnote to specify this.
-% \todo{Assigned: @tomek, @michael}
+Precision, understood as the final size of the posterior distribution on the measured parameters (including systematic errors), is the key interest of cosmology analysis.
+The robustness to noise is also crucial, as demonstrated in [9].
+%We expanded the sentence to include this.
+We added a footnote to specify this.
 % \TK{not sure what do to here.. will people get upset? "Precision" is commonly used in cosmology}
-
 
 \begin{mdframed}[style=comment]
 When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
 \end{mdframed}
+
 Thank you for the suggestion, normally we would adopt it, but the paper is already quite long, and breaking up the lines in equations would make it even longer. So we decided against it.
 
 \begin{mdframed}[style=comment]
-You change a lot between "node", "vertex" and "pixel". Could you stick to one of these? I think that "vertex" or "pixel" makes the most sense ("pixel" due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
+You change a lot between ``node'', ``vertex'' and ``pixel''. Could you stick to one of these? I think that ``vertex'' or ``pixel'' makes the most sense (``pixel'' due to the HEALPix pixelisation of the maps or vertex because of the use of the $v$ notation). Node is quite confusing in several places because there is an inherent connection between node and neuron in ML literature, and since there is swapping between the three different terms it's a little hard to keep track.
 \end{mdframed}
-We agree with the reviewer that using different term for the same notion can be confusing for the reader.
-Nevertheless, while ``a node'' and ``a vertex'' are synonyms refering to a graph part, ``a pixel'' is a different concept refering to a point of the (spherical) sampling.
-As a result, we decided to keep the ``vertex'' and ``pixel''.
-% \todo{Assigned: @all}
+
+We agree that using different terms for the same notion can confuse readers.
+While ``node'' and ``vertex'' are synonyms in referring to the elements of a graph, a ``pixel'' is a different concept referring to a point of the (spherical) sampling.
+A pixel can be represented by a vertex, but they are not the same.
+As such, we decided to replace all occurrences of ``node'' with ``vertex'' but keep the two concepts of ``vertex'' and ``pixel'' separate.
+
 % \nati{What do you think? This avoid repetition. But we could be more consistent...}
 % \TK{Agreed. Do you want to make the change @nati?}
-
+% \mdeff{Agreed. Node is the same as vertex. Pixel is not necessarily.}
 
 \begin{mdframed}[style=comment]
 You change between math font and text font for the names of your layers when inside and outside of equations. It would look a lot neater sticking with one choice. (Sorry, that seems quite petty and I don't mean it to be).
 \end{mdframed}
-Thank you for the suggestion. We have made the paper consistent.
-\nati{@all, when you read the paper, please check that I did not forget some of them. Every layer has been changed to math symbols as we use them like function. For example, SM becomes $SM$.}
+We have made the paper consistent by using a math font for layer names.
+%\nati{@all, when you read the paper, please check that I did not forget some of them. Every layer has been changed to math symbols as we use them like function. For example, SM becomes $SM$.}
+%\mdeff{Agreed. I checked and fixed one missing.}
 
 \begin{mdframed}[style=comment]
 In Appendix C. you talk about Kroneker a lot, but earlier you talk about Kroneker $\delta$ (which is it's correct name). It's probably worth sticking with the full name.
 \end{mdframed}
-We have modified the manuscript according to the reviewer suggestion.
+We have modified the manuscript according to the suggestion.
 
 \begin{mdframed}[style=comment]
 Sky maps are rotation invariant: rotating maps on the sphere doesn’t change their interpretation, as only the statistics of the maps are relevant.
 - I think that you mean that rotating maps on the sphere doesn't change their interpretation *when* only the statistics of the maps are relevant. Say you wanted to compare the NGC against the SGC, then rotating the map would obviously change the results.
 \end{mdframed}
-This sentence has been reformulated as:
-\begin{mdframed}[style=manuscript]
-We consider the sky maps rotational invariant as in our case rotating maps on the sphere doesn't change their interpretation since only the statistics of the maps are relevant.
-\end{mdframed}
+True.
+Equivariance is desired in such a case (rather than invariance).
+We clarified the sentence.
 
 \begin{mdframed}[style=comment]
 The flexibility of modelling the data domain with a graph allows to easily model data that spans only a part of the sphere, or data that is not uniformly sampled.
 
 - I think you're missing a "one" after allows. "The flexibility of modelling the data domain with a graph allows one to easily model data that spans only a part of the sphere, or data that is not uniformly sampled."
 \end{mdframed}
-Thank you for the suggestion, we updated the text.
+Thank you for the suggestion. We updated the text.
 
 \begin{mdframed}[style=comment]
 This kind of maps can be created using the gravitational lensing technique [see 29, for review]
@@ -661,34 +666,21 @@ A CNN is composed of the following main building blocks [31]: (i) a convolution,
 
 - I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
 \end{mdframed}
-We agree with the reviewer that (iii) and (iv) are also optional. Hence we reformulated this sentence as:
-\begin{mdframed}[style=manuscript]
-A CNN is composed of the following main building blocks~\cite{lecun1998cnn}:
-(i) a convolution,
-(ii) a non-linearity.
-Optionally, some CNN also have
-(iii) a down-sampling operation,
-(iv) a pooling operation, and
-(v) a normalization.
-\end{mdframed}
+We agree that (iii) and (iv) are optional and updated the sentence accordingly.
 
 \begin{mdframed}[style=comment]
 Likewise, down-sampling can be achieved by taking one pixel out of n.
 
 - I'm afraid I don't understand what this means at all, could you rephrase it?
 \end{mdframed}
-This has been rephrased as:
-\begin{mdframed}[style=manuscript]
-Likewise, down-sampling can be achieved by keeping one pixel every $n$ pixels with $n=2$ being very common.
-\end{mdframed}
+We rephrased it.
 
 \begin{mdframed}[style=comment]
 A rhombus is a quadrilateral whose four sides all have the same length.
 
 - I'm not sure that this really needs to be said.
 \end{mdframed}
-We agree with the reviewer and updated the manuscript accordingly.
-% \todo{assigned: @michael}
+Agreed. We removed the footnote.
 
 \begin{mdframed}[style=comment]
 As each pixel is subdivided in four, the second coarser resolution is $N_{pix} = N_{side}^2\times12=2^2\times12=48$ pixels (middle sphere in Figure 5), the third is $N_{pix} = N_{side}^2\times12=42\times12=192$ pixels, etc., where $N_side =1,2,4,8,\dots$ is the grid resolution parameter.
@@ -705,27 +697,30 @@ Thank you for the suggestion, we updated the text.
 This has been corrected.
 
 \begin{mdframed}[style=comment]
-Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$,a signal $f\in\mathbb{R}^{N_{pix}}$ on the graph is filtered as
+Given the convolution kernel $h:\mathbb{R}_+ \to \mathbb{R}$, a signal $f\in\mathbb{R}^{N_{pix}}$ on the graph is filtered as
 
 - You don't mention what $\mathbb{R}_+$ is or why $h$ defines that map.
 \end{mdframed}
-We are not sure what the reviewer means here. $\mathbb{R}_+$ is the ensemble of the real positive numbers and $h$ is simply a function that maps any positive real numbers to another real number.
+We are not sure what the reviewer means here.
+$\mathbb{R}_+$ is the ensemble of the real positive numbers and $h$ is a function that maps any positive real number to a real number.
+We think that $\mathbb{R}_+$ is a common enough notation to not require being explicitly defined.
 
-\nati{This seems clear to me. Specifying what $\mathbb{R}_+$ is would be a bit too much I believe. @all, is it also for you?}
+%\nati{This seems clear to me. Specifying what $\mathbb{R}_+$ is would be a bit too much I believe. @all, is it also for you?}
+%\mdeff{That is also quite clear to me.}
 
 \begin{mdframed}[style=comment]
 This localization of the kernel $h$ can be useful to visualize kernels, as explained in Appendix C.
 
  - Most of Appendix C is not involved with the localisation of the kernel so it might be worth expanding this sentence to "This localisation of the kernel $h$ can be useful to visualise kernels, as shown in an example of heat diffusion presented Appendix C. " Also, it is a little odd that Appendix C is mentioned before Appendix B in the text.
 \end{mdframed}
-We followed both of the reviewer suggestions.
+We followed both suggestions.
 
 \begin{mdframed}[style=comment]
 However, when considering only parts of the sphere, one can observe important border effects (see Figure B.13 and Appendix B).
 
 - I would just refer the reader to the appendix rather than the figure and the appendix. It is a bit more concise. "However, when considering only parts of the sphere, one can observe important border effects (see Appendix B)."
 \end{mdframed}
-We changed the manuscript according to the reviewer suggestion.
+We followed the suggestion.
 
 \begin{mdframed}[style=comment]
 ... where $T_ig[j]=g[i-j]$ is, up to a flip, a translation operator.
