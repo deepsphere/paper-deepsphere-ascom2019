@@ -294,10 +294,11 @@ Code and examples are available online.{\interfootnotelinepenalty=10000 \footnot
 
 A CNN is composed of the following main building blocks~\citep{lecun1998cnn}:
 (i) a convolution,
-(ii) a non-linearity,
+(ii) a non-linearity.
+Optionally, some CNN also have
 (iii) a down-sampling operation,
 (iv) a pooling operation, and
-(v), optionally,  normalization.\footnote{Batch normalization has been shown to help training \citep{ioffe2015batchnorm}. We verified this experimentally in our setting as well.}
+(v) a normalization.\footnote{Batch normalization has been shown to help training \citep{ioffe2015batchnorm}. We verified this experimentally in our setting as well.}
 Our architecture is depicted in~\figref{architecture} and discussed in greater details in \secref{architecture}. As operations (ii) and (v) are point-wise, they do not depend on the data domain. The pooling operation is simply a permutation invariant aggregation function which does not need to be adapted either. The convolution and down-sampling operations, however, need to be generalized from Euclidean domains to the sphere.
 
 On regular Euclidean domains, such as 1-dimensional time series or 2-dimensional images, a convolution can be efficiently implemented by sliding a localized convolution kernel (for example a patch of $5 \times 5$ pixels) in the signal domain.
@@ -381,7 +382,7 @@ is a measure of the variation of the eigenvector $\b u_i$ on the graph defined b
 
 \figref{graph_harmonics} shows the Fourier modes of a HEALPix graph, created using the graph construction described above.
 The graph Fourier modes resemble the spherical harmonics.
-That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling.
+That is a strong hint that the graph is able to capture the spherical properties of the HEALPix sampling. 
 This topic is further discussed in \ref{sec:comparison_spherical_harmonics}.
 
 \begin{figure}[t!]
@@ -648,7 +649,8 @@ The cost (or loss) function $C(\Y, \bar \Y) = C(NN_\theta(\X), \bar \Y)$ measure
 \begin{equation*}
 	C(\Y, \bar \Y) = - \sum_{i=1}^{N_{pix}} \sum_{j=1}^{N_{classes}} \bar y_{ij} \log(y_{ij}),
 \end{equation*}
-where $\bar \Y \in \R^{N_{pix} \times N_{classes}}$ is the ground truth label indicator, i.e., $\bar y_{ij} = 1$ if pixel $i$ of sample $\X$ belongs to class $j$ and is zero otherwise. For global prediction, the cost is as if $N_{pix} = 1$.
+where $\bar \Y \in \R^{N_{pix} \times N_{classes}}$ is the ground truth label indicator, i.e., $\bar y_{ij} = 1$ if pixel $i$ of sample $\X$ belongs to class $j$ and is zero otherwise. 
+For global prediction, we have $N_{pix} = 1$.
 For a regression task, a common choice is the mean squared error (MSE)
 \begin{equation*}
 	C(\Y, \bar \Y) = \frac{\|\Y-\bar{\Y}\|_2^2}{N_{pix} F_{out}} = \frac{1}{N_{pix} F_{out}} \sum_{i=1}^{N_{pix}} \sum_{j=1}^{F_{out}} (y_{ij} - \bar y_{ij})^2,
@@ -840,7 +842,6 @@ As described in \ref{sec:projection}, we use the geometrical properties of HEALP
 Note that during the review process another spherical CNN architecture using exploiting this property appeared \cite{krachmalnicoff2019convolutional}.
 We used convolution kernel of size $5\times 5$ and reduced the number of filters in order to match the number of variables between DeepSphere and the 2DCNN.
 }
-\nati{Say something about the number of parameters/fitlers. }
 
 \subsection{Network architecture and hyper-parameters}
 

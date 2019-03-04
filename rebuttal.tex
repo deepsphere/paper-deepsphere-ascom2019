@@ -653,8 +653,16 @@ A CNN is composed of the following main building blocks [31]: (i) a convolution,
 
 - I think that this is generalising a CNN a bit too much. In my mind (and in my personal uses of CNNs) steps (iii) and (iv) are not always necessary either. Perhaps you want to say that you wish to tackle common tasks which often arise in CNNs: i) convolution, (ii) non-linearity, (iii) down-sampling operation, (iv) pooling operation, and (v), optionally, normalisation.
 \end{mdframed}
-\todo{assigned: @michael}
-\nati{I do not know what to say. I just do not care what is the definition of a CNN.}
+We agree with the reviewer that (iii) and (iv) are also optional. Hence we reformulated this sentence as:
+\begin{mdframed}[style=manuscript]
+A CNN is composed of the following main building blocks~\cite{lecun1998cnn}:
+(i) a convolution,
+(ii) a non-linearity.
+Optionally, some CNN also have
+(iii) a down-sampling operation,
+(iv) a pooling operation, and
+(v) a normalization.
+\end{mdframed}
 
 \begin{mdframed}[style=comment]
 Likewise, down-sampling can be achieved by taking one pixel out of n.
@@ -873,18 +881,12 @@ For global prediction, the cost is as if $N_{pix} = 1$.
 
 - I think this should be "For global prediction $N_{pix} = 1$."
 \end{mdframed}
-\todo{Assigned: @michael}
-\nati{Here I do really understand this: the text reads:
+\todo{To check: @michael}
 
-\textit{For a classification task, the cost is usually taken to be the cross-entropy
-\begin{equation*}
-	C(\Y, \bar \Y) = - \sum_{i=1}^{N_{pix}} \sum_{j=1}^{N_{classes}} \bar y_{ij} \log(y_{ij}),
-\end{equation*}
-where $\bar \Y \in \R^{N_{pix} \times N_{classes}}$ is the ground truth label indicator, i.e., $\bar y_{ij} = 1$ if pixel $i$ of sample $\X$ belongs to class $j$ and is zero otherwise. For global prediction, the cost is as if $N_{pix} = 1$.
-For a regression task, a common choice is the mean squared error (MSE)}
-
-If you do a global prediction, you ar for sure in a regression task right? So I guess the two last sentence should be merged.
-}
+We changed the text as:
+\begin{mdframed}[style=manuscript]
+For global prediction, we have $N_{pix} = 1$.
+\end{mdframed}
 
 \begin{mdframed}[style=comment]
 We emphasize that the cost function and the SM layer is the sole difference between a neural network engineered for classification or regression.
@@ -1010,7 +1012,7 @@ Probabilities are computed by the SM layer.
 % \nati{Should we simply say "normalized network score"? I do not know...}
 
 We changed the manuscript to:
-\begin{mdframed}[style=comment]
+\begin{mdframed}[style=manuscript]
 The normalized network scores are computed by the $SM$ layer.
 \end{mdframed}
 
@@ -1051,7 +1053,7 @@ Figure 10: Random selection of 24 learned filters from the fifth spherical convo
 
 We decided not to add a colorbar as scale information is already present in the top plot of the figure.
 We added a small explanation for the peak structure
-\begin{mdframed}[style=comment]
+\begin{mdframed}[style=manuscript]
 The structure in the filters resembles peaks, which is not unexpected, given that the convergence maps largely consist of concentrated clumps.
 \end{mdframed}
 
@@ -1120,7 +1122,8 @@ In a neural network setting, the fact that the graph convolution is not exactly 
 
 - I think it might be another one of the most important points in the paper which allows you to justify why not being exact (like a spherical harmonic transform) is acceptable. If I were you I'd move this into the main body of the paper.
 \end{mdframed}
-\todo{Assign: @all, \nati{What do you think? I had the feeling we already have that in the main body of the paper. I cannot remember where, though.}}
+We thank the reviewer for this suggestion. We agree it is an important point, especially when one discuss the rotation equivariance. Nevertheless, since almost all of this discussion is done in Appendix, it complicated to bring it to the main body of the paper without moving a significant part of the Appendix as well.
+\todo{To check: @all}
 
 \begin{mdframed}[style=comment]
 We then plot the result with a gnomonic projection.
