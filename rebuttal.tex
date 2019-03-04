@@ -208,7 +208,7 @@ Though this is designated a minor revision, there are quite a few points that ne
 
 Dear Editor,
 
-Thanks for handling our submission. We have revised our manuscript following many of the reviewer suggestions. We believe that it is now ready for publication. Currenlty, the dataset can be accessed simply via Zenodo. While this process is not anonymons, we provide in this rebuttal (Comment \#2) a special link for the reviewers to access it is anonymously. 
+Thanks for handling our submission. We have revised our manuscript following many of the reviewer suggestions. We believe that it is now ready for publication. Currenlty, the dataset can be accessed simply via Zenodo. While this process is not anonymons, we provide in this rebuttal (Comment \#2) a special link for the reviewers to access it is anonymously.
 
 We thank the reviewers for taking the time to review our manuscript and for their constructive comments. We have answered
 
@@ -225,7 +225,7 @@ I have read with great interest the paper by Perraudin and collaborators present
 The paper is well-written, and the results are clearly presented. The literature as well as the advantages and limitations of new and existing algorithms are discussed thoroughly and fairly. I recommend this paper for publication, provided the following comments are addressed.
 \end{mdframed}
 
-Dear reviewer, 
+Dear reviewer,
 
 we thank you for your time and thorough comments.
 The manuscript improved thanks to your feedback.
@@ -236,10 +236,10 @@ You'll find an answer to all the points you mentioned in this rebuttal.
 One fairly significant concern I have is how convincing the application to other machine learning algorithms is. The authors compare deep sphere to a SVM classifier, in the case of distinguishing from two cosmological models from density maps. This classification is obviously a simplification of what would be done in real cosmological analyses, but is sufficient for the purpose of demonstration here. However, the metrics adopted do not clearly highlight the superiority of DeepSphere. The SVM takes pixel histograms or power spectrum densities (PSDs) of each input map. It is not surprising that DeepSphere outperforms them given that it takes the whole map as input. Histograms and PSDs are very restrictive compressions of the data - dropping a lot of spatial information. An SVM or even a standard fully connected neural network (NN) would perform a lot better. It is unclear how that would compare to DeepSphere. But I would certainly expect DeepSphere to be a lot easier to train and have many fewer parameters, which I think is the key advantage that needs to be highlighted here. This is analogous to comparing a standard convolutional NN to a standard fully-connected NN. With appropriate depth both will extract the same information and perform equally well. But of course the CNN has fewer parameters and is easier to train since its structure naturally extracts spatial information. One wouldn't compare the CNN to a SVM trained on pixel histograms or PSDs, since those would not have access to the same information. It would be more natural to compare the CNN and the NN trained on the same maps, and examine the number of parameters, the time and number of examples needed for training to achieve the same performance, etc. This would truly highlight how the structure of the NN is a key advantage.
 \end{mdframed}
 
-We agree that the ML algorithms should be tested on the same input data for a fair comparison. 
+We agree that the ML algorithms should be tested on the same input data for a fair comparison.
 
 We performed the comparizon with these features at it reflects the two-steps traditional way in classic machine learning: a) designing features b) using a method a ``simple'' classifier. Deep learning changed this this tactic with networks that learn the features directly from the raw data.
-The PS and histograms were chosen because they are standard statistics used by the cosmology community for analysing real data. 
+The PS and histograms were chosen because they are standard statistics used by the cosmology community for analysing real data.
 This is why we chose it as the reference point.
 In fact, the single step of moving away from these hand-picked statistics to ML approaches is already interesting for physicists.
 It would be indeed interesting to compare the performance of the CNN to other ML-based algorithms, but we belive it is a major undertaking if to be conducted fairly.
@@ -287,8 +287,8 @@ While our construction does not exactly respect their setting (the sampling is d
 \end{mdframed}
 
 While this particular point deserves more details, we believe that a deeper discussion does not belong to this paper.
-In fact, we are currently investigating this convergence with the goal of constructing better graphs whose Fourier modes would converge to 
-% (or even be equivalent to) 
+In fact, we are currently investigating this convergence with the goal of constructing better graphs whose Fourier modes would converge to
+% (or even be equivalent to)
 the spherical harmonics.
 
 \subsection{}
@@ -379,22 +379,23 @@ Secondly, using only SVM as a comparison might skew how well this technique appe
 
 We share the opinion of the reviewer when he says that 2D CNNs should probably work as well as DeepSphere, ``by taking in a projected 2D image of the sky and using *loads* of filters to learn about the distortion at different parts of the projected sky.'' Hence we decided to add a new experiment in the paper.
 
-Nevertheless, making a comparison is technically not as trivial as it may seems. 
+Nevertheless, making a comparison is technically not as trivial as it may seems.
 Problematically a radial projection is computationally expensive to the point where, because of the dataset augmentation, it becomes significantly more expensive than the actual training of the network.
-Hence, we decided to use the geometrical properties of HEALPix to create a ``special'' projection. 
+Hence, we decided to use the geometrical properties of HEALPix to create a ``special'' projection.
 In the HEALPix sampling, the sphere is first separated into $12$ parts that are then subdivided into $4$ recursively.
-Eventually, each of these $12$ part resembles a square grid. 
-As the problem we are solving only involve one of these 12 parts, we can use this natural structure to simply re-assign each HEALPix pixel to one of a 2 dimensional grid of size $N_{sides} \times N_{sides}$. 
-This operation is computationally very cheap and probably spread quite evenly across the resulting image. 
-This projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.  
+Eventually, each of these $12$ part resembles a square grid.
+As the problem we are solving only involve one of these 12 parts, we can use this natural structure to simply re-assign each HEALPix pixel to one of a 2 dimensional grid of size $N_{sides} \times N_{sides}$.
+This operation is computationally very cheap and probably spread quite evenly across the resulting image.
+This projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.
 
-As we believe that this projection is the optimal one to use a traditonal CNN for application, we performed the experiment using it. 
+As we believe that this projection is the optimal one to use a traditonal CNN for application, we performed the experiment using it.
+
 
 Our expectation were similar with the one of the reviewer, but the results did surprise us as the performance of the traditional CNN did in general not match DeepSphere, (see Figure 9 of the manuscript).
-It can probably be explained by the fact that 2DCNN breaks the rotational invariance of the data. 
-The problem comes from the fact that the projection introduce a distortion in the geometry and the network has to learn a correct weighting scheme to compensate for it. 
+It can probably be explained by the fact that 2DCNN breaks the rotational invariance of the data.
+The problem comes from the fact that the projection introduce a distortion in the geometry and the network has to learn a correct weighting scheme to compensate for it.
 Unfortunately, this operation waste many parameters, reducing the modelization power of the network and requires large amount of training data which is not fully available.
-Note that, when visualizing the learned convolution kernels, we observed that they were not radial. 
+Note that, when visualizing the learned convolution kernels, we observed that they were not radial.
 
 
 % \TK{makes sense to me.}
@@ -586,12 +587,16 @@ Thank you very much for taking the time for making these corrections. We find th
 We implemented most of them, see below.
 
 \begin{mdframed}[style=comment]
-Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation [9–16].
+Convolutional Neural Networks (CNNs) have been proposed as an alternative analysis tool in cosmology thanks to their ability to automatically design relevant statistics to maximise the precision of the parameter estimation, while maintaining robustness to noise [9–16].
 
 - There are many of us in the community who are not overly keen on "precision" of parameter estimation being the target for machine learning. Rather, we would prefer robustness of parameter estimation. It might be worth changing this sentence a bit so as not to upset some of the referenced authors ;)
 \end{mdframed}
-\todo{Assigned: @tomek}
-\TK{not sure what do to here.. will people get upset? "Precision" is commonly used in cosmology}
+
+Thank you for this comment. Precision, understood as the final size of the posterior distribution on the measured parameters (including systematic errors), is the key interest of cosmology analysis.
+The robustness to noise is also crucial, as demonstrated in [9]. We expanded the sentence to include this.
+% \todo{Assigned: @tomek, @michael}
+% \TK{not sure what do to here.. will people get upset? "Precision" is commonly used in cosmology}
+
 
 \begin{mdframed}[style=comment]
 When you have multiple = in equations could you split them on to separate lines? This would make the logical steps for following the equations a lot clearer.
@@ -1122,7 +1127,7 @@ This has been corrected.
 
 Finally, after all these little points, I just want to congratulate the authors again on a great paper. It was a pleasure reading it. I will be sure to be using this method in the near future!
 \end{mdframed}
-We would like to thank the reviewer again for his exceptionally detailed review. We really appreciate his effort and the time he invested in his answers. 
+We would like to thank the reviewer again for his exceptionally detailed review. We really appreciate his effort and the time he invested in his answers.
 He is welcome to contact us for additional information or discussion when the publication process will be over.
 
 
