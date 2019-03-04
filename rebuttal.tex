@@ -558,12 +558,14 @@ The manuscript was updated.
 \begin{mdframed}[style=comment]
 In Appendix A. (my personal favourite part) could you measure the percent difference that different eigenvectors differ from the spherical harmonics due to incomplete discretisation of the sphere, perhaps plotting side by side plots like Figure 3, but with SH too (or their differences). By the way, Figure A.12 is placed in the wrong section.
 \end{mdframed}
-\todo{Assigned: @nati, @michael}
-We added a figure showing the percentage of mis-alignment with the spherical harmonics. We also moved Figure A.12 in the correct subsection.
 
-\begin{center}
-\includegraphics[width=0.5\linewidth]{figures/subspace_alignment_percentage.pdf}
-\end{center}
+% (To plot the difference between the graph eigenvectors and the spherical harmonics on the sphere, one would have to align the subspaces.) Impossible to rotate arbitrarily on HEALPix.
+We cannot compare individual eigenvectors and spherical harmonics because of arbitration rotations.
+While any rotation of the basis of a subspace (the space spanned by the eigenvectors and harmonics corresponding to a given degree $\ell$) doesn't alter the spanned subspace, the difference between the basis vectors before and after the rotation can be 100\%.
+
+Your suggestion however made us realize that figure A.12 was not ideal in comparing the eigenvectors to the spherical harmonics.
+As such, we replaced it with another that we hope is clearer.
+We also moved Figure A.12 in the correct subsection.
 
 \subsection{}
 \begin{mdframed}[style=comment]

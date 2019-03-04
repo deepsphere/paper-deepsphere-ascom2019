@@ -998,37 +998,44 @@ Finally, we thank the two anonymous reviewers who provided extensive feedback th
 
 \section{Graph Fourier modes and spherical harmonics}
 \label{sec:comparison_spherical_harmonics}
+
 The first 16 eigenvectors $[\b u_1, \ldots, \b u_{16}]$ of the graph Laplacian $\L$, forming the lower part of the graph Fourier basis $\U$, are shown in \figref{graph_harmonics}.
 Let us further observe the spectral properties of our constructed spherical graph laplacian $\L$.
 Its eigenvalues, shown in \figref{graph_eigenvalues}, are clearly organized in frequency groups of $2\ell + 1$ orders for each degree $\ell$.
 We remind the reader that the amplitude of the Laplacian eigenvalue is proportional to the sum of the variations of its associated eigenvector. Furthermore, all spherical harmonics with the same order $\ell$ have the same variation. Hence, the fact that the Laplacian eigenvalues are grouped in blocks of size $2\ell + 1$ is a hint that the graph eigenvectors approximate the spherical harmonics.
-In order to push the comparison one step further, we show the correspondence (scalar product) between the subspaces spanned by the graph Fourier modes and the spherical ha, however, out of the scope of this contribution.rmonics in \figref{subspace_harmonics_eigenvectors}.
-The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
+In order to push the comparison one step further, we show the correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics in \figref{subspace_harmonics_eigenvectors}.
+%The block-diagonal structure of the matrix, as opposed to diagonal, results the fact that the phase of the graph eigenvector is not aligned with the one of the spherical harmonics.
 
-While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
-First, we believe that they are responsible for energy leaking outside of the block diagonal in \figref{subspace_harmonics_eigenvectors}.
-Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
-% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
-The theoretical study of the convergence is, however, out of the scope of this contribution.
-Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
-Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
-Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
-
-\begin{figure}[ht!]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[width=\linewidth]{graph_eigenvalues}
 	\caption{The eigenvalues $\bLambda$ of the graph Laplacian $\L = \U \bLambda \U\trans$, which corresponds to squared frequencies, are clearly organized in groups. Each group corresponds to a degree $\ell$ of the spherical harmonics. Each degree has $2\ell + 1$ orders. See also \figref{graph_harmonics}.}
 	\label{fig:graph_eigenvalues}
 \end{figure}
 
-\begin{figure}[ht!]
+\begin{figure}[t!]
 	\centering
-	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors}
-	\includegraphics[width=\linewidth]{figures/subspace_alignment_percentage.pdf}
-	\caption{Top: Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics. Each pixel on the plot is the dot product between one spherical harmonic and one graph Fourier mode $\b u_i$. The plot clearly shows how the subspaces are aligned: modes and harmonics that correspond to different degrees $\ell$ are mostly orthogonal to each other, while modes and harmonics that correspond to the same degree $\ell$ are linearly dependent. There are $2 \ell + 1$ orders per degree $\ell$. Moreover, we see that the Fourier modes have the correct symmetries, indicated by the perfect orthogonality between even and odd functions. For example, the modes corresponding to $\ell=7$ are perfectly orthogonal to the harmonics corresponding to $\ell=0,2,4,6,8$.
-	\nati{Bottom: Evolution of the allignement of the graph Fourier mode and the spherical harmonics for with respect of the speherical harmonic index $\ell$. It is the percentage of energy contained in the diagonal blocks of the correlation matrix plotted on top.}}
-	\label{fig:subspace_harmonics_eigenvectors}
+	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors_v2}
+	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics.
+		% No real convergence with increasing Nside.
+		Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
+		(\figref{graph_eigenvalues} shows how Fourier modes can be identified to spherical degrees.)
+		The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
+		Pixel $k$ in row $j$ measures the energy in frequency band $k$ of the graph Fourier modes identified to be part of band $j$.
+		The matrix should ideally be the identity.
+		While not the case, the plot shows how the subspaces agree: the subspaces spanned by the Fourier modes correspond to those spanned by the spherical harmonics in the low frequencies, while the Fourier modes leak towards adjacent frequency bands in the high frequencies.
+		While there is a systematic error, the Fourier modes agree at higher frequencies as $N_{side}$ increases.}
+		\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
+
+While these indications show that the constructed graph Fourier basis approximates well the spherical harmonics, one should not forget that the small irregularities in the sampling (non-constant number of neighboring pixels and varying distance between pixels, see \figref{healpix_graph_4}) have an important effect on the graph Fourier modes.
+First, we believe that they are responsible for energy leaking across frequency bands in \figref{subspace_harmonics_eigenvectors}.
+Second, as the resolution is increased with $N_{side} \rightarrow \infty$ and $N_{pix} \rightarrow \infty$, we are still unsure if the eigenvectors would converge towards the spherical harmonics.
+% We believe that it might be the case for a different construction of the graph (fully connected) and that a proof could be built on top of the work of~\cite{belkin2007convergence}. That is, however, out of the scope of this contribution.
+The theoretical study of the convergence is, however, out of the scope of this contribution.
+Third, counter-intuitively, some eigenvectors will be localized~\citep{perraudin2018global}, i.e., they will span a small part of the sphere.
+Those discrepancies result in a convolution operation that is not exactly equivariant to rotation.
+Nevertheless, our experiments suggest that these downsides do not have an important effect on the convolution nor hinder the performance of the neural network.
 
 \section{Example: heat diffusion}
 \label{sec:heat_diffusion}
