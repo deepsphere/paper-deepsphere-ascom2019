@@ -341,7 +341,7 @@ High-resolutions maps easily reach millions of pixels.
 \subsection{Graph construction}
 
 Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
-Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing random uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
+Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
 While our construction does not exactly respect their setting (the sampling is deterministic and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see \ref{sec:comparison_spherical_harmonics}).
 
 From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ vertices, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
@@ -911,8 +911,8 @@ It may seem unfair to compare DeepSphere, who has access to raw pixels, with SVM
 We however trained an SVM on the raw pixels and were unable to obtain over $60\%$ accuracy in any of the three noiseless cases.
 
 \nati{
-To our surprise, the traditional 2DCNN did not match the performance of DeepSphere.
-It can probably be explained by the fact that 2DCNN breaks the rotational invariance of the data.
+To our surprise, the traditional 2D ConvNet did not match the performance of DeepSphere.
+It can probably be explained by the fact that the 2D ConvNet breaks the rotational invariance of the data.
 The problem comes from the fact that the projection introduce a distortion in the geometry and the network has to learn a correct weighting scheme to compensate for it.
 Unfortunately, this operation waste many parameters, reducing the modelization power of the network and requires large amount of training data which is not fully available.
 Note that, when visualizing the learned convolution kernels, we observed that they were not radial.
@@ -1116,13 +1116,13 @@ We however do not expect these effects to cause any problem as long as the data 
 \nati{
 \section{Maps projection onto a 2-dimensional plane}
 \label{sec:projection}
-In order to compare the DeepSphere architecture with a traditional 2d-CNN, we need to project the spherical data onto a plane.
+In order to compare the DeepSphere architecture with a 2D ConvNet, we need to project the spherical data onto a plane.
 Problematically a radial projection is computationally expensive to the point where, because of the dataset augmentation, it becomes significantly more expensive than the actual training of the network.
 Hence, we decided to use the geometrical properties of HEALPix to create a ``special'' projection.
 In the HEALPix sampling, the sphere is first separated into $12$ parts that are then subdivided into $4$ recursively.
-Eventually, each of these $12$ part resembles a square grid.
+Eventually, each of these $12$ parts resembles a square grid.
 To visually see it, we refer the reader to \figref{border_effects}.
-As the problem we are solving only involve one of these 12 parts, we can use this natural structure to simply re-assign each HEALPix pixel to one of a 2 dimensional grid of size $N_{sides} \times N_{sides}$.
+As the problem we are solving only involve one of these $12$ parts, we can use this natural structure to simply re-assign each HEALPix pixel to one of a 2 dimensional grid of size $N_{sides} \times N_{sides}$.
 This operation is computationally very cheap and probably spread quite evenly across the resulting image.
 This projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.
 }

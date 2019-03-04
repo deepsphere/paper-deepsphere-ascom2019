@@ -256,8 +256,8 @@ This information has now been added to the manuscript.
 
 While fully-connected NNs (FCNNs) generalize CNNs, they don't perform as well as CNNs on tasks where the symmetries exploited by the CNN are relevant.\footnote{For cosmological data on the sphere, a desired symmetry, highlighted in the introduction, is for the model to be invariant to rotations.}
 That is similar to our comparison of the FCN and CNN variants.
-While the CNN is a generalization, it doesn't perform as well as the FCN.
-In practice, the large number of parameters required by a FCNN severely restricts what can be tested on conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which limits the number of neurons that can be used in the architecture. For completeness, we tried a FCNN and were only able to squeeze $128$ neurons in the first layer before hitting an out-of-memory error. With this architecture and a relative amount of noise of $0.5$, we were unable to regularize the network such that it would classify the validation set. (Remember that all reported classifiers obtained close to $100\%$ accuracy in this setting.) Similar conclusions were observed with other settings.
+While the CNN is a generalization, it doesn't perform as well as the FCN. We agree that show this in practice would be a great addition to the paper. Nevertheless, we were unable to make FCNN reach a baseline performance.
+In practice, the large number of parameters required by a FCNN severely restricts what can be tested on conventional hardware. In our case the input number of pixels (for order $1$) is $1024^2$ which limits the number of neurons that can be used in the architecture. For completeness, we tried a FCNN and were only able to squeeze $128$ neurons in the first layer before hitting an out-of-memory error. With this architecture and a relative amount of noise of $0.5$, we were unable to regularize the network such that it would classify the validation set. (Remember that all reported classifiers obtained close to $100\%$ accuracy in this setting.) Similar conclusions were observed with other settings. These results were not included as they simply too far from the SVM classifiers. 
 %Furthermore, the harmonic resemblance is another sign that the constructed graph is able to capture the spherical structure of the HEALPix sampling, even when increasing the number of neurons for small part of the sphere (order $2$ and $4$).
 
 
@@ -282,7 +282,7 @@ We removed the part about exact SHTs from the paragraph as we don't need to make
 We tried to clarify the paragraph in the following manner:
 \begin{mdframed}[style=manuscript]
 Our graph is constructed as an approximation of the sphere $S^2$, a 2D manifold embedded in $\mathbb{R}^3$.
-Indeed, \cite{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing random uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
+Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges to the Laplace-Beltrami when the number of pixels goes to infinity providing uniform sampling of the manifold and a fully connected graph built with exponentially decaying weights.
 While our construction does not exactly respect their setting (the sampling is deterministic and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see Appendix A).
 \end{mdframed}
 
@@ -310,9 +310,9 @@ The experiment whose result is reported in Figure 4 is intended to report filter
 While libsharp is probably not optimizing Gaussian smoothing in particular (w.r.t. filtering with any other filter), it is a highly optimized library for SHT.
 We don't care about the approximation quality as, in the context of neural networks, filters are learned.
 That is, graph filters are not approximating any predefined true harmonic-space filters anyway.
-It is however true that replacing spherical filtering (using the SHT) with graph filtering is an interesting prospect (in terms of speed) that might be possible in the future as suggested by Appendix B (Figure B.13).
+It is, however, true that replacing spherical filtering (using the SHT) with graph filtering is an interesting prospect (in terms of speed) that might be possible in the future as suggested by Appendix B (Figure B.13).
 We feel that, in its current state, graph filtering is probably not a good enough approximation to be usable when high-precision filtering is required.
-Nevertheless, theoretical improvements on a potential equivalence (or convergence) of the Laplacian eigenvectors to the spherical harmonics (see our answer to comment 1.4) could potentially make it competitive.
+Nevertheless, theoretical improvements on a potential equivalence (or convergence) of the Laplacian eigenvectors to the spherical harmonics (see our answer to the comment 1.4) could potentially make it competitive.
 
 
 \section{}
@@ -372,28 +372,30 @@ As stated above, the performance comparison will however have to wait our follow
 Secondly, using only SVM as a comparison might skew how well this technique appears to works in a deep learning setting. In principle (and I say this not knowing for sure) 2D CNNs should probably be able to work as well as DeepSphere (although no where near as elegantly) by taking in a projected 2D image of the sky and using *loads* of filters to learn about the distortion at different parts of the projected sky. It would be interesting (and I think a fairly easy test) to check how well DeepSphere performs against a 2D CNN on projections.
 \end{mdframed}
 
-\todo{Assigned: @Nati, @Michael, @Tomek}
-\nati{Please check if you like what I did in light of the discussion we had.}
+%\todo{Assigned: @Nati, @Michael, @Tomek}
+%\nati{Please check if you like what I did in light of the discussion we had.}
 
-We share the opinion of the reviewer when he says that 2D CNNs should probably work as well as DeepSphere, ``by taking in a projected 2D image of the sky and using *loads* of filters to learn about the distortion at different parts of the projected sky.'' Hence we decided to add a new experiment in the paper.
+We share the opinion of the reviewer when he says that 2D convolution neural networks (2D ConvNet) should probably work as well as DeepSphere ``by taking in a projected 2D image of the sky and using *loads* of filters to learn about the distortion at different parts of the projected sky.'' Hence we decided to add a new experiment in the paper.
 
 Nevertheless, making a comparison is technically not as trivial as it may seems.
 Problematically a radial projection is computationally expensive to the point where, because of the dataset augmentation, it becomes significantly more expensive than the actual training of the network.
 Hence, we decided to use the geometrical properties of HEALPix to create a ``special'' projection.
 In the HEALPix sampling, the sphere is first separated into $12$ parts that are then subdivided into $4$ recursively.
-Eventually, each of these $12$ part resembles a square grid.
+Eventually, each of these $12$ parts resembles a square grid.
 As the problem we are solving only involve one of these 12 parts, we can use this natural structure to simply re-assign each HEALPix pixel to one of a 2 dimensional grid of size $N_{sides} \times N_{sides}$.
-This operation is computationally very cheap and probably spread quite evenly across the resulting image.
-This projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.
+This operation is computationally very cheap and probably spread the projection error relatively evenly across the resulting image.
+We note that, this projection has recently been used for a CNN in cosmology in the very recent work \cite{krachmalnicoff2019convolutional}.
+%As we believe that this projection is the optimal one to use a traditional CNN for applications, we performed the experiment using it.
 
-As we believe that this projection is the optimal one to use a traditional CNN for application, we performed the experiment using it.
 
-
-Our expectation were similar with the one of the reviewer, but the results did surprise us as the performance of the traditional CNN did in general not match DeepSphere, (see Figure 9 of the manuscript).
+Our expectation were alligned with the one of the reviewer, but the results did surprise us as the performance of the traditional CNN did in general not match DeepSphere, (see Figure 9 of the manuscript).
 It can probably be explained by the fact that 2DCNN breaks the rotational invariance of the data.
 The problem comes from the fact that the projection introduce a distortion in the geometry and the network has to learn a correct weighting scheme to compensate for it.
 Unfortunately, this operation waste many parameters, reducing the modelization power of the network and requires large amount of training data which is not fully available.
 Note that, when visualizing the learned convolution kernels, we observed that they were not radial.
+We did not use *loads* of filters as suggested by the reviewer as the optimization was challenging and we already had to regularize significantly the network. 
+While adding more filters, did improve slightly the performance (never to the level of DeepSphere), it made the optimization even more challenging to the point where we could not obtain consistent results if we were to restart the training process.
+Eventually, we decided to report the results for the architecture with the same number of parameters as DeepSphere.
 
 
 % \TK{makes sense to me.}
