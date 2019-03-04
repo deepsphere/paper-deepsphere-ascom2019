@@ -421,7 +421,7 @@ To make the parallel with the classical 1D convolution, let $f, g\in \mathbb{Z} 
 \begin{equation*}
 	(f \ast g) [i] = \sum_{j=-\infty}^\infty f[j] g[i-j] = \langle T_i g,  f \rangle,
 \end{equation*}
-where $T_i g[j] = g[i-j]$ is, up to a flip ($g[i-j]$ instead of $g[i+j]$), a translation operator.
+where $T_i g[j] = g[i-j]$ is, up to a flip (i.e., $g[i-j]$ instead of $g[i+j]$), a translation operator.
 Similarly as \eqnref{graph_convolution_spatial}, the convolution of the signal $f$ by a kernel $g$ is the scalar product of $f$ with translated versions $T_i g$ of the kernel $g$.
 Additionally, it turns out that the localization operator $\T_i h$ is a generalization of the translation operator on graphs. In the particular case where the Laplacian matrix $\L$ is circulant, $\T_i h$ is a translated version of $\T_j h$ for all $i, j$ and both convolutions are equivalent. We refer the reader to \citep[Sec 2.2]{perraudin2017stationary} for a detailed discussion of the connection between translation $T_i$ and localization $\T_i$.
 
@@ -453,9 +453,9 @@ The filtering operation \eqnref{graph_convolution_fourier} becomes
 \begin{equation} \label{eqn:graph_convolution_monomial}
 	h_\theta(\L) \f =  \U \left(\sum_{k=0}^K \theta_k \bLambda^k \right) \U\trans \f = \sum_{k=0}^K \theta_k \L^k \f,
 \end{equation}
-where $\L^k$ captures $k$-neighborhoods.\footnote{In the context of graph, one way to define the distance between two vertices is to count the number of edges in the shortest path between these two vertices. Hence, we define the 1-neighborhood of a vertex as the set of vertices that are directly connected to it. The $k$-neighborhood of a vertex is the set of vertices that are connected to it through paths of length $k$.}
+where $\L^k$ captures $k$-neighborhoods.
 The entry $(\L^k)_{ij}$ is the sum of all weighted paths of length $k$ between vertices $v_i$ and $v_j$, where the weight of a path is the multiplication of all the edge weights on the path.
-Hence, it is non-zero if and only if vertices $v_i$ and $v_j$ are connected by at least one path of length $k$.
+Hence, it is non-zero if and only if vertices $v_i$ and $v_j$ are connected by at least one path of length $k$.\footnote{The length of a path between two vertices defines a distance on the graph.}
 Filtering with a polynomial convolution kernel can thus be interpreted in the pixel (vertex) domain as a weighted linear combination of neighboring pixel values.
 In the classical setting, convolutions are also weighted local sums.
 The weights are however given by the filter coefficients only, and there is one coefficient per pixel in the patch.
@@ -475,7 +475,7 @@ The filtering operation \eqnref{graph_convolution_fourier} becomes
 \end{equation}
 where
 \begin{equation*}
-\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}
+	\tL = \frac{2}{\lambda_{max}} \L - \b{I} = -\frac{2}{\lambda_{max}} \D^{-1/2} \W \D^{-1/2}
 \end{equation*}
 is the rescaled Laplacian with eigenvalues $\tilde{\b \Lambda}$ in $[-1, 1]$.
 $T_k(\cdot)$ is the Chebyshev polynomial of degree $k$ defined by the recursive relation $T_k(\tL) = 2\tL T_{k-1}(\tL) - T_{k-2}(\tL)$, $T_1(\tL) = \tL$, $T_0(\tL) = \b{I}$.
@@ -526,7 +526,9 @@ That operation is often taken to be the maximum value, but it can be any permuta
 
 Neural networks are constructed as stacks of layers which sequentially transform the data from its raw representation to some predictions.
 The general DeepSphere architecture, pictured in \figref{architecture}, is composed of many layers. The convolutional part, the head of the neural network, is composed of graph convolutional layers ($GC$), pooling layers ($P$), and batch normalization layers ($BN$). The tail is composed of multiple fully connected layers ($FC$) followed by an optional softmax layer ($SM$) if the network is used for discrete classification.
-A non-linear function $\sigma(\cdot)$ is applied after every linear $GC$ and $FC$ layer, except for the last $FC$ layer. That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$. The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice and is the one we adopted for this contribution.
+A non-linear function $\sigma(\cdot)$ is applied after every linear $GC$ and $FC$ layer, except for the last $FC$ layer.
+That operation is point-wise, i.e., $y_{ij} = \sigma(x_{ij})$ and $y_i = \sigma(x_i)$ for matrices $\X, \Y$ and vectors $\x, \y$.
+The rectified linear unit (ReLU) $\sigma(\cdot) = \max(\cdot, 0)$ is a common choice, and is the one we adopted in this contribution.
 
 Given a matrix $\X = [\x_1, \ldots, \x_{F_{in}}] \in \R^{N_{pix} \times F_{in}}$, a $GC$ layer computes $\Y = GC(\X) = [\y_1, \ldots, \y_{F_{out}}] \in \R^{N_{pix} \times F_{out}}$, where $N_{pix}$ is the number of pixels (and vertices), $F_{in}$ is the number of input features, and $F_{out}$ is the number of output features.
 Using the efficient graph convolution from \eqnref{graph_convolution_cheby}, each output feature map is computed as
@@ -548,9 +550,10 @@ The layer $FC: \R^{F_{in}} \rightarrow \R^{F_{out}}$ is defined as
 	\y = FC(\x) = \b W \x + \b b ,
 \end{equation}
 where $\W \in \R^{F_{out} \times F_{in}}$ and $\b b \in \R^{F_{out}}$ are the parameters to be learned.
-Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last $GC$ (or the output $\Y \in \R^{N_{stat} \times F_{out}}$ of the statistical layer), is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first $FC$, where $F_{in} = N_{pix} \times F_{out}$ (or $N_{stat} \times F_{out}$).
+Note that the output $\Y \in \R^{N_{pix} \times F_{out}}$ of the last $GC$ is vectorized as $\x = \vect(\X) \in \R^{F_{in}}$ before being fed to the first $FC$, where $F_{in} = N_{pix} \times F_{out}$.
 
-The softmax layer is the last layer in a neural network engineered for classification. Given the output $\x \in \R^{N_{classes}}$ of the last $FC$ (or statistical layer), called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
+The softmax layer is the last layer in a neural network engineered for classification.
+Given the output $\x \in \R^{N_{classes}}$ of the last $FC$, called the logits in the deep learning literature, the softmax layer outputs $\y = SM(\x)$ such that
 \begin{equation*}
 	y_i = \frac{\exp(x_i)}{\sum_{j=1}^{N_{classes}} \exp(x_j)} \in [0, 1], \ \forall i \in [N_{classes}],
 \end{equation*}
@@ -594,7 +597,7 @@ If $P$ layers are used, they have to be inverted via up-sampling in an encoder-d
 
 The set of input pixels which influence the value of an output pixel forms a \textit{receptive field}.
 That field is isotropic and local, i.e., it forms a disk centered around the output pixel.
-The radius of this filter is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of $P$ layers, if any.
+The field's radius is influenced by the polynomial order $K$ of $GC$ layers (setting how far the convolution operation looks around), and the down-sampling factor of $P$ layers, if any.
 This radius should be large enough to capture statistics of interest.
 For example, a partial sky observation can provide only limited information of cosmological relevance.
 On the other hand, looking at the whole sky is often superfluous and waste computations, as most interactions are local.
