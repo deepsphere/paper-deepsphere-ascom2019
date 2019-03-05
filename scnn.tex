@@ -436,7 +436,9 @@ To shed some light on the meaning of the convolution on a graph, we show in \ref
     The fast spherical harmonic transform (SHT) is implemented by the \texttt{healpy} Python package (via the \texttt{healpy.sphtfunc.smoothing} function).
     The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the \texttt{numpy} and \texttt{scipy} Python packages.
     Both are executed on a single core.
-	The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3) = \bO(N_{pix}^{3/2})$ for the spherical harmonics, where $\ell_{max}$ is the largest angular frequency.}
+	The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3) = \bO(N_{pix}^{3/2})$ for the spherical harmonics, where $\ell_{max}$ is the largest angular frequency.
+	The timings for the partial graphs correspond to the convolution on only a fraction (1/12, 1/48, 1/192) of the sphere. This illustrates how graph convolution scales with $N_{pix}$.
+	}
     \label{fig:filtering_speed}
 \end{figure}
 
@@ -488,6 +490,8 @@ By construction of our graph, $|\E| < 8 N_{pix}$ and the overall computational c
 This is especially true for smooth kernels which require a low polynomial degree $K$.
 \figref{filtering_speed} compares the speed of low-pass filtering for Gaussian smoothing using the spherical harmonics and the graph-based method presented here.
 On a single core, a naive implementation of our method is ten to twenty times faster for $N_{side} = 2048$, with $K=20$ and $K=5$, respectively, than using the spherical harmonic transform at $\ell_{max} = 3 N_{side}$ implemented by the highly optimized \pkg{libsharp} \citep{reinecke2013libsharp} library used by HEALPix.
+We also observe an important gain for graph convolution if it only needs to process only a subpart of the sphere. 
+This gain is the direct reflection of the graph convolution complexity proportional to $N_{pix}$.
 Note that the two might however scale differently, given that \pkg{libsharp} can be distributed on CPUs through MPI while our method can be distributed on GPUs by \pkg{TensorFlow}.
 
 \subsection{Coarsening and Pooling}
