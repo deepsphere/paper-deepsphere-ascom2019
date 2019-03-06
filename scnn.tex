@@ -282,7 +282,7 @@ These kind of maps can be created using the gravitational lensing technique \cit
 Our maps are similar to the ones used by \citep{schmelze2017cosmologicalmodel}.
 In a simplified scenario, we classify partial sky convergence maps into two cosmological models.
 These models were designed to have very similar angular power spectrum.
-We compare the performance of DeepSphere to three baselines: a 2D CNN, and an SVM classifier that takes pixel histograms or power spectrum densities (PSDs) of these maps as input.
+We compare the performance of DeepSphere to three baselines: a 2D CNN, and an SVM classifier that takes pixel histograms or power spectral densities (PSDs) of these maps as input.
 The comparison is made as a function of the additive noise level and the area of the sphere used in the analysis.
 Results show that our model is always better at discriminating the maps, especially in the presence of noise.
 DeepSphere is implemented with \pkg{TensorFlow} \citep{abadi2016tensorflow} and is intended to be easy to use out-of-the-box for cosmological applications.
@@ -782,7 +782,7 @@ For these reasons we decided to use the classification problem in this work, and
 \begin{figure}[t!]
 	\centering
 	\includegraphics[width=\linewidth]{psd_sigma3}
-	\caption{Power spectrum densities of the noiseless maps.
+	\caption{Power spectral densities of the noiseless maps.
 		To prevent the cosmological models from being distinguished by their power spectra alone, the maps have been smoothed with a Gaussian kernel of radius $3$ arcmins to remove high frequencies ($\ell>1000$).}
 	\label{fig:psd_sigma3}
 \end{figure}
@@ -807,7 +807,7 @@ The parameters $\Omega_m$ and $\sigma_8$ were chosen for the maps to have the sa
 That means that it is difficult to distinguish between these cosmological models.
 We found that the differences in power spectrum is $~5\%$ for $\ell>1000$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
-The resulting Power Spectrum Density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
+The resulting power spectral density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
 We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
 
 The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}.
@@ -836,7 +836,7 @@ That is a data augmentation scheme, as it creates more training examples than we
 \subsection{Baselines}
 
 DeepSphere is first compared against two simple yet powerful benchmarks.
-The two baselines are based on features that are (i) the power spectral densities (PSD) of maps, and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
+The two baselines are based on features that are (i) the power spectral densities (PSDs) of maps, and (ii) the histogram of pixels in the maps \citep{patton2017cosmologicalconstraints}.
 After normalization, those features are used by a linear support vector machine (SVM) trained for classification.
 A linear kernel is used as other kernels did not provide better results, while having significantly worse scaling properties.
 For fairness, the training set was augmented in a similar way as for DeepSphere: we created samples by adding new random realizations of the noise. We stopped adding new samples to the training data once the validation error converged. This process is detailed in \ref{sec:dataset_augmentation}.
