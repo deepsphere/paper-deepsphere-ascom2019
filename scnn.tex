@@ -437,7 +437,7 @@ To shed some light on the meaning of the convolution on a graph, we show in \ref
     The graph filtering is defined by \eqnref{graph_convolution_cheby} and implemented with the \texttt{numpy} and \texttt{scipy} Python packages.
     Both are executed on a single core.
 	The theoretical cost of filtering on the graph is $\bO(K N_{pix})$ and $\bO(\ell_{max}^3) = \bO(N_{pix}^{3/2})$ for the spherical harmonics, where $\ell_{max}$ is the largest angular frequency.
-	The timings for the partial graphs correspond to a convolution on two fractions (1/12 and 1/192) of the sphere, and illustrates the $\bO(N_{pix})$ scaling of graph convolutions.
+	The timings for the partial graphs correspond to a convolution on two fractions ($1/12$ and $1/192$) of the sphere, and illustrates the $\bO(N_{pix})$ scaling of graph convolutions.
 	}
     \label{fig:filtering_speed}
 \end{figure}
@@ -809,6 +809,7 @@ We found that the differences in power spectrum is $~5\%$ for $\ell>1000$.
 To remove this information, we additionally smooth the spherical maps with a Gaussian kernel of radius $3$ arcmin.
 The resulting power spectral density (PSD), computed using the \texttt{anafast} function of the HEALPix package, are displayed in \figref{psd_sigma3}.
 We also subtract the mean of each map and down-sample them to a resolution of $N_{side}=1024$, which corresponds to maps of $12 \times 1024^2 \approx 12 \times 10^6$ pixels.
+As shown by the occupied spectrum (\figref{psd_sigma3}), a larger resolution would waste memory and computation, while a lower resolution would destroy information.
 
 The simulations are created using the fast lightcone method \pkg{UFalcon} described in \citep{sgier2018fastgeneration}.
 A brief overview about the map making procedure used in \pkg{UFalcon} as well as the simulation parameters are given in \ref{sec:convergence_mass_maps}.
@@ -823,9 +824,11 @@ Initial conditions for these simulations are the same, so the differences in str
 
 As the distribution of matter in the universe is homogeneous and isotropic, no pixel is more informative than any other.\footnote{Contrast that with images, where the subject of interest is most often around the center of the picture.}
 As such, we can control the difficulty of the classification problem by limiting the number of pixels available to the algorithms, i.e., extracting partial maps from whole sky maps.
-Using the properties of HEALPix, we split maps into $12 \times o^2$ ($o=1,2,4,\dots$) independent samples of $(N_{pix} / o)^2$ pixels. The resulting partial maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\% ($\approx 1 \times 10^6$ pixels), 2.1\% ($\approx 260 \times 10^3$ pixels), and 0.5\% ($\approx 65 \times 10^3$ pixels) of the sphere for $o=1,2,4$, respectively.
+Using the properties of HEALPix, we split maps into $12 \times o^2$ independent samples of $(N_{pix} / o)^2$ pixels (for $o=1,2,4,\dots$). The resulting partial maps are large enough to suffer from the effects of the spherical geometry, and cover 8.3\% ($\approx 1 \times 10^6$ pixels), 2.1\% ($\approx 260 \times 10^3$ pixels), and 0.5\% ($\approx 65 \times 10^3$ pixels) of the sphere for $o=1,2,4$, respectively.
 Corresponding areas can be seen in \figref{pooling}: the surface of pixels in the left, middle, and right spheres correspond to samples at order $o=4,2,1$, respectively.
-We report results for $o=1,2,4$ only, as full sphere classification is easy at such resolution (perfect classification accuracy is already attainable for $o=1$, see \figref{results}), and many cosmological applications will use datasets located on part-sphere only. Our code nonetheless includes an example demoing classification on full spheres of much lower resolution ($N_{side} = 64$).
+We report results for $o=1,2,4$ only, as full sphere classification is easy at such resolution (perfect classification accuracy is already obtained at $o=1$, see \figref{results}).
+% any cosmological applications will use datasets located on part-sphere only. % MD: we made this point already
+The published code nonetheless includes an example demoing classification on full spheres of lower resolution ($N_{side} = 64$).
 
 To make the discrimination harder and the problem more realistic, centered Gaussian noise is added to the simulated maps.
 The standard deviation of the noise varies from zero (i.e., no noise) to $2\times$ the standard deviation of pixel's values in the noiseless maps.
@@ -850,6 +853,17 @@ This property has been independently exploited (while this paper was under revie
 In our experiments, we used the same architecture as DeepSphere (described in \secref{hyper_parameters}), with convolution kernels of size $5 \times 5$ and an $\ell2$ weight decay with a weight of 3 as regularization.
 The number of filters was reduced in order to match the number of trainable parameters between DeepSphere and the 2D ConvNet.
 (A larger architecture resulted in unstable training for a marginal performance gain.)
+
+Ideally, we would compare DeepSphere to alternative spherical CNNs like \citep{cohen2018sphericalcnn} and \citep{esteves2017sphericalcnn}.
+There are however two issues with that comparison.
+First, these CNNs were developed for the equirectangular sampling.
+An option is to modify the available implementations to use HEALPix, which is a major undertaking due to their complexity.
+Another option is to transform the cosmological maps to the equirectangular sampling, which is of disputable usefulness as the field is unlikely to use that sampling.
+% nefieldfully to not introduce artifacts
+Second, those methods, based on SHTs, only work on the full sphere (at least in their current state).
+As shown in \figref{filtering_speed}, using the full sphere at a resolution of $N_{side} = 1024$ would result in a slow-down of multiple orders of magnitude compared to using a partial graph.\footnote{Note that the authors report results for maps of at most $(2 \times 128)^2 = 65,536$ pixels \citep{cohen2018sphericalcnn, esteves2017sphericalcnn}.
+That is the size of our smallest partial map, while the largest is of approximately one million pixels.}
+For those reasons and because we think that a proper comparison is better carried out on diverse datasets and tasks, we leave it as future work.
 
 \subsection{Network architecture and hyper-parameters}
 \label{sec:hyper_parameters}
