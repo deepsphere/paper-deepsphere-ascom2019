@@ -1047,15 +1047,15 @@ In order to push the comparison one step further, we show the correspondence bet
 	\centering
 	\includegraphics[width=\linewidth]{subspace_harmonics_eigenvectors_v2}
 	\caption{Correspondence between the subspaces spanned by the graph Fourier modes and the spherical harmonics.
-		The correspondance is computed in two steps. (i) We compute the PSD of each graph eigenvector.
-		(ii) As, for each harmonic index $\ell$, there is $2\ell+1$ spherical harmonics, we sum the contribution of the corresponding $2\ell+1$ graph eigenvectors.
+		%The correspondence is computed in two steps.
+		First, we compute the power spectral density (PSD) of each graph eigenvector.
+		Second, as there is $2\ell+1$ spherical harmonics for each harmonic index $\ell$, we sum the contributions of the corresponding $2\ell+1$ graph eigenvectors.
 		% No real convergence with increasing Nside.
 		% Row $j$ is the sum of the (normalized) power spectral densities (PSDs), computed by the SHT, of the $2j+1$ graph Fourier modes $\b u_i$ identified with degree $j$.
 		% (\figref{graph_eigenvalues} shows how Fourier modes can be identified to spherical degrees.)
 		% The PSD is computed for degrees $\ell=0$ to $\ell = 3 N_{side} -1$.
 		% Pixel $k$ in row $j$ measures the energy in frequency band $k$ of the graph Fourier modes identified to be part of band $j$.
-		The matrix should ideally be the identity.
-		While not the case, the plot shows how the subspaces agree: the subspaces spanned by the Fourier modes correspond to those spanned by the spherical harmonics in the low frequencies, while the Fourier modes leak towards adjacent frequency bands in the high frequencies.
+		The matrix shows how the subspaces agree: the subspaces spanned by the Fourier modes correspond to those spanned by the spherical harmonics in the low frequencies, and the Fourier modes leak towards adjacent frequency bands at higher frequencies.
 		While there is a systematic error, the Fourier modes agree at higher frequencies as $N_{side}$ increases.}
 		\label{fig:subspace_harmonics_eigenvectors}
 \end{figure}
