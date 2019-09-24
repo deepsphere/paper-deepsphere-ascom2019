@@ -347,7 +347,7 @@ Indeed, \citep{belkin2007convergence} showed that the graph Laplacian converges 
 While our construction does not exactly respect their setting (the sampling is deterministic and the graph is not fully connected), we empirically observe a strong correspondence between the eigenmodes of both Laplacians (see \ref{sec:comparison_spherical_harmonics}).
 
 From the HEALPix pixelization, we build a weighted undirected graph $\G = (\V, \E, \W)$, where $\V$ is the set of $N_{pix} = |\V|$ vertices, $\E$ is the set of edges, and $\W$ is the weighted adjacency matrix.
-In our graph, each pixel $i$ is represented by a vertex (also called vertex) $v_i \in \V$.
+In our graph, each pixel $i$ is represented by a vertex $v_i \in \V$.
 Each vertex $v_i$ is then connected to the $8$ (or $7$)\footnote{\label{neighbors}The $12 \times 4 = 48$ pixels at the corner of each rhombus of the base dodecahedron only have 7 neighboring pixels. See Figures~\ref{fig:healpix_graph_4} and~\ref{fig:pooling}.} vertices $v_j$ which represent the neighboring pixels $j$ of pixel $i$, forming edges $(v_i, v_j) \in \E$. Given those edges, we define the weighted adjacency matrix $\W \in \R^{N_{pix} \times N_{pix}}$ as
 \begin{equation*}
 	\W_{ij} = \begin{cases}
