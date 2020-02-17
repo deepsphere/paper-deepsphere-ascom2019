@@ -44,3 +44,7 @@ Compile the latex source into a PDF with `make`.
 
 All the figures are in the [`figure`](figures/) folder.
 The code and data to reproduce them is found in the [code repository][code].
+
+## Reviews and rebuttal
+
+The journal reviews and rebuttal are found in [`rebuttal.tex`](rebuttal.tex) and will be compiled in a PDF by `make`.
