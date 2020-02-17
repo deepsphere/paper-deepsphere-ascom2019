@@ -39,6 +39,7 @@ Related: [code], [data], [blog], [slides].
 ## Compilation
 
 Compile the latex source into a PDF with `make`.
+Run `make clean` to remove temporary files and `make arxiv.zip` to prepare an archive to be uploaded on arxiv.
 
 ## Figures
 
