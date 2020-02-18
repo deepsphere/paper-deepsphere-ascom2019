@@ -43,7 +43,7 @@ Run `make clean` to remove temporary files and `make arxiv.zip` to prepare an ar
 
 ## Figures
 
-All the figures are in the [`figure`](figures/) folder.
+All the figures are in the [`figures`](figures/) folder.
 The code and data to reproduce them is found in the [code repository][code].
 
 ## Reviews and rebuttal
