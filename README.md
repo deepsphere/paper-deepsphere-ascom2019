@@ -31,7 +31,7 @@ Related: [code], [data], [blog], [slides].
 [arxiv]: https://arxiv.org/abs/1810.12186
 [journal]: https://doi.org/10.1016/j.ascom.2019.03.004
 [infoscience]: https://infoscience.epfl.ch
-[code]: https://github.com/SwissDataScienceCenter/DeepSphere
+[code]: https://github.com/deepsphere/deepsphere-cosmo-tf1
 [data]: https://doi.org/10.5281/zenodo.1303271
 [blog]: https://datascience.ch/deepsphere-a-neural-network-architecture-for-spherical-data
 [slides]: https://doi.org/10.5281/zenodo.3243380
