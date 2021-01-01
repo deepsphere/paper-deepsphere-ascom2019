@@ -1,12 +1,10 @@
 # DeepSphere: Efficient spherical Convolutional Neural Network with HEALPix sampling for cosmological applications
 
-[Nathanaël Perraudin][nath], [Michaël Defferrard][mdeff], [Tomasz Kacprzak][tomek], [Raphael Sgier][raphael]\
+[Nathanaël Perraudin](https://perraudin.info),
+[Michaël Defferrard](https://deff.ch),
+[Tomasz Kacprzak](https://www.ipa.phys.ethz.ch/people/person-detail.MjEyNzM5.TGlzdC82NjQsNTkxMDczNDQw.html),
+[Raphael Sgier](https://www.ipa.phys.ethz.ch/people/person-detail.MTcyNDY3.TGlzdC82NjQsNTkxMDczNDQw.html) \
 Astronomy and Computing, 2019
-
-[nath]: https://perraudin.info
-[mdeff]: https://deff.ch
-[tomek]: https://www.ipa.phys.ethz.ch/people/person-detail.MjEyNzM5.TGlzdC82NjQsNTkxMDczNDQw.html
-[raphael]: https://www.ipa.phys.ethz.ch/people/person-detail.MTcyNDY3.TGlzdC82NjQsNTkxMDczNDQw.html
 
 > Convolutional Neural Networks (CNNs) are a cornerstone of the Deep Learning toolbox and have led to many breakthroughs in Artificial Intelligence.
 > These networks have mostly been developed for regular Euclidean domains such as those supporting images, audio, or video.
@@ -25,12 +23,32 @@ Astronomy and Computing, 2019
 > For high noise levels and for data covering only a smaller fraction of the sphere, DeepSphere achieves typically 10% better classification accuracy than those baselines.
 > Finally, we show how learned filters can be visualized to introspect the neural network.
 
-**PDF available at [arxiv], [journal], [infoscience].**\
+```
+@article{deepsphere_cosmo,
+  title = {{DeepSphere}: Efficient spherical Convolutional Neural Network with {HEALPix} sampling for cosmological applications},
+  author = {Perraudin, Nathana\"el and Defferrard, Micha\"el and Kacprzak, Tomasz and Sgier, Raphael},
+  journal = {Astronomy and Computing},
+  volume = {27},
+  pages = {130-146},
+  year = {2019},
+  month = apr,
+  publisher = {Elsevier BV},
+  issn = {2213-1337},
+  doi = {10.1016/j.ascom.2019.03.004},
+  archiveprefix = {arXiv},
+  eprint = {1810.12186},
+  url = {https://arxiv.org/abs/1810.12186},
+}
+```
+
+## Resources
+
+PDF available at [arXiv] and the [journal].
+
 Related: [code], [data], [blog], [slides].
 
-[arxiv]: https://arxiv.org/abs/1810.12186
+[arXiv]: https://arxiv.org/abs/1810.12186
 [journal]: https://doi.org/10.1016/j.ascom.2019.03.004
-[infoscience]: https://infoscience.epfl.ch
 [code]: https://github.com/deepsphere/deepsphere-cosmo-tf1
 [data]: https://doi.org/10.5281/zenodo.1303271
 [blog]: https://datascience.ch/deepsphere-a-neural-network-architecture-for-spherical-data
