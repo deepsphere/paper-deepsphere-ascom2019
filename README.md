@@ -43,12 +43,12 @@ Astronomy and Computing, 2019
 
 ## Resources
 
-PDF available at [arXiv] and the [journal].
+PDF available at [arXiv] and [Astronomy and Computing].
 
 Related: [code], [data], [blog], [slides].
 
 [arXiv]: https://arxiv.org/abs/1810.12186
-[journal]: https://doi.org/10.1016/j.ascom.2019.03.004
+[Astronomy and Computing]: https://doi.org/10.1016/j.ascom.2019.03.004
 [code]: https://github.com/deepsphere/deepsphere-cosmo-tf1
 [data]: https://doi.org/10.5281/zenodo.1303271
 [blog]: https://datascience.ch/deepsphere-a-neural-network-architecture-for-spherical-data
@@ -64,6 +64,6 @@ Run `make clean` to remove temporary files and `make arxiv.zip` to prepare an ar
 All the figures are in the [`figures`](figures/) folder.
 The code and data to reproduce them is found in the [code repository][code].
 
-## Reviews and rebuttal
+## Peer-review
 
-The journal reviews and rebuttal are found in [`rebuttal.tex`](rebuttal.tex) and will be compiled in a PDF by `make`.
+The journal reviews and rebuttal are in [`rebuttal.tex`](rebuttal.tex) and will be compiled in a PDF by `make`.
